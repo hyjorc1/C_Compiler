@@ -65,13 +65,15 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 all: $(OUTPUT) $(MAIN)
-	@echo Executing 'all' complete!
+	@echo Executing target 'all' complete!
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
+	@echo Executing target '$(OUTPUT)' complete!
 
-$(MAIN): $(OBJECTS) 
+$(MAIN): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+	@echo Executing target '$(MAIN)' complete!
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -79,13 +81,16 @@ $(MAIN): $(OBJECTS)
 # (see the gnu make manual section about automatic variables)
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
+	@echo Executing target '.cpp.o' complete!
 
 .PHONY: clean
+	@echo Executing target '.PHONY' complete!
+
 clean:
 	$(RM) $(OUTPUTMAIN)
 	$(RM) $(call FIXPATH,$(OBJECTS))
-	@echo Cleanup complete!
+	@echo Executing target 'clean' complete!
 
 run: all
 	./$(OUTPUTMAIN)
-	@echo Executing 'run: all' complete!
+	@echo Executing target 'run: all' complete!
