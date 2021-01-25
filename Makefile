@@ -99,4 +99,4 @@ latex:
 	$(LATEX) $(DOC).tex
 
 latex-clean:
-	$(RM) *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls .fdb_latexmk *.gz $(DOC).pdf
+	$(RM) *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz $(DOC).pdf
