@@ -1,5 +1,5 @@
 
-################################# general targets #############################
+########################## general targets ########################
 
 all: project latex
 	@echo Executing target 'all' complete!
