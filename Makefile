@@ -1,28 +1,35 @@
-#
-# 'make'        build executable file 'main'
-# 'make clean'  removes all .o and executable files
-#
+
+################################# general targets #############################
+
+all: project latex
+	@echo Executing target 'all' complete!
+
+.PHONY: clean
+	@echo Executing target '.PHONY' complete!
+
+clean: project-clean latex-clean
+	@echo Executing target 'clean' complete!
+
+run: all
+	./$(OUTPUTMAIN)
+	@echo Executing target 'run: all' complete!
+
+############################# project #############################
 
 # define the Cpp compiler to use
 CXX = g++
-
 # define any compile-time flags
 CXXFLAGS	:= -std=c++17 -Wall -Wextra -g
-
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 LFLAGS =
-
 # define output directory
 OUTPUT	:= output
-
 # define source directory
 SRC		:= src
-
 # define include directory
 INCLUDE	:= include
-
 # define lib directory
 LIB		:= lib
 
@@ -46,13 +53,10 @@ endif
 
 # define any directories containing header files other than /usr/include
 INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
-
 # define the C libs
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
-
 # define the C source files
 SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS)))
-
 # define the C object files 
 OBJECTS		:= $(SOURCES:.cpp=.o)
 
@@ -61,11 +65,10 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 # build any executable just by changing the definitions above and by
 # deleting dependencies appended to the file from 'make depend'
 #
-
 OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
-all: $(OUTPUT) $(MAIN)
-	@echo Executing target 'all' complete!
+project: $(OUTPUT) $(MAIN)
+	@echo Built project!
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
@@ -83,12 +86,17 @@ $(MAIN): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
 	@echo Executing target '.cpp.o' complete!
 
-.PHONY: clean
-	@echo Executing target '.PHONY' complete!
-clean:
+project-clean:
 	$(RM) $(OUTPUTMAIN) $(call FIXPATH,$(OBJECTS)) $(call FIXPATH,$(SRC)/$(MAIN))
-	@echo Executing target 'clean' complete!
+	@echo Cleaned project!
 
-run: all
-	./$(OUTPUTMAIN)
-	@echo Executing target 'run: all' complete!
+################################# latex #############################
+
+DOC = developer
+LATEX = pdflatex
+
+latex:
+	$(LATEX) $(DOC).tex
+
+latex-clean:
+	$(RM) *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls .fdb_latexmk *.gz $(DOC).pdf
