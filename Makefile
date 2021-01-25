@@ -85,10 +85,8 @@ $(MAIN): $(OBJECTS)
 
 .PHONY: clean
 	@echo Executing target '.PHONY' complete!
-
 clean:
-	$(RM) $(OUTPUTMAIN)
-	$(RM) $(call FIXPATH,$(OBJECTS))
+	$(RM) $(OUTPUTMAIN) $(call FIXPATH,$(OBJECTS)) $(call FIXPATH,$(SRC)/$(MAIN))
 	@echo Executing target 'clean' complete!
 
 run: all
