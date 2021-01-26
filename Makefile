@@ -90,7 +90,7 @@ project-clean:
 	$(RM) $(OUTPUTMAIN) $(call FIXPATH,$(OBJECTS)) $(call FIXPATH,$(SRC)/$(MAIN))
 	@echo Cleaned project!
 
-################################# latex #############################
+################################ latex ############################
 
 DOC = developer
 LATEX = pdflatex
