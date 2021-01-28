@@ -10,8 +10,10 @@ all: project latex
 clean: project-clean latex-clean
 	@echo Executing target 'clean' complete!
 
-run: all
-	./$(OUTPUTMAIN)
+run: project
+	./$(MAIN) -0 -o output.txt
+	# ./$(MAIN) -0 -o output.txt input.boa
+	# ./$(MAIN) -0 -o output.txt input.boa
 	@echo Executing target 'run: all' complete!
 
 ############################# project #############################
@@ -34,7 +36,7 @@ INCLUDE	:= include
 LIB		:= lib
 
 ifeq ($(OS),Windows_NT)
-MAIN	:= main.exe
+MAIN	:= mycc.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
@@ -42,7 +44,7 @@ FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
 else
-MAIN	:= main
+MAIN	:= mycc
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
@@ -65,7 +67,7 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 # build any executable just by changing the definitions above and by
 # deleting dependencies appended to the file from 'make depend'
 #
-OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+# OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 project: $(OUTPUT) $(MAIN)
 	@echo Built project!
@@ -75,7 +77,7 @@ $(OUTPUT):
 	@echo Executing target '$(OUTPUT)' complete!
 
 $(MAIN): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
 	@echo Executing target '$(MAIN)' complete!
 
 # this is a suffix replacement rule for building .o's from .c's
@@ -87,7 +89,7 @@ $(MAIN): $(OBJECTS)
 	@echo Executing target '.cpp.o' complete!
 
 project-clean:
-	$(RM) $(OUTPUTMAIN) $(call FIXPATH,$(OBJECTS)) $(call FIXPATH,$(SRC)/$(MAIN))
+	$(RM) $(call FIXPATH,$(OBJECTS)) $(MAIN)
 	@echo Cleaned project!
 
 ################################ latex ############################
