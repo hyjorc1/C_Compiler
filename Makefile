@@ -68,11 +68,11 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 #
 # OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
-project: $(OUTPUT) $(MAIN)
+project: $(MAIN)
 # @echo Built project!
 
-$(OUTPUT):
-	$(MD) $(OUTPUT)
+# $(OUTPUT):
+# 	$(MD) $(OUTPUT)
 # @echo Executing target '$(OUTPUT)' complete!
 
 $(MAIN): $(OBJECTS)
