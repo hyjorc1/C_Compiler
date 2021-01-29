@@ -2,19 +2,18 @@
 ########################## general targets ########################
 
 all: project latex
-	@echo Executing target 'all' complete!
+# @echo Executing target 'all' complete!
 
 .PHONY: clean
-	@echo Executing target '.PHONY' complete!
+# @echo Executing target '.PHONY' complete!
 
 clean: project-clean latex-clean
-	@echo Executing target 'clean' complete!
 
 run: project
-	./$(MAIN) -0 -o output.txt
-	# ./$(MAIN) -0 -o output.txt input.boa
-	# ./$(MAIN) -0 -o output.txt input.boa
-	@echo Executing target 'run: all' complete!
+	./$(MAIN)
+
+test: project
+	./$(MAIN) test
 
 ############################# project #############################
 
@@ -70,15 +69,15 @@ OBJECTS		:= $(SOURCES:.cpp=.o)
 # OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
 
 project: $(OUTPUT) $(MAIN)
-	@echo Built project!
+# @echo Built project!
 
 $(OUTPUT):
 	$(MD) $(OUTPUT)
-	@echo Executing target '$(OUTPUT)' complete!
+# @echo Executing target '$(OUTPUT)' complete!
 
 $(MAIN): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
-	@echo Executing target '$(MAIN)' complete!
+# @echo Executing target '$(MAIN)' complete!
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
@@ -86,11 +85,11 @@ $(MAIN): $(OBJECTS)
 # (see the gnu make manual section about automatic variables)
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
-	@echo Executing target '.cpp.o' complete!
+# @echo Executing target '.cpp.o' complete!
 
 project-clean:
 	$(RM) $(call FIXPATH,$(OBJECTS)) $(MAIN)
-	@echo Cleaned project!
+# @echo Cleaned project!
 
 ################################ latex ############################
 

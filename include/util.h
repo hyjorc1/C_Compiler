@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
-#include <cxxopts.hpp>
+#include "../lib/cxxopts.hpp"
 
 using namespace std;
 using namespace cxxopts;

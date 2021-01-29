@@ -1,6 +1,6 @@
 # 540-project
 
-Test project at `ssh usr@pyrite.cs.iastate.edu`.
+Test project at `ssh hyj@pyrite.cs.iastate.edu`.
 
 ## Ease of Building and Cleaning
 

@@ -1,7 +1,17 @@
 #include "../include/util.h"
 
+string current_version()
+{
+	string res = "My bare-bones C compiler (for COM 440/540)\n";
+	res += "\tWritten by Yijia Huang (hyj@iastate.edu)\n";
+	res += "\tVersion 0.1\n";
+	res += "\t30 January, 2021\n";
+	return res;
+}
+
 vector<string> load_modes()
 {
+	// The mode is an integer from 0 to 5, and corresponds to each part of the project.
 	return {
 		"Version information",
 		"Part 1 (not implemented yet)",
@@ -19,7 +29,7 @@ Options load_options(string &program_name)
 		.show_positional_help()
 		.allow_unrecognised_options();
 
-	options.add_options()("o", "write to outfile instead of standard output", value<string>()->default_value("std.out"), "outfile");
+	options.add_options()("o", "write to outfile instead of standard output", value<string>(), "outfile");
 	return options;
 }
 
@@ -48,35 +58,10 @@ string help_msg(vector<string> &modes, Options &options)
 	return output;
 }
 
-string current_version()
-{
-	string res = "My bare-bones C compiler (for COM 440/540)\n";
-	res += "\tWritten by Yijia Huang (hyj@iastate.edu)\n";
-	res += "\tVersion 0.1\n";
-	res += "\t30 January, 2021\n";
-	return res;
-}
-
 bool is_number(const string &s)
 {
 	string::const_iterator it = s.begin();
 	while (it != s.end() && isdigit(*it))
 		++it;
 	return !s.empty() && it == s.end();
-}
-
-string handle_mode(string &mode, vector<string> &modes)
-{
-	if (mode.length() <= 1 || mode.at(0) != '-' || !is_number(mode.substr(1)))
-		throw OptionException("err");
-
-	int x;
-	sscanf(mode.substr(1).c_str(), "%d", &x);
-	int size = static_cast<int>(modes.size());
-	if (x < 0 || x >= size)
-		throw OptionException("err");
-
-	if (x == 0)
-		return current_version();
-	return modes.at(x);
 }
