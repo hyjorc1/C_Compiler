@@ -1,28 +1,22 @@
-\section{Heading on level 1 (section)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus:
-\begin{align}
-    \begin{split}
-        (x+y)^3 	&= (x+y)^2(x+y)\\
-        &=(x^2+2xy+y^2)(x+y)\\
-        &=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-        &=x^3+3x^2y+3xy^2+y^3
-    \end{split}
-\end{align}
-Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+\section*{PART 0}
 
-\subsection{Heading on level 2 (subsection)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-\begin{align}
-    A =
-    \begin{bmatrix}
-        A_{11} & A_{21} \\
-        A_{21} & A_{22}
-    \end{bmatrix}
-\end{align}
-Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+The compiler \texttt{mycc} is built with \texttt{make}.
+Currently, the project involves three folders 
+\texttt{src}, \texttt{lib}, and \texttt{include}.
 
-\subsubsection{Heading on level 3 (subsubsection)}
-Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+\paragraph{\large\textbf{src}} 
+\begin{enumerate}
+    \item \textbf{mycc.cpp} is the main file of the project.
+\end{enumerate}
 
-\paragraph{Heading on level 4 (paragraph)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim.
+\paragraph{\large\textbf{lib}} 
+\begin{enumerate}
+    \item \textbf{cxxopts.hpp} is a lightweight C++ option parser library, supporting the standard GNU style syntax for options. Here it is used to parse compiler arguments.
+\end{enumerate}
+
+\paragraph{\large\textbf{include}} 
+\begin{enumerate}
+    \item \textbf{mycc.h} is the head file for \texttt{mycc.cpp}.
+    \item \textbf{util.h} contains utility functions.
+    \item \textbf{test.h} contains unit tests for part 0.
+\end{enumerate}
