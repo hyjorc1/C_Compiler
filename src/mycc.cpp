@@ -47,13 +47,13 @@ int main(int argc, char *argv[])
 		// If mode argument is invalid, throw error.
 		string mode_arg = argv[1];
 		if (mode_arg.length() <= 1 || mode_arg.at(0) != '-' || !is_number(mode_arg.substr(1)))
-			throw OptionException("usage");
+			throw OptionException("invalid mode argument");
 
 		// If mode id is invalid, throw error
 		int mode_id;
 		sscanf(mode_arg.substr(1).c_str(), "%d", &mode_id);
 		if (mode_id < 0 || mode_id >= static_cast<int>(modes.size()))
-			throw OptionException("usage");
+			throw OptionException("model number is not in the range between 0 and 5");
 
 		auto result = options.parse(--argc, ++argv);
 
@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 
 			for (int i = 1; i < argc; ++i) {
 				std_out += "input file: " + string(argv[i]) + '\n';
+				std_out += "mode " + to_string(mode_id) + " is not implemented yet";
 			}
 		}
 
