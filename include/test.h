@@ -24,14 +24,15 @@ void test_main(const char *input) {
     for (string s; iss >> s;)
         result.push_back(s);
     int idx = 0, size = result.size();
-    char **argv = new char *[size + 1];
+    char **new_argv = new char *[size + 1];
     for (string s: result)
-        argv[idx++] = strdup(s.c_str());
+        new_argv[idx++] = strdup(s.c_str());
     cout << "Test " << test_num++ << endl;
     cout << "Command: " << input << endl; 
     cout << "------------- Output Start -------------" << endl;
-    main(size, argv);
+    main(size, new_argv);
     cout << "------------- Output End -------------\n" << endl;
+    delete []new_argv;
 }
 
 int unit_test()
