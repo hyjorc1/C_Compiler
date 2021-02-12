@@ -1,13 +1,7 @@
 
 ########################## general targets ########################
-
 all: project latex
 # @echo Executing target 'all' complete!
-
-.PHONY: clean
-# @echo Executing target '.PHONY' complete!
-
-clean: project-clean latex-clean
 
 run: project
 	./$(MAIN)
@@ -15,89 +9,64 @@ run: project
 test: project
 	./$(MAIN) test
 
-############################# project #############################
+.PHONY: clean
+clean: project-clean latex-clean
 
-# define the Cpp compiler to use
-CXX = g++
-# define any compile-time flags
-CXXFLAGS	:= -std=c++17 -Wall -Wextra -g
-# define library paths in addition to /usr/lib
-#   if I wanted to include libraries not in /usr/lib I'd specify
-#   their path using -Lpath, something like:
-LFLAGS =
-# define output directory
-OUTPUT	:= output
-# define source directory
-SRC		:= src
-# define include directory
-INCLUDE	:= include
-# define lib directory
-LIB		:= lib
+############################# project #############################
+CXX			 = g++ # define the Cpp compiler to use
+CXXFLAGS	:= -std=c++14 -Wall -Wextra -g # define any compile-time flags
+LFLAGS 		 =
+OUTPUT		:= output # define output directory
+SRC			:= src # define source directory
+INCLUDE		:= include # define include directory
+LIB			:= lib # define lib directory
 
 ifeq ($(OS),Windows_NT)
-MAIN	:= mycc.exe
+MAIN	    := mycc.exe
 SOURCEDIRS	:= $(SRC)
 INCLUDEDIRS	:= $(INCLUDE)
 LIBDIRS		:= $(LIB)
-FIXPATH = $(subst /,\,$1)
+FIXPATH      = $(subst /,\,$1)
 RM			:= del /q /f
-MD	:= mkdir
+MD	        := mkdir
 else
-MAIN	:= mycc
+MAIN	    := mycc
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
 INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
-FIXPATH = $1
-RM = rm -f
-MD	:= mkdir -p
+FIXPATH      = $1
+RM =        rm -f
+MD	        := mkdir -p
 endif
 
-# define any directories containing header files other than /usr/include
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
-# define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
-# define the C source files
-SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS)))
-# define the C object files 
-OBJECTS		:= $(SOURCES:.cpp=.o)
-
-#
-# The following part of the makefile is generic; it can be used to 
-# build any executable just by changing the definitions above and by
-# deleting dependencies appended to the file from 'make depend'
-#
-# OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%)) # define any directories containing header files other than /usr/include
+LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) # define the C libs
+SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS))) # define the C source files
+OBJECTS		:= $(SOURCES:.cpp=.o) # define the C object files 
 
 project: $(MAIN)
-# @echo Built project!
-
-# $(OUTPUT):
-# 	$(MD) $(OUTPUT)
-# @echo Executing target '$(OUTPUT)' complete!
 
 $(MAIN): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
-# @echo Executing target '$(MAIN)' complete!
+	@echo Executing target '$(MAIN)' complete! $(OBJECTS)
 
-# this is a suffix replacement rule for building .o's from .c's
-# it uses automatic variables $<: the name of the prerequisite of
-# the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
-# (see the gnu make manual section about automatic variables)
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
-# @echo Executing target '.cpp.o' complete!
+	@echo Executing target '.cpp.o' complete!
 
 project-clean:
-	$(RM) $(call FIXPATH,$(OBJECTS)) $(MAIN)
+	$(RM) $(call FIXPATH,$(OBJECTS)) $(MAIN) 
+	$(RM) lexer.yy.cc lexer.o
 # @echo Cleaned project!
 
-################################ latex ############################
+lexer: lexer.l
+	flex --outfile=lexer.yy.cc  $<
+	g++  -Wno-deprecated-register -O0  -g -Wall -std=c++14 -c lexer.yy.cc -o lexer.o
 
+################################ latex ############################
 DOC = developer
 LATEX = pdflatex
-
 latex:
 	$(LATEX) $(DOC).tex
-
 latex-clean:
 	$(RM) *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz $(DOC).pdf
