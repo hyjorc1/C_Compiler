@@ -4,15 +4,15 @@
 #include <stdio.h>
 #include <string.h>
 #include "tokens.h"
-#include "scanner.h"
+// #define ECHO fwrite( yytext, yyleng, 1, yyout )
 
 struct bufstack
 {
-    struct bufstack *prev;
-    YY_BUFFER_STATE bs;
-    int lineno;
-    char *filename;
-    FILE *f;
+    struct bufstack *prev;  /* previous entry */
+    YY_BUFFER_STATE bs;     /* saved buffer */
+    int lineno;             /* saved line number */
+    char *filename;         /* name of this file */
+    FILE *f;                /* current file */
 } *curbs = 0;
 
 char *curfilename;
@@ -30,12 +30,12 @@ char *err_msg;
 
 "#include".*\n          { /* ignore */ }
 
-"/*"                    { BEGIN(COMMENT); err_lineno = lineno(); }
+"/*"                    { BEGIN(COMMENT); err_lineno = yylineno; }
 <COMMENT>"*/"           { BEGIN(INITIAL); }
 <COMMENT>.|\n           { /* ignore */ }
-<COMMENT><<EOF>>        { err_msg = (char *) "Unclosed comment"; return ERR; }
+<COMMENT><<EOF>>        { fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); BEGIN(INITIAL); yyterminate(); }
 
-<<EOF>>                 { printf("end of file\n"); if(!popfile()) yyterminate(); }
+<<EOF>>                 { yylineno = 1; printf("end of file\n"); if (!popfile()) yyterminate(); return END; }
 
 "//".*\n                { /* ignore */ }
 [ \t\r\n]*              { /* ignore */ }
@@ -108,12 +108,15 @@ char *err_msg;
 "<"         { return LT; }
 "<="        { return LE; }
 
-.	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); }
+.	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); return END; }
 
 %%
 
+
+
 int newfile(char *fn)
 {
+    printf("new file %s\n", fn);
     FILE *f = fopen(fn, "r");
     struct bufstack *bs = malloc(sizeof(struct bufstack));
     /* die if no file or no room */
@@ -136,12 +139,18 @@ int newfile(char *fn)
 
 int popfile(void)
 {
+    printf("pop file %s\n", curfilename);
     struct bufstack *bs = curbs;
     struct bufstack *prevbs;
-    if (!bs)
+    if (!bs) {
         return 0;
+    }
     /* get rid of current entry */
-    fclose(bs->f); 
+    if (fclose(bs->f) == 0) {
+        printf("closed file %s\n", curfilename);
+    }  else {
+        printf("cannot closed file");
+    }
     yy_delete_buffer(bs->bs);
     /* switch back to previous */
     prevbs = bs->prev;
@@ -153,4 +162,12 @@ int popfile(void)
     yylineno = curbs->lineno;
     curfilename = curbs->filename;
     return 1;
+}
+
+int reset() {
+    yylineno = 1;
+    BEGIN(INITIAL); 
+    if (!popfile())
+        yyterminate(); 
+    return END;
 }
