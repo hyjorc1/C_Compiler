@@ -101,6 +101,6 @@ extern int err_lineno;
 
 int newfile(char *fn);
 int popfile(void);
-int reset();
+int terminate();
 
 #endif

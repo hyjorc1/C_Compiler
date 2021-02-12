@@ -13,7 +13,7 @@ struct bufstack
     int lineno;             /* saved line number */
     char *filename;         /* name of this file */
     FILE *f;                /* current file */
-} *curbs = 0;
+} *stack = NULL;
 
 char *curfilename;
 int yylval;
@@ -33,9 +33,9 @@ char *err_msg;
 "/*"                    { BEGIN(COMMENT); err_lineno = yylineno; }
 <COMMENT>"*/"           { BEGIN(INITIAL); }
 <COMMENT>.|\n           { /* ignore */ }
-<COMMENT><<EOF>>        { fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); BEGIN(INITIAL); yyterminate(); }
+<COMMENT><<EOF>>        { fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); return terminate(); }
 
-<<EOF>>                 { yylineno = 1; printf("end of file\n"); if (!popfile()) yyterminate(); return END; }
+<<EOF>>                 { printf("end of file\n"); return terminate(); }
 
 "//".*\n                { /* ignore */ }
 [ \t\r\n]*              { /* ignore */ }
@@ -108,66 +108,78 @@ char *err_msg;
 "<"         { return LT; }
 "<="        { return LE; }
 
-.	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); return END; }
+
+\0          { printf("reach to end of string\n"); return terminate(); }
+.	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); }
 
 %%
 
-
-
 int newfile(char *fn)
 {
-    printf("new file %s\n", fn);
+    printf("newfile() %s\n", fn);
     FILE *f = fopen(fn, "r");
     struct bufstack *bs = malloc(sizeof(struct bufstack));
+
     /* die if no file or no room */
     if (!f) { perror(fn); return 0; }
     if (!bs) { perror("malloc"); exit(1); }
+
     /* remember state */ 
-    if (curbs)
-        curbs->lineno = yylineno;
-    bs->prev = curbs;
+    if (stack) {
+        printf("newfile() has previous file %s\n", curfilename);
+        stack->lineno = yylineno;
+    } else {
+        printf("newfile() no previous file\n");
+    }
+    bs->prev = stack;
+
     /* set up current entry */
     bs->bs = yy_create_buffer(f, YY_BUF_SIZE);
     bs->f = f;
     bs->filename = fn;
     yy_switch_to_buffer(bs->bs);
-    curbs = bs;
+
+    stack = bs;
     yylineno = 1;
     curfilename = fn;
+    printf("newfile() lineno: %d\n", yylineno);
     return 1;
 }
 
 int popfile(void)
 {
-    printf("pop file %s\n", curfilename);
-    struct bufstack *bs = curbs;
-    struct bufstack *prevbs;
+    printf("popfile() lineno: %d\n", yylineno);
+    struct bufstack *bs = stack;
     if (!bs) {
+        printf("popfile() current stack is empty");
         return 0;
     }
+    
     /* get rid of current entry */
     if (fclose(bs->f) == 0) {
-        printf("closed file %s\n", curfilename);
+        printf("popfile() closed file %s\n", curfilename);
     }  else {
-        printf("cannot closed file");
+        printf("popfile() cannot closed file");
     }
     yy_delete_buffer(bs->bs);
+
     /* switch back to previous */
-    prevbs = bs->prev;
+    stack = bs->prev;
     free(bs);
-    if (!prevbs)
+    if (!stack) {
+        printf("popfile() no previous file and current lineno: %d\n", yylineno);
         return 0;
-    yy_switch_to_buffer(prevbs->bs);
-    curbs = prevbs;
-    yylineno = curbs->lineno;
-    curfilename = curbs->filename;
+    }
+    yy_switch_to_buffer(stack->bs);
+    yylineno = stack->lineno;
+    printf("popfile() current lineno: %d\n", yylineno);
+    curfilename = stack->filename;
+    printf("popfile() current file: %s\n", curfilename);
     return 1;
 }
 
-int reset() {
-    yylineno = 1;
-    BEGIN(INITIAL); 
-    if (!popfile())
-        yyterminate(); 
-    return END;
-}
+int terminate() {
+    BEGIN(INITIAL);
+    popfile();
+    yyterminate();
+};
