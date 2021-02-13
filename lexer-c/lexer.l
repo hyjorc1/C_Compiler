@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 #include "tokens.h"
 #define ECHO fwrite(yytext, yyleng, 1, yyout)
 #define END return terminate();
@@ -18,7 +19,7 @@ struct listnode
 } *buflist = NULL;
 
 char *curfilename;
-int yylval;
+int debug = 0;
 
 int err_lineno;
 char *err_msg;
@@ -134,19 +135,19 @@ char *err_msg;
 "<="        { return LE; }
 
 <<EOF>>     {   
-                printf("end of file\n"); 
+                print("end of file\n"); 
                 BEGIN(INITIAL);
                 if (!popfile())
                     yyterminate(); 
             }
-\0          { printf("reach to end of string\n"); END; }
-.	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); }
+\0          { print("reach to end of string\n"); END; }
+.	        { print("bad input character '%s' at line %d\n", yytext, yylineno); }
 
 %%
 
 int newfile(char *fn)
 {
-    printf("newfile() %s\n", fn);
+    print("newfile() %s\n", fn);
 
     /* detect cycle */
     struct listnode *cur = buflist;
@@ -174,10 +175,10 @@ int newfile(char *fn)
 
     /* remember state */ 
     if (buflist) {
-        printf("newfile() has previous file %s\n", curfilename);
+        print("newfile() has previous file %s\n", curfilename);
         buflist->lineno = yylineno;
     } else {
-        printf("newfile() no previous file\n");
+        print("newfile() no previous file\n");
     }
     
     /* set up current entry */
@@ -195,24 +196,24 @@ int newfile(char *fn)
     
     yylineno = 1;
     curfilename = fn;
-    printf("newfile() lineno: %d\n", yylineno);
+    print("newfile() lineno: %d\n", yylineno);
     return 1;
 }
 
 int popfile(void)
 {
-    printf("popfile() lineno: %d\n", yylineno);
+    print("popfile() lineno: %d\n", yylineno);
     struct listnode *node = buflist;
     if (!node) {
-        printf("popfile() current list is empty");
+        print("popfile() current list is empty");
         return 0;
     }
     
     /* get rid of current entry */
     if (fclose(node->f) == 0) {
-        printf("popfile() closed file %s\n", node->filename);
+        print("popfile() closed file %s\n", node->filename);
     }  else {
-        printf("popfile() cannot closed file");
+        print("popfile() cannot closed file");
     }
     yy_delete_buffer(node->bs);
 
@@ -224,15 +225,15 @@ int popfile(void)
 
     free(node);
     if (!buflist) {
-        printf("popfile() no previous file and current lineno: %d\n", yylineno);
+        print("popfile() no previous file and current lineno: %d\n", yylineno);
         return 0;
     }
 
     yy_switch_to_buffer(buflist->bs);
     yylineno = buflist->lineno;
     curfilename = buflist->filename;
-    printf("popfile() current lineno: %d\n", yylineno);
-    printf("popfile() current file: %s\n", curfilename);
+    print("popfile() current lineno: %d\n", yylineno);
+    print("popfile() current file: %s\n", curfilename);
     return 1;
 }
 
@@ -241,6 +242,15 @@ int terminate() {
     popfile();
     yyterminate();
 };
+
+void print(const char *format, ...) {
+    if (debug) {
+        va_list args;
+        va_start(args, format);
+        vprintf(format, args);
+        va_end(args);
+    }
+}
 
 /* void fwrite(char *text, int len, int val, ) {
 

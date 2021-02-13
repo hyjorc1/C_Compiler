@@ -8,10 +8,11 @@
 int main(int argc, char *argv[])
 {
 
+    fprintf(stdout, "current debug mode %d\n", debug);
     for (int i = 1; i < argc; i++)
     {
 
-        printf("\nstart file %s\n", argv[i]);
+        fprintf(stdout, "\nstart file %s\n", argv[i]);
         if (newfile(argv[i]))
         {
             int token;

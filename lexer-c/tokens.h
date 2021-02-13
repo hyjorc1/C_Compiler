@@ -94,13 +94,14 @@ extern int yylineno;
 int yylex();
 void yyrestart(FILE *input_file);
 
-extern int yylval; // token attribute
 extern char *curfilename;
 extern char *err_msg;
 extern int err_lineno;
+extern int debug;
 
 int newfile(char *fn);
 int popfile(void);
 int terminate();
+void print(const char *format, ...);
 
 #endif
