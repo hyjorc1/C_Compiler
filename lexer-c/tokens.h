@@ -95,7 +95,6 @@ int yylex();
 void yyrestart(FILE *input_file);
 
 extern char *curfilename;
-extern char *err_msg;
 extern int err_lineno;
 extern int debug;
 

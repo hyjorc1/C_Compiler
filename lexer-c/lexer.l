@@ -22,7 +22,6 @@ char *curfilename;
 int debug = 0;
 
 int err_lineno;
-char *err_msg;
 
 %}
 
