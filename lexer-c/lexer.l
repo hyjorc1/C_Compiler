@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "tokens.h"
-// #define ECHO fwrite( yytext, yyleng, 1, yyout )
+#define ECHO fwrite(yytext, yyleng, 1, yyout)
+#define END return terminate();
 
 struct bufstack
 {
@@ -23,24 +24,44 @@ char *err_msg;
 
 %}
 
-%option yylineno noyywrap
+%option yylineno noyywrap nodefault
 %x COMMENT
+%x IFILE
 
 %%
 
-"#include".*\n          { /* ignore */ }
+^"#"[ \t]*"include"[ \t]*[\"<]      {   /* match #include statement up through the quote or < */
+                                        BEGIN(IFILE); 
+                                    }
+<IFILE>[^ \t\n\">]+                 {   /* handle filename up to the closing quote, >, or end of line */
+                                        int c; 
+                                        while((c = input()) && c != '\n');
+                                        newfile(yytext);
+                                        BEGIN(INITIAL);
+                                    }
+<IFILE>.|\n                         {   /* handle bad input in IFILE state */
+                                        fprintf(stderr, "%4d bad include line\n", yylineno);
+                                        END;
+                                    }
 
-"/*"                    { BEGIN(COMMENT); err_lineno = yylineno; }
-<COMMENT>"*/"           { BEGIN(INITIAL); }
-<COMMENT>.|\n           { /* ignore */ }
-<COMMENT><<EOF>>        { fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); return terminate(); }
 
-<<EOF>>                 { printf("end of file\n"); return terminate(); }
+"/*"                                {   /* handle c comment */
+                                        BEGIN(COMMENT); 
+                                        err_lineno = yylineno; 
+                                    }
+<COMMENT>.|\n                       {   /* ignore */  }
+<COMMENT>"*/"                       {   BEGIN(INITIAL); }
+<COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
+                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); 
+                                        END; 
+                                    }
+"//".*\n                            { /* handle c++ comment */ }
 
-"//".*\n                { /* ignore */ }
-[ \t\r\n]*              { /* ignore */ }
 
-"void"      { return TYPE; }
+[ \t\r\n]*  { /* ignore */ }
+
+
+"void"      { return TYPE; ECHO; }
 "char"      { return TYPE; }
 "int"       { return TYPE; }
 "float"     { return TYPE; }
@@ -108,8 +129,13 @@ char *err_msg;
 "<"         { return LT; }
 "<="        { return LE; }
 
-
-\0          { printf("reach to end of string\n"); return terminate(); }
+<<EOF>>     {   
+                printf("end of file\n"); 
+                BEGIN(INITIAL);
+                if (!popfile())
+                    yyterminate(); 
+            }
+\0          { printf("reach to end of string\n"); END; }
 .	        { printf("bad input character '%s' at line %d\n", yytext, yylineno); }
 
 %%
@@ -117,11 +143,30 @@ char *err_msg;
 int newfile(char *fn)
 {
     printf("newfile() %s\n", fn);
-    FILE *f = fopen(fn, "r");
-    struct bufstack *bs = malloc(sizeof(struct bufstack));
 
-    /* die if no file or no room */
-    if (!f) { perror(fn); return 0; }
+    /* check the existance of the file */
+    FILE *f = fopen(fn, "r");
+    if (!f) {
+        if (stack) {
+            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+            fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
+        } else {
+            perror(fn);
+        }
+        return 0; 
+    }
+    /* detect cycle */
+    struct bufstack *cur = stack;
+    while (cur) {
+        if (strcmp(cur->filename, fn) == 0) {
+            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+            fprintf(stderr, "\t#include cycle:\n");
+            return 0;
+        }
+        cur = cur->prev;
+    }
+
+    struct bufstack *bs = malloc(sizeof(struct bufstack));
     if (!bs) { perror("malloc"); exit(1); }
 
     /* remember state */ 
@@ -183,3 +228,7 @@ int terminate() {
     popfile();
     yyterminate();
 };
+
+/* void fwrite(char *text, int len, int val, ) {
+
+} */
