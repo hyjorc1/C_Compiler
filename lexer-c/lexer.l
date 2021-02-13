@@ -29,6 +29,7 @@ char *curfilename;
 
 %option yylineno noyywrap nodefault
 %x COMMENT
+%x CXXCOMMENT
 %x IFILE
 
 %%
@@ -71,10 +72,27 @@ char *curfilename;
                                         fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment\n"); 
                                         END; 
                                     }
-"//".*\n                            { /* handle c++ comment */ }
 
 
-[ \t\r\n]*  { /* ignore */ }
+"//"                                {   /* handle c++ comment */
+                                        BEGIN(CXXCOMMENT);
+                                        print("enter CXXCOMMENT state\n");
+                                    }
+<CXXCOMMENT>"\n"                    {   BEGIN(INITIAL);    
+                                        print("leave CXXCOMMENT state\n");
+                                    }
+<CXXCOMMENT>.                       {   /* ignore */  }                                 
+
+
+[ \t\r\n]*                          {   /* whitespace ingnore */    }
+
+
+<<EOF>>                             {   /* end of file */
+                                        print("end of file and beign INITIAL state\n"); 
+                                        BEGIN(INITIAL);
+                                        if (!popfile())
+                                            yyterminate(); 
+                                    }
 
 
 "void"      { return TYPE; }
@@ -92,6 +110,7 @@ char *curfilename;
 "break"     { return BREAK; }
 "continue"  { return CONTINUE; }
 "return"    { return RETURN; }
+
 
 [a-zA-Z_][a-zA-Z_0-9]*              { return IDENT; }
 
@@ -145,12 +164,6 @@ char *curfilename;
 "<"         { return LT; }
 "<="        { return LE; }
 
-<<EOF>>     {   
-                print("end of file\n"); 
-                BEGIN(INITIAL);
-                if (!popfile())
-                    yyterminate(); 
-            }
 \0          { print("reach to end of string\n"); END; }
 .	        { fprintf(stderr, "Error near %s bad input character '%s' at line %d\n", curfilename, yytext, yylineno); }
 
