@@ -15,7 +15,7 @@ struct listnode
     int lineno;             /* saved line number */
     char *filename;         /* name of this file */
     FILE *f;                /* current file */
-} *list = NULL;
+} *buflist = NULL;
 
 char *curfilename;
 int yylval;
@@ -37,7 +37,10 @@ char *err_msg;
 <IFILE>[^ \t\n\">]+                 {   /* handle filename up to the closing quote, >, or end of line */
                                         int c; 
                                         while((c = input()) && c != '\n');
-                                        newfile(yytext);
+                                        if (!newfile(yytext)) {
+                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
+                                        }
                                         BEGIN(INITIAL);
                                     }
 <IFILE>.|\n                         {   /* handle bad input in IFILE state */
@@ -62,7 +65,7 @@ char *err_msg;
 [ \t\r\n]*  { /* ignore */ }
 
 
-"void"      { return TYPE; ECHO; }
+"void"      { return TYPE; }
 "char"      { return TYPE; }
 "int"       { return TYPE; }
 "float"     { return TYPE; }
@@ -145,35 +148,34 @@ int newfile(char *fn)
 {
     printf("newfile() %s\n", fn);
 
-    /* check the existance of the file */
-    FILE *f = fopen(fn, "r");
-    if (!f) {
-        if (list) {
-            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
-            fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
-        } else {
-            perror(fn);
-        }
-        return 0; 
-    }
     /* detect cycle */
-    /* struct listnode *cur = list;
+    struct listnode *cur = buflist;
     while (cur) {
+        /* printf("cycle file %s %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->filename, fn) == 0) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
             fprintf(stderr, "\t#include cycle:\n");
+            while (cur != buflist) {
+                fprintf(stderr, "\tFile %s includes %s\n", cur->filename, cur->next->filename);
+                cur = cur->next;
+            }
+            fprintf(stderr, "\tFile %s includes %s\n", cur->filename, fn);
             return 0;
         }
         cur = cur->prev;
-    } */
+    }
+
+    /* check the existance of the file */
+    FILE *f = fopen(fn, "r");
+    if (!f) { perror(fn); return 0; }
 
     struct listnode *node = malloc(sizeof(struct listnode));
     if (!node) { perror("malloc"); exit(1); }
 
     /* remember state */ 
-    if (list) {
+    if (buflist) {
         printf("newfile() has previous file %s\n", curfilename);
-        list->lineno = yylineno;
+        buflist->lineno = yylineno;
     } else {
         printf("newfile() no previous file\n");
     }
@@ -185,11 +187,11 @@ int newfile(char *fn)
     yy_switch_to_buffer(node->bs);
 
     /* list <- node */
-    node->prev = list;
-    if (list) {
-        list->next = node;
+    node->prev = buflist;
+    if (buflist) {
+        buflist->next = node;
     }
-    list = node;
+    buflist = node;
     
     yylineno = 1;
     curfilename = fn;
@@ -200,7 +202,7 @@ int newfile(char *fn)
 int popfile(void)
 {
     printf("popfile() lineno: %d\n", yylineno);
-    struct listnode *node = list;
+    struct listnode *node = buflist;
     if (!node) {
         printf("popfile() current list is empty");
         return 0;
@@ -208,27 +210,27 @@ int popfile(void)
     
     /* get rid of current entry */
     if (fclose(node->f) == 0) {
-        printf("popfile() closed file %s\n", curfilename);
+        printf("popfile() closed file %s\n", node->filename);
     }  else {
         printf("popfile() cannot closed file");
     }
     yy_delete_buffer(node->bs);
 
     /* switch back to previous */
-    list = node->prev;
-    if (list) {
-        list->next = NULL;
+    buflist = node->prev;
+    if (buflist) {
+        buflist->next = NULL;
     }
 
     free(node);
-    if (!list) {
+    if (!buflist) {
         printf("popfile() no previous file and current lineno: %d\n", yylineno);
         return 0;
     }
 
-    yy_switch_to_buffer(list->bs);
-    yylineno = list->lineno;
-    curfilename = list->filename;
+    yy_switch_to_buffer(buflist->bs);
+    yylineno = buflist->lineno;
+    curfilename = buflist->filename;
     printf("popfile() current lineno: %d\n", yylineno);
     printf("popfile() current file: %s\n", curfilename);
     return 1;

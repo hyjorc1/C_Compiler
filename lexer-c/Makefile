@@ -5,8 +5,7 @@ EXE = mode
 LEX = lexer
 
 all: lexer
-	./$(EXE) d.c
-# hello.c tricky.txt input3.txt d.c
+	./$(EXE) d.c hello.c tricky.txt input3.txt
 # input1.txt input2.txt tricky.txt
 # hello.c 
 # tricky.txt input3.txt
