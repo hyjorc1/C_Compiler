@@ -7,14 +7,15 @@
 #define ECHO fwrite(yytext, yyleng, 1, yyout)
 #define END return terminate();
 
-struct bufstack
+struct listnode
 {
-    struct bufstack *prev;  /* previous entry */
+    struct listnode *prev;
+    struct listnode *next;
     YY_BUFFER_STATE bs;     /* saved buffer */
     int lineno;             /* saved line number */
     char *filename;         /* name of this file */
     FILE *f;                /* current file */
-} *stack = NULL;
+} *list = NULL;
 
 char *curfilename;
 int yylval;
@@ -147,7 +148,7 @@ int newfile(char *fn)
     /* check the existance of the file */
     FILE *f = fopen(fn, "r");
     if (!f) {
-        if (stack) {
+        if (list) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
             fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
         } else {
@@ -156,7 +157,7 @@ int newfile(char *fn)
         return 0; 
     }
     /* detect cycle */
-    struct bufstack *cur = stack;
+    /* struct listnode *cur = list;
     while (cur) {
         if (strcmp(cur->filename, fn) == 0) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
@@ -164,27 +165,32 @@ int newfile(char *fn)
             return 0;
         }
         cur = cur->prev;
-    }
+    } */
 
-    struct bufstack *bs = malloc(sizeof(struct bufstack));
-    if (!bs) { perror("malloc"); exit(1); }
+    struct listnode *node = malloc(sizeof(struct listnode));
+    if (!node) { perror("malloc"); exit(1); }
 
     /* remember state */ 
-    if (stack) {
+    if (list) {
         printf("newfile() has previous file %s\n", curfilename);
-        stack->lineno = yylineno;
+        list->lineno = yylineno;
     } else {
         printf("newfile() no previous file\n");
     }
-    bs->prev = stack;
-
+    
     /* set up current entry */
-    bs->bs = yy_create_buffer(f, YY_BUF_SIZE);
-    bs->f = f;
-    bs->filename = fn;
-    yy_switch_to_buffer(bs->bs);
+    node->bs = yy_create_buffer(f, YY_BUF_SIZE);
+    node->f = f;
+    node->filename = fn;
+    yy_switch_to_buffer(node->bs);
 
-    stack = bs;
+    /* list <- node */
+    node->prev = list;
+    if (list) {
+        list->next = node;
+    }
+    list = node;
+    
     yylineno = 1;
     curfilename = fn;
     printf("newfile() lineno: %d\n", yylineno);
@@ -194,31 +200,36 @@ int newfile(char *fn)
 int popfile(void)
 {
     printf("popfile() lineno: %d\n", yylineno);
-    struct bufstack *bs = stack;
-    if (!bs) {
-        printf("popfile() current stack is empty");
+    struct listnode *node = list;
+    if (!node) {
+        printf("popfile() current list is empty");
         return 0;
     }
     
     /* get rid of current entry */
-    if (fclose(bs->f) == 0) {
+    if (fclose(node->f) == 0) {
         printf("popfile() closed file %s\n", curfilename);
     }  else {
         printf("popfile() cannot closed file");
     }
-    yy_delete_buffer(bs->bs);
+    yy_delete_buffer(node->bs);
 
     /* switch back to previous */
-    stack = bs->prev;
-    free(bs);
-    if (!stack) {
+    list = node->prev;
+    if (list) {
+        list->next = NULL;
+    }
+
+    free(node);
+    if (!list) {
         printf("popfile() no previous file and current lineno: %d\n", yylineno);
         return 0;
     }
-    yy_switch_to_buffer(stack->bs);
-    yylineno = stack->lineno;
+
+    yy_switch_to_buffer(list->bs);
+    yylineno = list->lineno;
+    curfilename = list->filename;
     printf("popfile() current lineno: %d\n", yylineno);
-    curfilename = stack->filename;
     printf("popfile() current file: %s\n", curfilename);
     return 1;
 }
