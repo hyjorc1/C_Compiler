@@ -8,6 +8,9 @@
 #define ECHO fwrite(yytext, yyleng, 1, yyout)
 #define END return terminate();
 
+int err_lineno;
+int debug = 0;
+
 struct listnode
 {
     struct listnode *prev;
@@ -18,10 +21,9 @@ struct listnode
     FILE *f;                /* current file */
 } *buflist = NULL;
 
-char *curfilename;
-int debug = 0;
+int buflistsize;
 
-int err_lineno;
+char *curfilename;
 
 %}
 
@@ -31,20 +33,29 @@ int err_lineno;
 
 %%
 
-^"#"[ \t]*"include"[ \t]*[\"<]      {   /* match #include statement up through the quote or < */
-                                        BEGIN(IFILE); 
+^"#"[ \t]*"include"[ \t]*[\"]       {   /* match #include statement up through the quote or < */
+                                        BEGIN(IFILE);
+                                        print("enter IFILE state\n");
+                                        err_lineno = yylineno;
                                     }
 <IFILE>[^ \t\n\">]+                 {   /* handle filename up to the closing quote, >, or end of line */
-                                        int c; 
-                                        while((c = input()) && c != '\n');
-                                        if (!newfile(yytext)) {
-                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
-                                            fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
+                                        int c = input(); 
+                                        if (c == '"') {
+                                            while((c = input()) && c != '\n');
+                                            if (!newfile(yytext)) {
+                                                fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
+                                                fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
+                                            }
+                                            BEGIN(INITIAL);
+                                            print("leave IFILE state\n");
                                         }
-                                        BEGIN(INITIAL);
                                     }
 <IFILE>.|\n                         {   /* handle bad input in IFILE state */
-                                        fprintf(stderr, "%4d bad include line\n", yylineno);
+                                        fprintf(stderr, "Error near %s line %d bad #include\n", curfilename, err_lineno);
+                                        END;
+                                    }
+<IFILE><<EOF>>                      {   /* handle bad input in IFILE state */
+                                        fprintf(stderr, "Error near %s line %d bad #include\n", curfilename, err_lineno);
                                         END;
                                     }
 
@@ -52,11 +63,12 @@ int err_lineno;
 "/*"                                {   /* handle c comment */
                                         BEGIN(COMMENT); 
                                         err_lineno = yylineno; 
+                                        print("enter COMMENT state\n");
                                     }
 <COMMENT>.|\n                       {   /* ignore */  }
-<COMMENT>"*/"                       {   BEGIN(INITIAL); }
+<COMMENT>"*/"                       {   BEGIN(INITIAL); print("leave COMMENT state"); }
 <COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
-                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); 
+                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment\n"); 
                                         END; 
                                     }
 "//".*\n                            { /* handle c++ comment */ }
@@ -140,7 +152,7 @@ int err_lineno;
                     yyterminate(); 
             }
 \0          { print("reach to end of string\n"); END; }
-.	        { print("bad input character '%s' at line %d\n", yytext, yylineno); }
+.	        { fprintf(stderr, "Error near %s bad input character '%s' at line %d\n", curfilename, yytext, yylineno); }
 
 %%
 
@@ -148,12 +160,18 @@ int newfile(char *fn)
 {
     print("newfile() %s\n", fn);
 
+    /* limit buffer list size <= 256 */
+    if (buflistsize >= 256) {
+        fprintf(stderr, "Error reaching to buffer list size 256\n");
+        return 0;
+    }
+
     /* detect cycle */
     struct listnode *cur = buflist;
     while (cur) {
         /* printf("cycle file %s %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->filename, fn) == 0) {
-            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
             fprintf(stderr, "\t#include cycle:\n");
             while (cur != buflist) {
                 fprintf(stderr, "\tFile %s includes %s\n", cur->filename, cur->next->filename);
@@ -194,8 +212,10 @@ int newfile(char *fn)
     buflist = node;
     
     yylineno = 1;
+    err_lineno = 0;
     curfilename = fn;
-    print("newfile() lineno: %d\n", yylineno);
+    buflistsize++;
+    print("newfile() buffer list size: %d\n", buflistsize);
     return 1;
 }
 
@@ -223,6 +243,8 @@ int popfile(void)
     }
 
     free(node);
+    buflistsize--;
+    print("popfile() buffer list size: %d\n", buflistsize);
     if (!buflist) {
         print("popfile() no previous file and current lineno: %d\n", yylineno);
         return 0;
