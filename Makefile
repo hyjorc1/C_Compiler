@@ -1,72 +1,45 @@
+CC 		:= gcc
+CFLAGS	:= -Wall -Wextra -g
+LFLAGS 	:=
+SRC		:= src
+INCLUDE	:= include
+LIB		:= lib
 
-########################## general targets ########################
-all: project latex
-# @echo Executing target 'all' complete!
+EXE 	:= main
+LEX1	:= $(SRC)/lexer
+MAIN	:= $(SRC)/$(EXE)
+UTIL	:= $(SRC)/util
 
-run: project
-	./$(MAIN)
+INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
+LIBDIRS		:= $(shell find $(LIB) -type d)
 
-test: project
-	./$(MAIN) test
+INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
+
+
+all: link
+	./$(EXE) hello.c tricky.txt d.c defines.c
+
+################################ project ############################
+link: compile
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(LEX1).o $(MAIN).o $(UTIL).o $(LIBS)
+
+compile: lexer
+	$(CC) $(CFLAGS) $(INCLUDES) -c $(LEX1).yy.c -o $(LEX1).o
+
+	$(CC) $(CFLAGS) $(INCLUDES) -c $(MAIN).c -o $(MAIN).o
+	$(CC) $(CFLAGS) $(INCLUDES) -c $(UTIL).c -o $(UTIL).o
+
+lexer:
+	flex -o $(LEX1).yy.c $(LEX1).l
 
 .PHONY: clean
-clean: project-clean latex-clean
+clean: latex-clean
+	rm -rf $(SRC)/*.o $(SRC)/*.yy.c $(EXE)
 
-############################# project #############################
-CXX			 = g++ # define the Cpp compiler to use
-CXXFLAGS	:= -std=c++14 -Wall -Wextra -g # define any compile-time flags
-LFLAGS 		 =
-OUTPUT		:= output # define output directory
-SRC			:= src # define source directory
-INCLUDE		:= include # define include directory
-LIB			:= lib # define lib directory
-
-ifeq ($(OS),Windows_NT)
-MAIN	    := mycc.exe
-SOURCEDIRS	:= $(SRC)
-INCLUDEDIRS	:= $(INCLUDE)
-LIBDIRS		:= $(LIB)
-FIXPATH      = $(subst /,\,$1)
-RM			:= del /q /f
-MD	        := mkdir
-else
-MAIN	    := mycc
-SOURCEDIRS	:= $(shell find $(SRC) -type d)
-INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
-LIBDIRS		:= $(shell find $(LIB) -type d)
-FIXPATH      = $1
-RM =        rm -f
-MD	        := mkdir -p
-endif
-
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%)) # define any directories containing header files other than /usr/include
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%)) # define the C libs
-SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS))) # define the C source files
-OBJECTS		:= $(SOURCES:.cpp=.o) # define the C object files 
-
-project: $(MAIN)
-
-$(MAIN): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(MAIN) $(OBJECTS) $(LFLAGS) $(LIBS)
-	@echo Executing target '$(MAIN)' complete! $(OBJECTS)
-
-.cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
-	@echo Executing target '.cpp.o' complete!
-
-project-clean:
-	$(RM) $(call FIXPATH,$(OBJECTS)) $(MAIN) 
-	$(RM) lexer.yy.cc lexer.o
-# @echo Cleaned project!
-
-lexer: lexer.l
-	flex --outfile=lexer.yy.cc  $<
-	g++  -Wno-deprecated-register -O0  -g -Wall -std=c++14 -c lexer.yy.cc -o lexer.o
 
 ################################ latex ############################
-DOC = developer
-LATEX = pdflatex
 latex:
-	$(LATEX) $(DOC).tex
+	pdflatex developer.tex
 latex-clean:
-	$(RM) *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz $(DOC).pdf
+	rm -rf *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz developer.pdf
