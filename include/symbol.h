@@ -73,7 +73,7 @@ int addref(int lineno, char *filename, char *sym, char *val, int flags) {
     
     int status = 1; /* indicate the new symbol in the current file */
     if (sp->reflist && sp->reflist->filename == filename) {
-        fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
+        fprintf(stderr, "Error near %s line %d\n", curfilename, err_lineno);
         fprintf(stderr, "\tre-defining preprocessor symbol %s\n", sp->name);
         print("addref() has prevref with val:'%s'-\n", sp->reflist->value);
         status = 0;

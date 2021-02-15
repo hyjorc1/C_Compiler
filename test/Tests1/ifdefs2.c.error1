@@ -1,0 +1,11 @@
+Warning: ignoring #define directive in ifdefs2.c line 3
+Warning: ignoring #ifndef directive in ifdefs2.c line 5
+Warning: ignoring #define directive in ifdefs2.c line 6
+Warning: ignoring #endif directive in ifdefs2.c line 7
+Warning: ignoring #ifdef directive in ifdefs2.c line 9
+Warning: ignoring #else directive in ifdefs2.c line 11
+Warning: ignoring #endif directive in ifdefs2.c line 13
+Warning: ignoring #ifdef directive in ifdefs2.c line 15
+Warning: ignoring #else directive in ifdefs2.c line 17
+Warning: ignoring #else directive in ifdefs2.c line 19
+Warning: ignoring #endif directive in ifdefs2.c line 21

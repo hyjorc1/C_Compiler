@@ -24,3 +24,6 @@ Test project at `ssh hyj@pyrite.cs.iastate.edu`.
    2. Note that any incorrect input format will abort the execution and end with a error message or the usage information.
    
    
+TEST
+`./Check.sh mycc -s *.c`
+`./Check.sh mycc -d *.c`

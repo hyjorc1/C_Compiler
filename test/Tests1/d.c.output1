@@ -1,0 +1,16 @@
+d.c line 3 text 'int' token TYPE
+d.c line 3 text 'D' token IDENT
+d.c line 3 text '(' token LPAR
+d.c line 3 text ')' token RPAR
+d.c line 4 text '{' token LBRACE
+d.c line 5 text 'return' token RETURN
+d.c line 5 text 'A' token IDENT
+d.c line 5 text '+' token PLUS
+d.c line 5 text 'B' token IDENT
+d.c line 5 text '+' token PLUS
+d.c line 5 text 'C' token IDENT
+d.c line 5 text ';' token SEMI
+d.c line 6 text '}' token RBRACE
+d.c line 10 text 'int' token TYPE
+d.c line 10 text 'BYE' token IDENT
+d.c line 10 text ';' token SEMI

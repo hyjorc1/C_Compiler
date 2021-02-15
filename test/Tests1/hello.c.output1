@@ -1,0 +1,12 @@
+hello.c line 8 text 'int' token TYPE
+hello.c line 8 text 'main' token IDENT
+hello.c line 8 text '(' token LPAR
+hello.c line 8 text ')' token RPAR
+hello.c line 9 text '{' token LBRACE
+hello.c line 10 text 'return' token RETURN
+hello.c line 10 text 'printf' token IDENT
+hello.c line 10 text '(' token LPAR
+hello.c line 10 text '"Hello, world!\n"' token STRCONST
+hello.c line 10 text ')' token RPAR
+hello.c line 10 text ';' token SEMI
+hello.c line 11 text '}' token RBRACE

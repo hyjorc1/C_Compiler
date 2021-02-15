@@ -1,0 +1,6 @@
+Error near f.h line 2
+	#include cycle:
+	File e.h includes f.h
+	File f.h includes e.h
+Error near f.h line 2
+	Couldn't open included file e.h

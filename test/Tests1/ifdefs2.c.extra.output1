@@ -1,0 +1,3 @@
+ifdefs2.c line 12 text '9' token INTCONST
+ifdefs2.c line 18 text 'Y' token IDENT
+ifdefs2.c line 20 text 'Z' token IDENT

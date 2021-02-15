@@ -126,7 +126,7 @@ int iflistsize = 0;
                                             END;
                                         }
                                         if (iflist->else_lineno > 0) {
-                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "Error near %s line %d\n", curfilename, yylineno);
                                             fprintf(stderr, "\tsecond #else (first on line %d), ignoring\n", iflist->else_lineno);
                                         } else {
                                             if (iflist->satisfy == 1) {
@@ -188,7 +188,7 @@ int iflistsize = 0;
                                             END;
                                         }
                                         if (iflist->else_lineno > 0) {
-                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "Error near %s line %d\n", curfilename, yylineno);
                                             fprintf(stderr, "\tsecond #else (first on line %d), ignoring\n", iflist->else_lineno);
                                         } else {
                                             if (iflist->skip == 0)
@@ -223,7 +223,7 @@ int iflistsize = 0;
                                         if (c == '"') {
                                             while((c = input()) && c != '\n');
                                             if (!newfile(yytext)) {
-                                                fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
+                                                fprintf(stderr, "Error near %s line %d\n", curfilename, err_lineno);
                                                 fprintf(stderr, "\tCouldn't open included file %s\n", yytext);
                                             }
                                             BEGIN(INITIAL);
@@ -303,7 +303,7 @@ int iflistsize = 0;
 <COMMENT>.|\n                       {   /* ignore */  }
 <COMMENT>"*/"                       {   BEGIN(INITIAL); print("leave COMMENT state\n"); }
 <COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
-                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); 
+                                        fprintf(stderr, "Error, comment started in %s line %d is unclosed\n", curfilename, err_lineno); 
                                         END; 
                                     }
 
@@ -349,7 +349,7 @@ int iflistsize = 0;
 [a-zA-Z_][a-zA-Z_0-9]*              {
                                         token_str = "IDENT";
                                         if (!newmacro(yytext))
-                                            return IDENT; 
+                                            return IDENT;
                                     }
 
 [0-9]+                              { token_str = "INTCONST"; return INTCONST; }
@@ -434,14 +434,14 @@ int newmacro(char* ident) {
     while (cur) {
         /* printf("cycle macro buf '%s' %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->name, ident) == 0) {
-            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, ident);
-            fprintf(stderr, "\t#define substituion cycle:\n");
+            fprintf(stderr, "Error near %s line %d\n", curfilename, yylineno);
+            fprintf(stderr, "\t#define substitution cycle:\n");
             while (cur != macrobuflist) {
                 fprintf(stderr, "\t%s macro contains %s\n", cur->name, cur->prev->name);
                 cur = cur->prev;
             }
             fprintf(stderr, "\t%s macro contains %s\n", cur->name, ident);
-            return 0;
+            return 1;
         }
         cur = cur->next;
     }
@@ -520,10 +520,10 @@ int newfile(char *fn)
     while (cur) {
         /* printf("cycle file '%s' %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->filename, fn) == 0) {
-            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
+            fprintf(stderr, "Error near %s line %d\n", curfilename, err_lineno);
             fprintf(stderr, "\t#include cycle:\n");
             while (cur != filebuflist) {
-                fprintf(stderr, "\tFile %s includes %s\n", cur->filename, cur->next->filename);
+                fprintf(stderr, "\tFile %s includes %s\n", cur->filename, cur->prev->filename);
                 cur = cur->prev;
             }
             fprintf(stderr, "\tFile %s includes %s\n", cur->filename, fn);

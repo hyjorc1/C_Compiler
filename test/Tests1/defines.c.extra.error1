@@ -1,0 +1,6 @@
+Error near defines.c line 15
+	re-defining preprocessor symbol M
+Error near defines.c line 36
+	#define substitution cycle:
+	BAD macro contains THING
+	THING macro contains BAD

@@ -1,0 +1,37 @@
+tricky.txt line 1 text '3' token INTCONST
+tricky.txt line 4 text '4' token INTCONST
+tricky.txt line 5 text '*' token STAR
+tricky.txt line 5 text '/' token SLASH
+tricky.txt line 6 text '>' token GT
+tricky.txt line 6 text '<' token LT
+tricky.txt line 6 text '>=' token GE
+tricky.txt line 6 text '<=' token LE
+tricky.txt line 6 text '!=' token NEQUAL
+tricky.txt line 7 text '=' token ASSIGN
+tricky.txt line 7 text '==' token EQUALS
+tricky.txt line 7 text '==' token EQUALS
+tricky.txt line 7 text '=' token ASSIGN
+tricky.txt line 7 text '==' token EQUALS
+tricky.txt line 7 text '==' token EQUALS
+tricky.txt line 8 text 'i' token IDENT
+tricky.txt line 9 text 'in' token IDENT
+tricky.txt line 10 text 'int' token TYPE
+tricky.txt line 11 text 'inte' token IDENT
+tricky.txt line 12 text 'integ' token IDENT
+tricky.txt line 13 text 'intege' token IDENT
+tricky.txt line 14 text 'integer' token IDENT
+tricky.txt line 15 text ''c'' token CHARCONST
+tricky.txt line 16 text '' '' token CHARCONST
+tricky.txt line 17 text ''\n'' token CHARCONST
+tricky.txt line 18 text '""' token STRCONST
+tricky.txt line 19 text '" "' token STRCONST
+tricky.txt line 20 text '"              "' token STRCONST
+tricky.txt line 21 text '"+ - * / ++ -- "' token STRCONST
+tricky.txt line 22 text '" /* evil 1 */ "' token STRCONST
+tricky.txt line 23 text '" // evil 2    "' token STRCONST
+tricky.txt line 33 text '5' token INTCONST
+tricky.txt line 34 text '6' token INTCONST
+tricky.txt line 35 text '7' token INTCONST
+tricky.txt line 36 text '8' token INTCONST
+tricky.txt line 36 text '*' token STAR
+tricky.txt line 36 text '/' token SLASH

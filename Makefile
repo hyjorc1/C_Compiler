@@ -6,9 +6,11 @@ INCLUDE	:= include
 LIB		:= lib
 
 EXE 	:= mycc
-LEX1	:= $(SRC)/lexer
 MAIN	:= $(SRC)/$(EXE)
 UTIL	:= $(SRC)/util
+
+LEX1	:= $(SRC)/lexer
+TEXT1	:= test/Tests1
 
 INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
@@ -18,12 +20,18 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
 all: link
-	./$(EXE) -1 -o out.txt hello.c tricky.txt
+	
+# ./$(EXE) -1 ifdefs2.c
 # -o out.txt hello.c
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c 
 
 ################################ project ############################
+TESTCMD	:= ./Check.sh mycc -d *.c tricky.txt
+
+test: link
+	cp $(EXE) $(TEXT1) && cd $(TEXT1) && $(TESTCMD) && rm $(EXE) && cd ../../
+
 link: compile
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(LEX1).o $(MAIN).o $(UTIL).o $(LIBS)
 

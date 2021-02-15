@@ -1,0 +1,8 @@
+ifdefs1.c line 10 text '7' token INTCONST
+ifdefs1.c line 12 text '6' token INTCONST
+ifdefs1.c line 16 text '5' token INTCONST
+ifdefs1.c line 18 text '4' token INTCONST
+ifdefs1.c line 24 text '3' token INTCONST
+ifdefs1.c line 26 text '2' token INTCONST
+ifdefs1.c line 30 text '1' token INTCONST
+ifdefs1.c line 32 text '0' token INTCONST

@@ -1,0 +1,2 @@
+Error near hello.c line 6
+	Couldn't open included file stdio.h
