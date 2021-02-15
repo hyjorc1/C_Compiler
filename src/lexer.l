@@ -11,8 +11,7 @@
 #define END return terminate();
 
 /*  ----------------- file buffer list ----------------- */
-struct filebuf
-{
+struct filebuf {
     struct filebuf *prev;
     struct filebuf *next;
     YY_BUFFER_STATE bs;     /* saved buffer */
@@ -30,8 +29,7 @@ char *curfilename;
 int err_lineno;
 
 /*  ----------------- macro buffer list ----------------- */
-struct macrobuf
-{
+struct macrobuf {
     struct macrobuf *prev;
     struct macrobuf *next;
     YY_BUFFER_STATE bs;
@@ -44,6 +42,12 @@ char *symbolname;
 
 /*  ----------------- define if  ----------------- */
 
+struct ifdef {
+    struct ifdef *next;
+    int lineno;
+    char yes;
+    char skip;
+} *iflist = 0;
 
 %}
 
@@ -51,8 +55,86 @@ char *symbolname;
 %x COMMENT CXXCOMMENT
 %x IFILE
 %x DEFINE_KEY DEFINE_VAL UNDEFINE
+%x IFDEF SKIP
 
 %%
+
+^"#"[ \t]*"ifdef"[ \t]*             {   /* handle #ifdef  */
+                                        BEGIN(IFDEF);
+                                        print("enter IFDEF state\n");
+                                        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
+                                        ifd->skip = 0;
+                                        ifd->lineno = yylineno;
+                                        ifd->next = iflist;
+                                        iflist = ifd;
+                                    }
+<IFDEF>[^ \t\n]+                    {
+                                        print("yytext %s\n", yytext);
+                                        struct symbol *sp = lookup(yytext);
+                                        if (!sp || !sp->name || !sp->reflist || sp->reflist->filename != curfilename) {
+                                            print("not found %s enter SKIP state\n", yytext);
+                                            BEGIN(SKIP);
+                                        } else {
+                                            print("found %s enter INITIAL state\n", yytext);
+                                            iflist->yes = 1;
+                                            BEGIN(INITIAL);
+                                        }
+                                    }
+^"#"[ \t]*"else"[ \t]*              {   /* handle #else  */
+                                        print("find #else\n");
+                                        if (!iflist) {
+                                            fprintf(stderr, "Error near %s line %d bad #ifdef/#ifndef\n", curfilename, yylineno);
+                                            END;
+                                        }
+                                        if (iflist->yes == 1) {
+                                            print("enter SKIP state\n");
+                                            BEGIN(SKIP);
+                                        } else {
+                                            print("enter INITIAL state\n");
+                                            BEGIN(INITIAL);
+                                        }
+                                    }
+^"#"[ \t]*"endif"[ \t]*             {   /* handle #endif  */
+                                        print("find #endif\n");
+                                        if (!iflist) {
+                                            fprintf(stderr, "Error near %s line %d bad #endif\n", curfilename, yylineno);
+                                            END;
+                                        }
+                                        struct ifdef *ptr = iflist;
+                                        iflist = ptr->next;
+                                        free(ptr);
+                                    }
+<SKIP>^"#"[ \t]*"ifdef"[ \t]*       {   /* handle <SKIP>#ifdef  */
+                                        print("find <SKIP>#ifdef");
+                                        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
+                                        ifd->skip = 1;
+                                        ifd->lineno = yylineno;
+                                        ifd->next = iflist;
+                                        iflist = ifd;
+                                    }
+<SKIP>^"#"[ \t]*"else"[ \t]*        {   /* handle <SKIP>#else  */
+                                        print("find <SKIP>#else enter INITIAL state\n");
+                                        if (!iflist) {
+                                            fprintf(stderr, "Error near %s line %d bad #endif\n", curfilename, yylineno);
+                                            END;
+                                        }
+                                        if (iflist->skip == 0)
+                                            BEGIN(INITIAL);
+                                    }
+<SKIP>^"#"[ \t]*"endif"[ \t]*       {   /* handle <SKIP>#endif */
+                                        print("find #endif enter INITIAL state\n");
+                                        if (!iflist) {
+                                            fprintf(stderr, "Error near %s line %d bad #endif\n", curfilename, yylineno);
+                                            END;
+                                        }
+                                        if (iflist->skip == 0)
+                                            BEGIN(INITIAL);
+                                        struct ifdef *ptr = iflist;
+                                        iflist = ptr->next;
+                                        free(ptr);
+                                    }
+<SKIP>.|\n                          {   /* ignore  */  print("SKIP -%s-\n", yytext); }
+
 
 ^"#"[ \t]*"include"[ \t]*[\"]       {   /* handle #include statement up through the quote */
                                         BEGIN(IFILE);
@@ -105,6 +187,13 @@ char *symbolname;
                                         if (text_size >= REP_SIZE_LIMIT) {
                                             fprintf(stderr, "Error near %s line %d the length of the replacement text is larger the limit %d\n", curfilename, err_lineno, REP_SIZE_LIMIT);
                                         } else if (addref(err_lineno, curfilename, symbolname, yytext, 0)) {
+                                            addmacro(symbolname);
+                                        }
+                                        BEGIN(INITIAL);
+                                        print("leave DEFINE_VAL state\n");
+                                    }
+<DEFINE_VAL>.|\n                    {   /* handle #define wiht empty input */
+                                        if (addref(err_lineno, curfilename, symbolname, "", 0)) {
                                             addmacro(symbolname);
                                         }
                                         BEGIN(INITIAL);

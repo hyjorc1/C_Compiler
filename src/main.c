@@ -4,7 +4,7 @@
 #include "tokens.h"
 #include "global.h"
 
-int debug = 1;
+int debug = 0;
 
 int main(int argc, char *argv[])
 {

@@ -18,7 +18,7 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
 all: link
-	./$(EXE) defines1.c
+	./$(EXE) ifdefs1.c
 # hello.c tricky.txt d.c defines.c
 
 ################################ project ############################
