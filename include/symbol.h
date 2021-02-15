@@ -52,11 +52,11 @@ struct symbol *lookup(char *sym) {
 }
 
 void removeref(char *sym) {
-    print("removeref() %s\n", sym);
+    print("removeref() '%s'\n", sym);
     struct symbol *sp = lookup(sym);
     /* symbol doesn't exist in the table */
     if (!sp->reflist || sp->reflist->filename != curfilename) {
-        print("removeref() key:%s- doesn't exist\n", sym);
+        print("removeref() key:'%s' doesn't exist\n", sym);
         return;
     }
 
@@ -67,7 +67,7 @@ void removeref(char *sym) {
 }
 
 int addref(int lineno, char *filename, char *sym, char *val, int flags) {
-    print("addref() key:%s- val:%s-\n", sym, val);
+    print("addref() key:'%s' val:'%s'\n", sym, val);
     struct ref *r;
     struct symbol *sp = lookup(sym);
     
@@ -75,7 +75,7 @@ int addref(int lineno, char *filename, char *sym, char *val, int flags) {
     if (sp->reflist && sp->reflist->filename == filename) {
         fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
         fprintf(stderr, "\tre-defining preprocessor symbol %s\n", sp->name);
-        print("addref() has prevref with val:%s-\n", sp->reflist->value);
+        print("addref() has prevref with val:'%s'-\n", sp->reflist->value);
         status = 0;
     }
 
@@ -118,10 +118,10 @@ void printrefs() {
     qsort(symtab, NHASH, sizeof(struct symbol), symcompare); /* sort the symbol table */
 
     if (!symtab[0].name) {
-        print("\n%s symbol table is empty!!\n\n", curfilename);
+        print("\n'%s' symbol table is empty!!\n\n", curfilename);
         return;
     }
-    print("\nprint %s symbol table\n", curfilename);
+    print("\nprint '%s' symbol table\n", curfilename);
     for (sp = symtab; sp->name && sp < symtab + NHASH; sp++) {
         char *prevfn = NULL; /* last printed filename, to skip dups */
         /* reverse the list of references */
@@ -137,14 +137,14 @@ void printrefs() {
         } while (rp);
 
         /* now print the word and its references */
-        print("%s", sp->name);
+        print("'%s'", sp->name);
         for (rp = rpp; rp; rp = rp->next) {
             if (rp->filename == prevfn) {
                 print(" line:%d", rp->lineno);
-                print(" val:%s,", rp->value);
+                print(" val:'%s',", rp->value);
             } else {
-                print(" %s-line:%d", rp->filename, rp->lineno);
-                print(" val:%s,", rp->value);
+                print(" '%s' line:%d", rp->filename, rp->lineno);
+                print(" val:'%s',", rp->value);
                 prevfn = rp->filename;
             }
         }

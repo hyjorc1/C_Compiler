@@ -10,9 +10,9 @@ struct node {
 
 void printmacros(struct node *list) {
    struct node *ptr = list;
-   printf("\n%s macro buf [ ", curfilename);
+   printf("\n'%s' macro buf [ ", curfilename);
    while(ptr != NULL) {
-      printf("%s, ",  ptr->data);
+      printf("'%s', ",  ptr->data);
       ptr = ptr->next;
    }
    printf(" ]\n");

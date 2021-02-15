@@ -19,6 +19,8 @@ struct filebuf {
     char *filename;         /* name of this file */
     FILE *f;                /* current file */
     struct node *macros;    /* saved new macros */
+    struct ifdef *iflist;   /* saved iflist */
+    int iflistsize;
 } *filebuflist = 0;
 
 int filebuflistsize = 0;
@@ -51,6 +53,8 @@ struct ifdef {
     char else_lineno;
 } *iflist = 0;
 
+int iflistsize = 0;
+
 %}
 
 %option yylineno noyywrap nodefault
@@ -63,44 +67,54 @@ struct ifdef {
 
 ^"#"[ \t]*"ifdef"[ \t]*             {   /* handle #ifdef  */
                                         BEGIN(IFDEF);
-                                        print("find %s enter IFDEF state at line %d\n", yytext, yylineno);
-                                        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                        ifd->isifdef = 1;
-                                        ifd->skip = 0;
-                                        ifd->else_lineno = 0;
-                                        ifd->lineno = yylineno;
-                                        ifd->next = iflist;
-                                        iflist = ifd;
+                                        print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
+                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
+                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
+                                        } else {
+                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
+                                            ifd->isifdef = 1;
+                                            ifd->skip = 0;
+                                            ifd->else_lineno = 0;
+                                            ifd->lineno = yylineno;
+                                            ifd->next = iflist;
+                                            iflist = ifd;
+                                            iflistsize++;
+                                        }
                                     }
 ^"#"[ \t]*"ifndef"[ \t]*            {   /* handle #ifndef  */
                                         BEGIN(IFDEF);
-                                        print("find %s enter IFDEF state at line %d\n", yytext, yylineno);
-                                        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                        ifd->isifdef = 0;
-                                        ifd->skip = 0;
-                                        ifd->else_lineno = 0;
-                                        ifd->lineno = yylineno;
-                                        ifd->next = iflist;
-                                        iflist = ifd; 
+                                        print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
+                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
+                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
+                                        } else {
+                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
+                                            ifd->isifdef = 0;
+                                            ifd->skip = 0;
+                                            ifd->else_lineno = 0;
+                                            ifd->lineno = yylineno;
+                                            ifd->next = iflist;
+                                            iflist = ifd;
+                                            iflistsize++;
+                                        }
                                     }
 <IFDEF>[^ \t\n]+                    {
                                         struct symbol *sp = lookup(yytext);
                                         if (!sp || !sp->name || !sp->reflist || sp->reflist->filename != curfilename) {
                                             if (iflist->isifdef == 1) {
-                                                print("ifdef not found %s enter SKIP state at line %d\n", yytext, yylineno);
+                                                print("ifdef not found '%s' enter SKIP state at line %d\n", yytext, yylineno);
                                                 BEGIN(SKIP);
                                             } else {
-                                                print("ifndef not found %s enter INITIAL state at line %d\n", yytext, yylineno);
+                                                print("ifndef not found '%s' enter INITIAL state at line %d\n", yytext, yylineno);
                                                 iflist->satisfy = 1;
                                                 BEGIN(INITIAL);
                                             }
                                         } else {
                                             if (iflist->isifdef == 1) {
-                                                print("ifdef found %s enter INITIAL state at line %d\n", yytext, yylineno);
+                                                print("ifdef found '%s' enter INITIAL state at line %d\n", yytext, yylineno);
                                                 iflist->satisfy = 1;
                                                 BEGIN(INITIAL);
                                             } else {
-                                                print("ifdef found %s enter SKIP state at line %d\n", yytext, yylineno);
+                                                print("ifdef found '%s' enter SKIP state at line %d\n", yytext, yylineno);
                                                 BEGIN(SKIP);
                                             }
                                         }
@@ -135,6 +149,7 @@ struct ifdef {
                                         print("pop last ifdef node at line %d\n", ptr->lineno);
                                         iflist = ptr->next;
                                         free(ptr);
+                                        iflistsize--;
                                     }
 <SKIP>^"#"[ \t]*"ifdef"[ \t]*       {   /* handle <SKIP>#ifdef  */
                                         print("find <SKIP>#ifdef at line %d\n", yylineno);
@@ -183,6 +198,7 @@ struct ifdef {
                                         print("pop last ifdef node at line %d\n", ptr->lineno);
                                         iflist = ptr->next;
                                         free(ptr);
+                                        iflistsize--;
                                     }
 <SKIP>.|\n                          {   /* ignore  */  /* print("SKIP -%s-\n", yytext); */ }
 
@@ -406,7 +422,7 @@ int newmacro(char* ident) {
     /* detect cycle */
     struct macrobuf *cur = macrobuflist;
     while (cur) {
-        /* printf("cycle macro buf %s %d\n", cur->filename, strcmp(cur->filename, fn)); */
+        /* printf("cycle macro buf '%s' %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->name, ident) == 0) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, ident);
             fprintf(stderr, "\t#define substituion cycle:\n");
@@ -425,7 +441,7 @@ int newmacro(char* ident) {
         return 0;
     }
 
-    print("newmacro() find symbol %s wiht val:%s-\n", ident, sp->reflist->value);
+    print("newmacro() find symbol '%s' wiht val:'%s'\n", ident, sp->reflist->value);
 
     struct macrobuf *mb = (struct macrobuf*)malloc(sizeof(struct macrobuf));
     if (!mb) { perror("malloc"); exit(1); }
@@ -475,7 +491,7 @@ int popmacro() {
 
     /* update current macro buffer */
     yy_switch_to_buffer(macrobuflist->bs);
-    print("popmacro() macro buf %s with lineno %d\n", macrobuflist->name, yylineno);
+    print("popmacro() macro buf '%s' with lineno %d\n", macrobuflist->name, yylineno);
     return 1;
 };
 
@@ -492,7 +508,7 @@ int newfile(char *fn)
     /* detect cycle */
     struct filebuf *cur = filebuflist;
     while (cur) {
-        /* printf("cycle file %s %d\n", cur->filename, strcmp(cur->filename, fn)); */
+        /* printf("cycle file '%s' %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->filename, fn) == 0) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, err_lineno, yytext);
             fprintf(stderr, "\t#include cycle:\n");
@@ -508,7 +524,7 @@ int newfile(char *fn)
 
     /* check the existance of the file */
     FILE *f = fopen(fn, "r");
-    if (!f) { perror(fn); return 0; }
+    if (!f) { /* perror(fn); */ return 0; }
 
     struct filebuf *fb = (struct filebuf*)malloc(sizeof(struct filebuf));
     if (!fb) { perror("malloc"); exit(1); }
@@ -517,6 +533,8 @@ int newfile(char *fn)
     if (filebuflist) {
         print("newfile() has previous file %s\n", curfilename);
         filebuflist->lineno = yylineno;
+        filebuflist->iflist = iflist;
+        filebuflist->iflistsize = iflistsize;
     } else {
         print("newfile() no previous file\n");
     }
@@ -534,9 +552,12 @@ int newfile(char *fn)
     }
     filebuflist = fb;
     
+    /* set up enviroment for the new file */
     yylineno = 1;
     err_lineno = 0;
     curfilename = fn;
+    iflist = 0;
+    iflistsize = 0;
     filebuflistsize++;
     print("newfile() buffer list size: %d\n", filebuflistsize);
     return 1;
@@ -588,10 +609,12 @@ int popfile(void)
         return 0;
     }
 
-    /* update current file buffer */
+    /* update the environment for the last file buffer */
     yy_switch_to_buffer(filebuflist->bs);
     yylineno = filebuflist->lineno;
     curfilename = filebuflist->filename;
-    print("popfile() current file %s with lineno %d\n", curfilename, yylineno);
+    iflist  = filebuflist->iflist;
+    iflistsize = filebuflist->iflistsize;
+    print("popfile() current file '%s' with lineno %d\n", curfilename, yylineno);
     return 1;
 }
