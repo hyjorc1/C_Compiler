@@ -1,22 +1,30 @@
-\section{Lists}
+\section*{PART 1}
 
-\subsection{Example for list (3*itemize)}
-\begin{itemize}
-    \item First item in a list
-          \begin{itemize}
-              \item First item in a list
-                    \begin{itemize}
-                        \item First item in a list
-                        \item Second item in a list
-                    \end{itemize}
-              \item Second item in a list
-          \end{itemize}
-    \item Second item in a list
-\end{itemize}
+Mode 1 is a lexer for processing C program and output the corresponding tokens.
 
-\subsection{Example for list (enumerate)}
+\subsection*{1.1 \large\textbf{src}}
 \begin{enumerate}
-    \item First item in a list
-    \item Second item in a list
-    \item Third item in a list
+    \item \textbf{lexer.l} is scanner build with Flex 2.6.4. It provides lexical analysis to process the input C program. The mechanism behind Flex is to automatically scan a input buffer to extract the patterns defined by designer and process them. In order to achieve various features, the ability to store and process multiple buffers are implemented. For the overview architecture, the lexer maintains two buffer lists (\texttt{struct filebuf} and \texttt{struct macrobuf}), one preprocessor symbol table, and a \texttt{struct ifdef} status linked list. The details are provided as follows:
+    
+    \begin{enumerate} 
+        \item \texttt{struct filebuf} is a linked data structure.
+
+        \textbf{\#include} feature is achieved by utilizing this linked list. The purpose of the file buffer list is used as a stack to maintaining each encountered file. Assume the lexer encounters \texttt{\#include 'B'} when processing file A. The buffer of file A and its corresponding environment configurations will be packed and push the stack before processing file B. At the end of each file in the scanning, the previous file (if existing) buffer will be popped and resume the scanning and processing.
+
+        \item \texttt{struct macrobuf} is a linked data structure.
+
+        \textbf{\#define} feature is achieved by utilizing this and a symbol table discussed in section 1.2 \texttt{symbol.h}. This data structure works as a stack to track the replacement chain of macros. When the lexer encountering a defined identifier, it will extract its representation from the symbol table and push it into the macro buffer stack. The lexer scans those buffers until the stack is empty. 
+
+        \item \texttt{struct ifdef} is a linked data structure.
+        
+        \textbf{\#ifdef} feature is achieved by utilizing this data structure. Similar to the previous data structures. \texttt{struct ifdef} also serve as a stack to maintain the status of each \#ifdef/\#ifndef for the nesting feature. When the lexer find a \#ifdef/\#ifndef, it will push the corresponding status into the stack. 
+
+    \end{enumerate}
 \end{enumerate}
+
+\subsection*{1.2 \large\textbf{include}}
+\begin{enumerate}
+    \item \textbf{tokens.h} contains tokens used to matching C keywords and operators.
+    \item \textbf{symbol.h} contains the program to implement a symbol table for the preprocessors. It tracks each identifier (\texttt{struct symbol}) and its representation (\texttt{char *value} nested in \texttt{struct ref}) in a hash table. The implemented lookup technique is known as hashing with linear probing. It uses a hash function to hash the key, then checks the entry, and, if it’s already taken by a different key, scans linearly until it finds a free entry.
+    \item \textbf{macro.h} contains the data structure and utility functions for attribute \texttt{struct node *macros} maintained in \texttt{struct filebuf}. The attribute is used to tracking macros defined in the corresponding file buffer.
+\end{enumerate} 

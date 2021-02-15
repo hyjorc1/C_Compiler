@@ -1,22 +1,19 @@
 \section*{PART 0}
 
-The compiler \texttt{mycc} is built with \texttt{make}.
+The C compiler \texttt{mycc} is built with \texttt{make}.
 Currently, the project involves three folders 
 \texttt{src}, \texttt{lib}, and \texttt{include}.
 
-\paragraph{\large\textbf{src}} 
+\paragraph{\large\textbf{src}} is a source folder.
 \begin{enumerate}
-    \item \textbf{mycc.cpp} is the main file of the project. Given arguments, the \texttt{main} function will choose a specific mode to process the input file and attache the corresponding result to the standard output or a output file (if specified).
+    \item \textbf{mycc.c} is the main file of the project. Given arguments, the \texttt{main} function will choose a specific mode to process the input file and attache the corresponding result to the standard output or a output file (if specified).
+    \item \textbf{util.c} contains utility functions for \texttt{mycc.c}.
 \end{enumerate}
 
-\paragraph{\large\textbf{lib}} 
-\begin{enumerate}
-    \item \textbf{cxxopts.hpp} is a lightweight C++ option parser library, supporting the standard GNU style syntax for options. Here it is used to parse compiler arguments for options.
-\end{enumerate}
+\paragraph{\large\textbf{lib}} defines library paths in addition to /usr/lib.
 
-\paragraph{\large\textbf{include}} 
+\paragraph{\large\textbf{include}} defines include directory.
 \begin{enumerate}
-    \item \textbf{mycc.h} is the head file for \texttt{mycc.cpp}.
-    \item \textbf{util.h} contains utility functions for \texttt{mycc.cpp}.
-    \item \textbf{test.h} contains unit tests for part 0.
-\end{enumerate}
+    \item \textbf{global.h} contains global variables and funtions.
+\end{enumerate} 
+

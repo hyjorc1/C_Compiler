@@ -19,7 +19,7 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
-all: link
+all: link latex
 	
 # ./$(EXE) -1 ifdefs2.c
 # -o out.txt hello.c
@@ -28,6 +28,7 @@ all: link
 
 ################################ project ############################
 TESTCMD	:= ./Check.sh mycc -s *.c tricky.txt
+# TESTCMD	:= ./Check.sh mycc -d *.c tricky.txt
 
 test: link
 	cp $(EXE) $(TEXT1) && cd $(TEXT1) && $(TESTCMD) && rm $(EXE) && cd ../../
