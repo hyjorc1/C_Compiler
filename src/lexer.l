@@ -51,7 +51,6 @@ char *symbolname;
 %x COMMENT CXXCOMMENT
 %x IFILE
 %x DEFINE_KEY DEFINE_VAL UNDEFINE
-%x DEFINE_IF DEFINE_IFN DEFINE_ELSE DEFINE_END
 
 %%
 
@@ -138,7 +137,7 @@ char *symbolname;
 <COMMENT>.|\n                       {   /* ignore */  }
 <COMMENT>"*/"                       {   BEGIN(INITIAL); print("leave COMMENT state\n"); }
 <COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
-                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment\n"); 
+                                        fprintf(stderr, "Error near %s line %d\n\t%s\n", curfilename, err_lineno, "Unclosed comment"); 
                                         END; 
                                     }
 
@@ -157,7 +156,7 @@ char *symbolname;
 
 
 <<EOF>>                             {   /* end of file */
-                                        print("end of file and beign INITIAL state\n"); 
+                                        print("end of buffer and beign INITIAL state\n"); 
                                         BEGIN(INITIAL);
                                         if (!popfile())
                                             yyterminate();
@@ -244,10 +243,11 @@ char *symbolname;
 
 void addmacro(char * sym) {
     print("addmacro() add new marco %s\n", sym);
-    struct node *link = (struct node*) malloc(sizeof(struct node));
-    link->data = sym;
-    link->next = filebuflist->macros;
-    filebuflist->macros = link;
+    /* macro -> macros */
+    struct node *macro = (struct node*) malloc(sizeof(struct node));
+    macro->data = sym;
+    macro->next = filebuflist->macros;
+    filebuflist->macros = macro;
 }
 
 int terminate() {
@@ -271,13 +271,13 @@ int newmacro(char* ident) {
             fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, ident);
             fprintf(stderr, "\t#define substituion cycle:\n");
             while (cur != macrobuflist) {
-                fprintf(stderr, "\t%s macro contains %s\n", cur->name, cur->next->name);
-                cur = cur->next;
+                fprintf(stderr, "\t%s macro contains %s\n", cur->name, cur->prev->name);
+                cur = cur->prev;
             }
             fprintf(stderr, "\t%s macro contains %s\n", cur->name, ident);
             return 0;
         }
-        cur = cur->prev;
+        cur = cur->next;
     }
 
     struct symbol *sp = lookup(ident);
@@ -285,7 +285,7 @@ int newmacro(char* ident) {
         return 0;
     }
 
-    print("newmacro() check id %s wiht val:%s-\n", ident, sp->reflist->value);
+    print("newmacro() find symbol %s wiht val:%s-\n", ident, sp->reflist->value);
 
     struct macrobuf *mb = (struct macrobuf*)malloc(sizeof(struct macrobuf));
     if (!mb) { perror("malloc"); exit(1); }
@@ -294,10 +294,10 @@ int newmacro(char* ident) {
     mb->bs = yy_scan_string(sp->reflist->value);
     yy_switch_to_buffer(mb->bs);
 
-    /* list <- fb */
-    mb->prev = macrobuflist;
+    /* mb -> list */
+    mb->next = macrobuflist;
     if (macrobuflist) {
-        macrobuflist->next = mb;
+        macrobuflist->prev = mb;
     }
     macrobuflist = mb;
 
@@ -307,33 +307,35 @@ int newmacro(char* ident) {
 }
 
 int popmacro() {
-    print("popmacro() lineno: %d\n", yylineno);
-
     struct macrobuf *mb = macrobuflist;
     if (!mb) {
-        print("popmacro() current list is empty");
+        print("popmacro() current macro buf doesn't exist %s\n");
         yy_switch_to_buffer(filebuflist->bs);
         return 0;
     }
+    print("popmacro() current macro name: %s\n", mb->name);
 
+    /* clear current macro buffer */
     yy_delete_buffer(mb->bs);
-
-    /* switch back to previous */
-    macrobuflist = mb->prev;
-    if (macrobuflist) {
-        macrobuflist->next = 0;
-    }
+    
+    /* move to the next macro buffer */
+    macrobuflist = mb->next;
+    if (macrobuflist)
+        macrobuflist->prev = 0;
     macrobuflistsize--;
     print("popmacro() buffer list size: %d\n", macrobuflistsize);
+
+    free(mb);  /* free the memory */
+
     if (!macrobuflist) {
         print("popmacro() no previous macro buf and current lineno: %d\n", yylineno);
         yy_switch_to_buffer(filebuflist->bs);
         return 0;
     }
 
+    /* update current macro buffer */
     yy_switch_to_buffer(macrobuflist->bs);
-    print("popmacro() macro buf $s with lineno %d\n", macrobuflist->name, yylineno);
-
+    print("popmacro() macro buf %s with lineno %d\n", macrobuflist->name, yylineno);
     return 1;
 };
 
@@ -356,12 +358,12 @@ int newfile(char *fn)
             fprintf(stderr, "\t#include cycle:\n");
             while (cur != filebuflist) {
                 fprintf(stderr, "\tFile %s includes %s\n", cur->filename, cur->next->filename);
-                cur = cur->next;
+                cur = cur->prev;
             }
             fprintf(stderr, "\tFile %s includes %s\n", cur->filename, fn);
             return 0;
         }
-        cur = cur->prev;
+        cur = cur->next;
     }
 
     /* check the existance of the file */
@@ -385,10 +387,10 @@ int newfile(char *fn)
     fb->filename = fn;
     yy_switch_to_buffer(fb->bs);
 
-    /* list <- fb */
-    fb->prev = filebuflist;
+    /* fb -> list  */
+    fb->next = filebuflist;
     if (filebuflist) {
-        filebuflist->next = fb;
+        filebuflist->prev = fb;
     }
     filebuflist = fb;
     
@@ -407,45 +409,44 @@ int popfile(void)
         return 1;
     }
 
-    print("popfile() lineno: %d\n", yylineno);
     struct filebuf *fb = filebuflist;
     if (!fb) {
-        print("popfile() current list is empty");
+        print("popfile() current file doesn't exist %s\n");
         return 0;
     }
-    
-    /* get rid of current entry */
-    if (fclose(fb->f) == 0) {
-        print("popfile() closed file %s\n", fb->filename);
-    }  else {
-        print("popfile() cannot closed file");
-    }
+    print("popfile() %s\n", curfilename);
+
+    /* clear current file buffer */
+    fclose(fb->f);
     yy_delete_buffer(fb->bs);
-    /* clear macro records */
-    /* printmacros(fb->macros); */
-    struct node *ptr = fb->macros;
+    if (debug)
+        printmacros(fb->macros);
+    struct node *ptr = fb->macros; /* clear macro records on symbol table */
     while (ptr) {
         removeref(ptr->data);
         ptr = ptr->next;
     }
-    free(fb);
-    /* printrefs(); */
+    if (debug)
+        printrefs();
 
-    /* switch back to previous */
-    filebuflist = fb->prev;
-    if (filebuflist) {
-        filebuflist->next = 0;
-    }
+    /* move to next file buffer */
+    filebuflist = fb->next;
+    if (filebuflist)
+        filebuflist->prev = 0;
     filebuflistsize--;
-    print("popfile() buffer list size: %d\n", filebuflistsize);
+    print("popfile() filebuflistsize: %d, macrobuflistsize: %d\n", filebuflistsize, macrobuflistsize);
+
+    free(fb); /* free memory */
+    
     if (!filebuflist) {
-        print("popfile() no previous file and current lineno: %d\n", yylineno);
+        print("popfile() no next file\n");
         return 0;
     }
 
+    /* update current file buffer */
     yy_switch_to_buffer(filebuflist->bs);
     yylineno = filebuflist->lineno;
     curfilename = filebuflist->filename;
-    print("popfile() current file $s with lineno %d\n", curfilename, yylineno);
+    print("popfile() current file %s with lineno %d\n", curfilename, yylineno);
     return 1;
 }

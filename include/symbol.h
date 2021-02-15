@@ -118,10 +118,10 @@ void printrefs() {
     qsort(symtab, NHASH, sizeof(struct symbol), symcompare); /* sort the symbol table */
 
     if (!symtab[0].name) {
-        print("\nsymbol table is empty!!\n\n");
+        print("\n%s symbol table is empty!!\n\n", curfilename);
         return;
     }
-    print("\nprint symbol table\n");
+    print("\nprint %s symbol table\n", curfilename);
     for (sp = symtab; sp->name && sp < symtab + NHASH; sp++) {
         char *prevfn = NULL; /* last printed filename, to skip dups */
         /* reverse the list of references */
