@@ -27,7 +27,7 @@ all: link
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c 
 
 ################################ project ############################
-TESTCMD	:= ./Check.sh mycc -d *.c tricky.txt
+TESTCMD	:= ./Check.sh mycc -s *.c tricky.txt
 
 test: link
 	cp $(EXE) $(TEXT1) && cd $(TEXT1) && $(TESTCMD) && rm $(EXE) && cd ../../
