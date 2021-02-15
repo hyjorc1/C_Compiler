@@ -1,9 +1,0 @@
-$$
-
-#include "z.h"
-
-int a;
-
-#include "z.h"
-
-// fdsfs

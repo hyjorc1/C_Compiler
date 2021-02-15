@@ -27,4 +27,7 @@ extern void print(const char *format, ...);
 extern void addmacro(char *sym);
 extern int newmacro(char* ident);
 
+void printusage();
+void printversion();
+
 #endif

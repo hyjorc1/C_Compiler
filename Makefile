@@ -5,7 +5,7 @@ SRC		:= src
 INCLUDE	:= include
 LIB		:= lib
 
-EXE 	:= main
+EXE 	:= mycc
 LEX1	:= $(SRC)/lexer
 MAIN	:= $(SRC)/$(EXE)
 UTIL	:= $(SRC)/util
@@ -18,7 +18,9 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
 all: link
-	./$(EXE) hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c
+	./$(EXE) -1 -o out.txt hello.c tricky.txt
+# -o out.txt hello.c
+# hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c 
 
 ################################ project ############################
