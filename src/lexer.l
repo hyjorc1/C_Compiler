@@ -457,14 +457,13 @@ int newfile(char *fn)
 
     /* limit buffer list size <= 256 */
     if (filebuflistsize >= BUFFER_LIST_SIZE_LIMIT) {
-        fprintf(stderr, "Error reaching to file buffer list size %d\n", BUFFER_LIST_SIZE_LIMIT);
+        fprintf(stderr, "Error reaching to file buffer list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
         return 0;
     }
 
     /* detect cycle */
     struct filebuf *cur = filebuflist;
     while (cur) {
-        /* printf("cycle file '%s' %d\n", cur->filename, strcmp(cur->filename, fn)); */
         if (strcmp(cur->filename, fn) == 0) {
             fprintf(stderr, "Error near %s line %d\n", curfilename, err_lineno);
             fprintf(stderr, "\t#include cycle:\n");
