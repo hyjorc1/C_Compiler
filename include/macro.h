@@ -1,3 +1,6 @@
+#ifndef MACRO_H
+#define MACRO_H
+
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -18,3 +21,4 @@ void printmacros(struct node *list) {
    printf(" ]\n");
 }
 
+#endif

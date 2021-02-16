@@ -8,9 +8,11 @@
 #include "tokens.h"
 #include "symbol.h"
 #include "macro.h"
+#include "ifdef.h"
 #define END return terminate();
 
 /*  ----------------- file buffer list ----------------- */
+
 struct filebuf {
     struct filebuf *prev;
     struct filebuf *next;
@@ -24,13 +26,13 @@ struct filebuf {
 } *filebuflist = 0;
 
 int filebuflistsize = 0;
-#define BUFFER_LIST_SIZE_LIMIT 256
+int err_lineno = 0;
 
-char *token_str;
-char *curfilename;
-int err_lineno;
+char *token_str = 0;
+char *curfilename = 0;
 
 /*  ----------------- macro buffer list ----------------- */
+
 struct macrobuf {
     struct macrobuf *prev;
     struct macrobuf *next;
@@ -39,21 +41,9 @@ struct macrobuf {
 } *macrobuflist = 0;
 
 int macrobuflistsize = 0;
-char *symbolname;
-#define REP_SIZE_LIMIT 4096
+char *symbolname = 0;
 
-/*  ----------------- define if  ----------------- */
-
-struct ifdef {
-    struct ifdef *next;
-    int lineno;
-    char satisfy;
-    char isifdef;
-    char skip;
-    char else_lineno;
-} *iflist = 0;
-
-int iflistsize = 0;
+/*  --------------------------------------------------- */
 
 %}
 
@@ -68,34 +58,12 @@ int iflistsize = 0;
 ^"#"[ \t]*"ifdef"[ \t]*             {   /* handle #ifdef  */
                                         BEGIN(IFDEF);
                                         print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
-                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
-                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
-                                        } else {
-                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                            ifd->isifdef = 1;
-                                            ifd->skip = 0;
-                                            ifd->else_lineno = 0;
-                                            ifd->lineno = yylineno;
-                                            ifd->next = iflist;
-                                            iflist = ifd;
-                                            iflistsize++;
-                                        }
+                                        newifdef(1, 0);
                                     }
 ^"#"[ \t]*"ifndef"[ \t]*            {   /* handle #ifndef  */
                                         BEGIN(IFDEF);
                                         print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
-                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
-                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
-                                        } else {
-                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                            ifd->isifdef = 0;
-                                            ifd->skip = 0;
-                                            ifd->else_lineno = 0;
-                                            ifd->lineno = yylineno;
-                                            ifd->next = iflist;
-                                            iflist = ifd;
-                                            iflistsize++;
-                                        }
+                                        newifdef(0, 0);
                                     }
 <IFDEF>[^ \t\n]+                    {
                                         struct symbol *sp = lookup(yytext);
@@ -153,33 +121,11 @@ int iflistsize = 0;
                                     }
 <SKIP>^"#"[ \t]*"ifdef"[ \t]*       {   /* handle <SKIP>#ifdef  */
                                         print("find <SKIP>#ifdef at line %d\n", yylineno);
-                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
-                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
-                                        } else {
-                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                            ifd->isifdef = 1;
-                                            ifd->skip = 1;
-                                            ifd->else_lineno = 0;
-                                            ifd->lineno = yylineno;
-                                            ifd->next = iflist;
-                                            iflist = ifd;
-                                            iflistsize++;
-                                        }
+                                        newifdef(1, 1);
                                     }
-<SKIP>^"#"[ \t]*"ifndef"[ \t]*      {   /* handle <SKIP>#ifdef  */
+<SKIP>^"#"[ \t]*"ifndef"[ \t]*      {   /* handle <SKIP>#ifndef  */
                                         print("find <SKIP>#ifndef at line %d\n", yylineno);
-                                        if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
-                                            fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
-                                        } else {
-                                            struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
-                                            ifd->isifdef = 0;
-                                            ifd->skip = 1;
-                                            ifd->else_lineno = 0;
-                                            ifd->lineno = yylineno;
-                                            ifd->next = iflist;
-                                            iflist = ifd;
-                                            iflistsize++;
-                                        }
+                                        newifdef(0, 1);
                                     }
 <SKIP>^"#"[ \t]*"else"[ \t]*        {   /* handle <SKIP>#else  */
                                         print("find <SKIP>#else enter INITIAL state at line %d\n", yylineno);
@@ -261,8 +207,8 @@ int iflistsize = 0;
                                     }
 <DEFINE_VAL>[^\n]+                  {   
                                         int text_size = strlen(yytext);
-                                        if (text_size >= REP_SIZE_LIMIT) {
-                                            fprintf(stderr, "Error near %s line %d the length of the replacement text is larger the limit %d\n", curfilename, err_lineno, REP_SIZE_LIMIT);
+                                        if (text_size >= REPRESENTATION_SIZE_LIMIT) {
+                                            fprintf(stderr, "Error near %s line %d the length of the replacement text is larger the limit %d\n", curfilename, err_lineno, REPRESENTATION_SIZE_LIMIT);
                                         } else if (addref(err_lineno, curfilename, symbolname, yytext, 0)) {
                                             addmacro(symbolname);
                                         }
@@ -402,7 +348,7 @@ int iflistsize = 0;
 "<"         { token_str = "LT"; return LT; }
 "<="        { token_str = "LE"; return LE; }
 
-\0          { print("reach to end of string\n"); END; }
+\0          { fprintf(stderr, "Reach to end of string\n"); END; }
 .	        { fprintf(stderr, "Error near %s bad input character '%s' at line %d\n", curfilename, yytext, yylineno); }
 
 %%
@@ -612,7 +558,18 @@ int popfile(void)
     filebuflistsize--;
     print("popfile() filebuflistsize: %d, macrobuflistsize: %d, iflistsize: %d\n", filebuflistsize, macrobuflistsize, iflistsize);
 
+    if (filebuflist) {
+        print("filebuflist exists");
+    }
+    if (macrobuflist) {
+        print("macrobuflist exists");
+    }
+    if (iflist) {
+        print("iflist exists");
+    }
+
     free(fb); /* free memory */
+    fb = 0;
     
     if (!filebuflist) {
         print("popfile() no next file\n");

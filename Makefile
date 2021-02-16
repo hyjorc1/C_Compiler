@@ -19,8 +19,10 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
-all: link latex
-	
+all: link
+	./$(EXE) -1 d.c d.c d.c d.c d.c d.c d.c d.c d.c d.c d.c
+
+# d.c d.c d.c d.c d.c d.c d.c d.c d.c d.c
 # ./$(EXE) -1 ifdefs2.c
 # -o out.txt hello.c
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c

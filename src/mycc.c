@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     }
 
     int fileIdx = 2;
+
     /* set output file */
     if (argc >= 4 && !strcmp(argv[2], "-o")) {
         freopen(argv[3], "w", stdout);
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]) {
     if (!strcmp(argv[1], "-0")) {
         printversion();
     } else {
-        if (fileIdx > argc) {
+        if (fileIdx >= argc) {
             fprintf(stderr, "Modes 1 to 5 need input files\n");
         } else if (!strcmp(argv[1], "-1")) {
             for (int i = fileIdx; i < argc; i++) {
@@ -33,6 +34,8 @@ int main(int argc, char *argv[]) {
                     while ((token = yylex())) {
                         fprintf(stdout, "%s line %d text '%s' token %s\n", curfilename, yylineno, yytext, token_str);
                     }
+                } else {
+                    fprintf(stderr, "THe input file %s doesn't exist\n", argv[i]);
                 }
             }
         } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {
