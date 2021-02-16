@@ -184,7 +184,8 @@ char *symbolname = 0;
                                         err_lineno = yylineno;
                                     }
 <DEFINE_KEY>[^ \t\n]+               {   /*  */
-                                        symbolname = strdup(yytext);
+                                        free(symbolname); /* free symbolname @ lexer.l#2 */
+                                        symbolname = strdup(yytext); /* allocate symbolname @ lexer.l#2 */
                                         BEGIN(DEFINE_VAL);
                                         print("leave DEFINE_KEY state\n");
                                         print("enter DEFINE_VAL state\n");
@@ -348,7 +349,7 @@ char *symbolname = 0;
 void addmacro(char * sym) {
     print("addmacro() add new marco %s\n", sym);
     /* macro -> macros */
-    struct node *macro = (struct node*) malloc(sizeof(struct node));
+    struct node *macro = (struct node*) malloc(sizeof(struct node)); /* allocate macro node @ lexer.l#1 */
     macro->data = sym;
     macro->next = filebuflist->macros;
     filebuflist->macros = macro;
@@ -533,8 +534,8 @@ int popfile(void)
         fprintf(stderr, "Error cannot close file %s\n", curfilename);
     }
     yy_delete_buffer(fb->bs);
-    /* if (debug)
-        printmacros(fb->macros); */
+    if (debug)
+        printmacros(fb->macros);
     struct node *ptr = fb->macros; /* clear macro records on symbol table */
     while (ptr) {
         print("popfile() remove file macros %s\n", ptr->data);

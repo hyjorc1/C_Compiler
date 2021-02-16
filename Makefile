@@ -20,7 +20,7 @@ LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
 all: link
-	./$(EXE) -1 defines.c
+	./$(EXE) -1 ifdefs1.c
 
 # d.c d.c d.c d.c d.c d.c d.c d.c d.c d.c
 # ./$(EXE) -1 ifdefs2.c
