@@ -502,9 +502,8 @@ int newfile(char *fn)
 
     /* fb -> list  */
     fb->next = filebuflist;
-    if (filebuflist) {
+    if (filebuflist)
         filebuflist->prev = fb;
-    }
     filebuflist = fb;
     
     /* set up enviroment for the new file */
@@ -538,12 +537,15 @@ int popfile(void)
     print("popfile() %s\n", curfilename);
 
     /* clear current file buffer */
-    fclose(fb->f);
+    if (fclose(fb->f)) {
+        fprintf(stderr, "Error cannot close file %s\n", curfilename);
+    }
     yy_delete_buffer(fb->bs);
-    if (debug)
-        printmacros(fb->macros);
+    /* if (debug)
+        printmacros(fb->macros); */
     struct node *ptr = fb->macros; /* clear macro records on symbol table */
     while (ptr) {
+        print("popfile() remove file macros %s\n", ptr->data);
         removeref(ptr->data);
         ptr = ptr->next;
     }

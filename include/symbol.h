@@ -40,6 +40,7 @@ struct symbol *lookup(char *sym) {
             return sp;
         /* new entry */
         if (!sp->name) {
+            sp->name = 0;
             sp->reflist = 0;
             return sp;
         }
@@ -55,15 +56,29 @@ void removeref(char *sym) {
     print("removeref() '%s'\n", sym);
     struct symbol *sp = lookup(sym);
     /* symbol doesn't exist in the table */
-    if (!sp->reflist || sp->reflist->filename != curfilename) {
+    if (!sp->reflist || !sp->reflist->filename || sp->reflist->filename != curfilename) {
         print("removeref() key:'%s' doesn't exist\n", sym);
         return;
     }
 
-    sp->name = 0;
-    struct ref *r = sp->reflist;
-    sp->reflist = 0;
-    free(r);
+    /* first remmove the refs not in the same file */
+    while (sp->reflist && sp->reflist->filename && sp->reflist->filename == curfilename) {
+        struct ref *next = sp->reflist->next;
+        free(sp->reflist->value); /* free value @2 */
+        sp->reflist->next = 0;
+        sp->reflist->filename = 0;
+        sp->reflist->lineno = 0;
+        sp->reflist->flags = 0;
+        free(sp->reflist); /* free ref @3 */
+        sp->reflist = next;
+    }
+
+    /* if current symbol is null, reset it */
+    if (!sp->reflist) {
+        free(sp->name); /* free sp->name @1 */
+        sp->name = 0;
+        sp->reflist = 0;
+    }
 }
 
 int addref(int lineno, char *filename, char *sym, char *val, int flags) {
@@ -79,18 +94,19 @@ int addref(int lineno, char *filename, char *sym, char *val, int flags) {
         status = 0;
     }
 
-    r = (struct ref*)malloc(sizeof(struct ref));
+    r = (struct ref*)malloc(sizeof(struct ref)); /* need to free ref @3 */
     if (!r) {
         fputs("out of space\n", stderr);
         abort();
     }
-    r->value = strdup(val);
+    r->value = strdup(val);  /* need to free ref->value @2 */
     r->next = sp->reflist;
-    r->filename = filename;
+    r->filename = filename; /* point to the same address, no need to free */
     r->lineno = lineno;
     r->flags = flags;
     sp->reflist = r;
-    sp->name = strdup(sym);
+    if (!sp->name)
+        sp->name = strdup(sym); /* need to free sp->name @1 */
     return status;
 }
 

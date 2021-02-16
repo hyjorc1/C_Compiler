@@ -11,10 +11,10 @@ struct node {
     struct node *next;
 };
 
-void printmacros(struct node *list) {
-   struct node *ptr = list;
+void printmacros(struct node *macros) {
+   struct node *ptr = macros;
    printf("\n'%s' macro buf [ ", curfilename);
-   while(ptr != NULL) {
+   while(ptr) {
       printf("'%s', ",  ptr->data);
       ptr = ptr->next;
    }
