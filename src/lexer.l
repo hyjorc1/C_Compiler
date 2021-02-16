@@ -202,14 +202,14 @@ char *symbolname = 0;
                                         int text_size = strlen(yytext);
                                         if (text_size >= REPRESENTATION_SIZE_LIMIT) {
                                             fprintf(stderr, "Error near %s line %d the length of the replacement text is larger the limit %d\n", curfilename, err_lineno, REPRESENTATION_SIZE_LIMIT);
-                                        } else if (addref(err_lineno, curfilename, symbolname, yytext, 0)) {
+                                        } else if (addref(symbolname, yytext, 0)) {
                                             addmacro(symbolname);
                                         }
                                         BEGIN(INITIAL);
                                         print("leave DEFINE_VAL state\n");
                                     }
 <DEFINE_VAL>.|\n                    {   /* handle #define wiht empty input */
-                                        if (addref(err_lineno, curfilename, symbolname, "", 0)) {
+                                        if (addref(symbolname, "", 0)) {
                                             addmacro(symbolname);
                                         }
                                         BEGIN(INITIAL);
@@ -350,9 +350,25 @@ void addmacro(char * sym) {
     print("addmacro() add new marco %s\n", sym);
     /* macro -> macros */
     struct node *macro = (struct node*) malloc(sizeof(struct node)); /* allocate macro node @ lexer.l#1 */
-    macro->data = sym;
+    macro->data = strdup(sym); /* allocate macro->data @ lexer.l#3 */
     macro->next = filebuflist->macros;
     filebuflist->macros = macro;
+}
+
+void clearmacros() {
+    struct node *macro = filebuflist->macros;
+    if (debug)
+        printmacros(macro);
+    while (macro) {
+        print("popfile() remove file macros %s\n", macro->data);
+        struct node *next = macro->next;
+        removeref(macro->data); /* free macro->data @ lexer.l#3 */
+        free(macro->data);  /* free macro node @ lexer.l#1 */
+        free(macro);
+        macro = next;
+    }
+    if (debug)
+        printrefs();
 }
 
 int terminate() {
@@ -392,18 +408,17 @@ int newmacro(char* ident) {
 
     print("newmacro() find symbol '%s' wiht val:'%s'\n", ident, sp->reflist->value);
 
-    struct macrobuf *mb = (struct macrobuf*)malloc(sizeof(struct macrobuf));
+    struct macrobuf *mb = (struct macrobuf*)malloc(sizeof(struct macrobuf)); /* allocate mb @ lexer.l#4 */
     if (!mb) { perror("malloc"); exit(1); }
 
-    mb->name = sp->name;
+    mb->name = sp->name; /* point to the same address, no need to free */
     mb->bs = yy_scan_string(sp->reflist->value);
     yy_switch_to_buffer(mb->bs);
 
     /* mb -> list */
     mb->next = macrobuflist;
-    if (macrobuflist) {
+    if (macrobuflist)
         macrobuflist->prev = mb;
-    }
     macrobuflist = mb;
 
     macrobuflistsize++;
@@ -430,7 +445,7 @@ int popmacro() {
     macrobuflistsize--;
     print("popmacro() buffer list size: %d\n", macrobuflistsize);
 
-    free(mb);  /* free the memory */
+    free(mb);  /* free mb @ lexer.l#4 */
 
     if (!macrobuflist) {
         print("popmacro() no previous macro buf and current lineno: %d\n", yylineno);
@@ -534,16 +549,7 @@ int popfile(void)
         fprintf(stderr, "Error cannot close file %s\n", curfilename);
     }
     yy_delete_buffer(fb->bs);
-    if (debug)
-        printmacros(fb->macros);
-    struct node *ptr = fb->macros; /* clear macro records on symbol table */
-    while (ptr) {
-        print("popfile() remove file macros %s\n", ptr->data);
-        removeref(ptr->data);
-        ptr = ptr->next;
-    }
-    if (debug)
-        printrefs();
+    clearmacros();
 
     /* move to next file buffer */
     filebuflist = fb->next;

@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include "global.h"
 
-struct symbol {             /* a word */
+struct symbol {
     char *name;
     struct ref *reflist; 
 };
@@ -81,13 +81,13 @@ void removeref(char *sym) {
     }
 }
 
-int addref(int lineno, char *filename, char *sym, char *val, int flags) {
+int addref(char *sym, char *val, int flags) {
     print("addref() key:'%s' val:'%s'\n", sym, val);
     struct ref *r;
     struct symbol *sp = lookup(sym);
     
     int status = 1; /* indicate the new symbol in the current file */
-    if (sp->reflist && sp->reflist->filename == filename) {
+    if (sp->reflist && sp->reflist->filename == curfilename) {
         fprintf(stderr, "Error near %s line %d\n", curfilename, err_lineno);
         fprintf(stderr, "\tre-defining preprocessor symbol %s\n", sp->name);
         print("addref() has prevref with val:'%s'-\n", sp->reflist->value);
@@ -101,8 +101,8 @@ int addref(int lineno, char *filename, char *sym, char *val, int flags) {
     }
     r->value = strdup(val);  /* allocate ref->value @ symbol.h#2 */
     r->next = sp->reflist;
-    r->filename = filename; /* point to the same address, no need to free */
-    r->lineno = lineno;
+    r->filename = curfilename; /* point to the same address, no need to free */
+    r->lineno = err_lineno;
     r->flags = flags;
     sp->reflist = r;
     if (!sp->name)

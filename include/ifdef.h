@@ -34,7 +34,7 @@ int newifdef(char isifdef, char skip) {
     return 1;
 }
 
-int popifdef() {
+void popifdef() {
     struct ifdef *next = iflist->next;
     print("pop last ifdef node at line %d\n", iflist->lineno);
     free(iflist); /* free ifdef @ ifdef.h#1 */
