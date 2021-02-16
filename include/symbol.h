@@ -64,18 +64,18 @@ void removeref(char *sym) {
     /* first remmove the refs not in the same file */
     while (sp->reflist && sp->reflist->filename && sp->reflist->filename == curfilename) {
         struct ref *next = sp->reflist->next;
-        free(sp->reflist->value); /* free value @2 */
+        free(sp->reflist->value); /* free ref->value @ symbol.h#2 */
         sp->reflist->next = 0;
         sp->reflist->filename = 0;
         sp->reflist->lineno = 0;
         sp->reflist->flags = 0;
-        free(sp->reflist); /* free ref @3 */
+        free(sp->reflist); /* free ref @ symbol.h#3 */
         sp->reflist = next;
     }
 
-    /* if current symbol is null, reset it */
+    /* if the symbol has no reflist, reset it */
     if (!sp->reflist) {
-        free(sp->name); /* free sp->name @1 */
+        free(sp->name); /* free sp->name @ symbol.h#1 */
         sp->name = 0;
         sp->reflist = 0;
     }
@@ -94,19 +94,19 @@ int addref(int lineno, char *filename, char *sym, char *val, int flags) {
         status = 0;
     }
 
-    r = (struct ref*)malloc(sizeof(struct ref)); /* need to free ref @3 */
+    r = (struct ref*)malloc(sizeof(struct ref)); /* allocate ref @ symbol.h#3 */
     if (!r) {
         fputs("out of space\n", stderr);
         abort();
     }
-    r->value = strdup(val);  /* need to free ref->value @2 */
+    r->value = strdup(val);  /* allocate ref->value @ symbol.h#2 */
     r->next = sp->reflist;
     r->filename = filename; /* point to the same address, no need to free */
     r->lineno = lineno;
     r->flags = flags;
     sp->reflist = r;
     if (!sp->name)
-        sp->name = strdup(sym); /* need to free sp->name @1 */
+        sp->name = strdup(sym); /* allocate sp->name @ symbol.h#1 */
     return status;
 }
 

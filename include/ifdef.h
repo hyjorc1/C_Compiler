@@ -22,7 +22,7 @@ int newifdef(char isifdef, char skip) {
     if (iflistsize >= BUFFER_LIST_SIZE_LIMIT) {
         fprintf(stderr, "Error reaching iflist list size limit %d\n", BUFFER_LIST_SIZE_LIMIT);
     } else {
-        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef));
+        struct ifdef *ifd = (struct ifdef*)malloc(sizeof(struct ifdef)); /* allocate ifdef @ ifdef.h#1 */
         ifd->isifdef = isifdef;
         ifd->skip = skip;
         ifd->else_lineno = 0;
@@ -32,6 +32,14 @@ int newifdef(char isifdef, char skip) {
         iflistsize++;
     }
     return 1;
+}
+
+int popifdef() {
+    struct ifdef *next = iflist->next;
+    print("pop last ifdef node at line %d\n", iflist->lineno);
+    free(iflist); /* free ifdef @ ifdef.h#1 */
+    iflist = next;
+    iflistsize--;
 }
 
 #endif

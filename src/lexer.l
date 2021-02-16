@@ -113,11 +113,7 @@ char *symbolname = 0;
                                             fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
                                             END;
                                         }
-                                        struct ifdef *ptr = iflist;
-                                        print("pop last ifdef node at line %d\n", ptr->lineno);
-                                        iflist = ptr->next;
-                                        free(ptr);
-                                        iflistsize--;
+                                        popifdef();
                                     }
 <SKIP>^"#"[ \t]*"ifdef"[ \t]*       {   /* handle <SKIP>#ifdef  */
                                         print("find <SKIP>#ifdef at line %d\n", yylineno);
@@ -150,11 +146,7 @@ char *symbolname = 0;
                                         }
                                         if (iflist->skip == 0)
                                             BEGIN(INITIAL);
-                                        struct ifdef *ptr = iflist;
-                                        print("pop last ifdef node at line %d\n", ptr->lineno);
-                                        iflist = ptr->next;
-                                        free(ptr);
-                                        iflistsize--;
+                                        popifdef();
                                     }
 <SKIP>.|\n                          {   /* ignore  */  /* print("SKIP -%s-\n", yytext); */ }
 
