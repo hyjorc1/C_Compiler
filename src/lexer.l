@@ -549,7 +549,7 @@ int popfile(void)
         fprintf(stderr, "Error cannot close file %s\n", curfilename);
     }
     yy_delete_buffer(fb->bs);
-    clearmacros();
+    /* clearmacros(); */
 
     /* move to next file buffer */
     filebuflist = fb->next;

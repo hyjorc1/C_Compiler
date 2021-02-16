@@ -15,10 +15,6 @@ Mode 1 is a lexer for processing C program and output the corresponding tokens.
 
         \textbf{\#define} feature is achieved by utilizing this and a symbol table discussed in section 1.2 \texttt{symbol.h}. This data structure works as a stack to track the replacement chain of macros. When the lexer encountering a defined identifier, it will extract its representation from the symbol table and push it into the macro buffer stack. The lexer scans those buffers until the stack is empty. 
 
-        \item \texttt{struct ifdef} is a linked data structure.
-        
-        \textbf{\#ifdef} feature is achieved by utilizing this data structure. Similar to the previous data structures. \texttt{struct ifdef} also serve as a stack to maintain the status of each \#ifdef/\#ifndef for the nesting feature. When the lexer find a \#ifdef/\#ifndef, it will push the corresponding status into the stack. 
-
     \end{enumerate}
 \end{enumerate}
 
@@ -27,4 +23,5 @@ Mode 1 is a lexer for processing C program and output the corresponding tokens.
     \item \textbf{tokens.h} contains tokens used to matching C keywords and operators.
     \item \textbf{symbol.h} contains the program to implement a symbol table for the preprocessors. It tracks each identifier (\texttt{struct symbol}) and its representation (\texttt{char *value} nested in \texttt{struct ref}) in a hash table. The implemented lookup technique is known as hashing with linear probing. It uses a hash function to hash the key, then checks the entry, and, if it’s already taken by a different key, scans linearly until it finds a free entry.
     \item \textbf{macro.h} contains the data structure and utility functions for attribute \texttt{struct node *macros} maintained in \texttt{struct filebuf}. The attribute is used to tracking macros defined in the corresponding file buffer.
+    \item \textbf{ifdef.h} contains \texttt{struct ifdef}, a linked data structure. \textbf{\#ifdef} feature is achieved by utilizing this data structure. Similar to the previous data structures. \texttt{struct ifdef} also serve as a stack to maintain the status of each \#ifdef/\#ifndef for the nesting feature. When the lexer find a \#ifdef/\#ifndef, it will push the corresponding status into the stack. 
 \end{enumerate} 
