@@ -7,7 +7,6 @@
 #include "global.h"
 #include "tokens.h"
 #include "symbol.h"
-#include "macro.h"
 #include "ifdef.h"
 #define END return terminate();
 
@@ -20,7 +19,6 @@ struct filebuf {
     int lineno;             /* saved line number */
     char *filename;         /* name of this file */
     FILE *f;                /* current file */
-    struct node *macros;    /* saved new macros */
     struct ifdef *iflist;   /* saved iflist */
     int iflistsize;
 } *filebuflist = 0;
@@ -142,15 +140,17 @@ char *symbolname = 0;
                                             iflist->else_lineno = yylineno;
                                         }
                                     }
-<SKIP>"#"[ \t]*"endif"[ \t]*       {   /* handle <SKIP>#endif */
+<SKIP>"#"[ \t]*"endif"[ \t]*        {   /* handle <SKIP>#endif */
                                         print("find #endif enter INITIAL state at line %d\n", yylineno);
                                         if (!iflist) {
-                                            fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
-                                            END;
-                                        }
-                                        if (iflist->skip == 0)
+                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "\t#endif with no matching #ifdef/#ifndef, ignoring\n");
                                             BEGIN(INITIAL);
-                                        popifdef();
+                                        } else {
+                                            if (iflist->skip == 0)
+                                                BEGIN(INITIAL);
+                                            popifdef();
+                                        }
                                     }
 <SKIP>\".*\"|.|\n                   {   /* ignore string and anything else */  }
 
@@ -207,14 +207,14 @@ char *symbolname = 0;
                                         if (text_size >= REPRESENTATION_SIZE_LIMIT) {
                                             fprintf(stderr, "Error near %s line %d the length of the replacement text is larger the limit %d\n", curfilename, err_lineno, REPRESENTATION_SIZE_LIMIT);
                                         } else if (addref(symbolname, yytext, 0)) {
-                                            addmacro(symbolname);
+                                            // addmacro(symbolname);
                                         }
                                         BEGIN(INITIAL);
                                         print("leave DEFINE_VAL state\n");
                                     }
 <DEFINE_VAL>.|\n                    {   /* handle #define wiht empty input */
                                         if (addref(symbolname, "", 0)) {
-                                            addmacro(symbolname);
+                                            // addmacro(symbolname);
                                         }
                                         BEGIN(INITIAL);
                                         print("leave DEFINE_VAL state\n");
@@ -346,34 +346,9 @@ char *symbolname = 0;
 "<="        { token_str = "LE"; return LE; }
 
 \0          { fprintf(stderr, "Reach to end of string\n"); END; }
-.	        { fprintf(stderr, "Error near %s bad input character '%s' at line %d\n", curfilename, yytext, yylineno); }
+.	        { fprintf(stderr, "Error near %s line %d text '%s'\n\tunexpected characters; ignoring.\n", curfilename, yylineno, yytext); }
 
 %%
-
-void addmacro(char * sym) {
-    print("addmacro() add new marco %s\n", sym);
-    /* macro -> macros */
-    struct node *macro = (struct node*) malloc(sizeof(struct node)); /* allocate macro node @ lexer.l#1 */
-    macro->data = strdup(sym); /* allocate macro->data @ lexer.l#3 */
-    macro->next = filebuflist->macros;
-    filebuflist->macros = macro;
-}
-
-void clearmacros() {
-    struct node *macro = filebuflist->macros;
-    if (debug)
-        printmacros(macro);
-    while (macro) {
-        print("popfile() remove file macros %s\n", macro->data);
-        struct node *next = macro->next;
-        removeref(macro->data); /* free macro->data @ lexer.l#3 */
-        free(macro->data);  /* free macro node @ lexer.l#1 */
-        free(macro);
-        macro = next;
-    }
-    if (debug)
-        printrefs();
-}
 
 int terminate() {
     BEGIN(INITIAL);
@@ -553,7 +528,6 @@ int popfile(void)
         fprintf(stderr, "Error cannot close file %s\n", curfilename);
     }
     yy_delete_buffer(fb->bs);
-    /* clearmacros(); */
 
     /* move to next file buffer */
     filebuflist = fb->next;
