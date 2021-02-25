@@ -1,0 +1,36 @@
+include_4.c line 2 text 'line2' token IDENT
+include_4.c line 2 text ';' token SEMI
+inc3.h line 2 text '"inc3 line 2"' token STRCONST
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+inc3.h line 6 text '"inc3 line 6"' token STRCONST
+inc2.h line 2 text '"starting inc2"' token STRCONST
+inc2.h line 2 text ';' token SEMI
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+inc2.h line 6 text '"finishing inc2"' token STRCONST
+inc2.h line 6 text ';' token SEMI
+inc3.h line 10 text '"inc3 line 10"' token STRCONST
+inc3.h line 2 text '"inc3 line 2"' token STRCONST
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+inc3.h line 6 text '"inc3 line 6"' token STRCONST
+inc2.h line 2 text '"starting inc2"' token STRCONST
+inc2.h line 2 text ';' token SEMI
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+inc2.h line 6 text '"finishing inc2"' token STRCONST
+inc2.h line 6 text ';' token SEMI
+inc3.h line 10 text '"inc3 line 10"' token STRCONST
+include_4.c line 7 text 'line7' token IDENT
+include_4.c line 7 text ';' token SEMI
+inc2.h line 2 text '"starting inc2"' token STRCONST
+inc2.h line 2 text ';' token SEMI
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+inc2.h line 6 text '"finishing inc2"' token STRCONST
+inc2.h line 6 text ';' token SEMI
+inc1.h line 2 text '"inside inc1"' token STRCONST
+inc1.h line 2 text ';' token SEMI
+include_4.c line 12 text 'line12' token IDENT
+include_4.c line 12 text ';' token SEMI

@@ -1,0 +1,12 @@
+Warning: ignoring #define directive in ifdef_nest_3.c line 2
+Warning: ignoring #define directive in ifdef_nest_3.c line 3
+Warning: ignoring #define directive in ifdef_nest_3.c line 4
+Warning: ignoring #ifdef directive in ifdef_nest_3.c line 8
+Warning: ignoring #ifdef directive in ifdef_nest_3.c line 10
+Warning: ignoring #ifdef directive in ifdef_nest_3.c line 12
+Warning: ignoring #endif directive in ifdef_nest_3.c line 14
+Warning: ignoring #endif directive in ifdef_nest_3.c line 16
+Warning: ignoring #endif directive in ifdef_nest_3.c line 18
+Warning: ignoring #endif directive in ifdef_nest_3.c line 20
+Warning: ignoring #endif directive in ifdef_nest_3.c line 21
+Warning: ignoring #endif directive in ifdef_nest_3.c line 22

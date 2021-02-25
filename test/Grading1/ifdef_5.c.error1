@@ -1,0 +1,6 @@
+Warning: ignoring #endif directive in ifdef_5.c line 2
+Warning: ignoring #ifdef directive in ifdef_5.c line 6
+Warning: ignoring #else directive in ifdef_5.c line 10
+Warning: ignoring #else directive in ifdef_5.c line 14
+Warning: ignoring #endif directive in ifdef_5.c line 18
+Warning: ignoring #ifndef directive in ifdef_5.c line 22

@@ -1,0 +1,6 @@
+Error near ifdef_nest_3.c line 20 text '#endif'
+	#endif with no matching #ifdef/#ifndef, ignoring
+Error near ifdef_nest_3.c line 21 text '#endif'
+	#endif with no matching #ifdef/#ifndef, ignoring
+Error near ifdef_nest_3.c line 22 text '#endif'
+	#endif with no matching #ifdef/#ifndef, ignoring

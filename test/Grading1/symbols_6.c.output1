@@ -1,0 +1,6 @@
+symbols_6.c line 1 text '==' token EQUALS
+symbols_6.c line 2 text '!=' token NEQUAL
+symbols_6.c line 3 text '>' token GT
+symbols_6.c line 4 text '>=' token GE
+symbols_6.c line 5 text '<' token LT
+symbols_6.c line 6 text '<=' token LE

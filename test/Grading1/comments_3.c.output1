@@ -1,0 +1,14 @@
+comments_3.c line 3 text ';' token SEMI
+comments_3.c line 5 text 'still' token IDENT
+comments_3.c line 5 text 'inside' token IDENT
+comments_3.c line 5 text 'the' token IDENT
+comments_3.c line 5 text 'comment' token IDENT
+comments_3.c line 5 text 'even' token IDENT
+comments_3.c line 5 text 'vi' token IDENT
+comments_3.c line 5 text 'gets' token IDENT
+comments_3.c line 5 text 'this' token IDENT
+comments_3.c line 5 text 'wrong' token IDENT
+comments_3.c line 6 text '*' token STAR
+comments_3.c line 6 text '/' token SLASH
+comments_3.c line 7 text ';' token SEMI
+comments_3.c line 9 text ';' token SEMI

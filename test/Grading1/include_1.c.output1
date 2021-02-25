@@ -1,0 +1,4 @@
+include_1.c line 2 text 'hello' token IDENT
+include_1.c line 2 text ';' token SEMI
+include_1.c line 6 text 'there' token IDENT
+include_1.c line 6 text ';' token SEMI

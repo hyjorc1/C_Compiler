@@ -1,0 +1,3 @@
+incloop_1.c line 2 text 'start' token IDENT
+incloop_1.c line 2 text ';' token SEMI
+incloop1.h line 2 text '"bad"' token STRCONST

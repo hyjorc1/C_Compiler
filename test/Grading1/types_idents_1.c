@@ -1,0 +1,3 @@
+float int
+void
+char

@@ -1,0 +1,5 @@
+lineno.c line 1 text 'I' token IDENT
+lineno.c line 10 text 'J' token IDENT
+lineno.c line 15 text 'K' token IDENT
+lineno.c line 22 text 'L' token IDENT
+lineno.c line 33 text 'M' token IDENT

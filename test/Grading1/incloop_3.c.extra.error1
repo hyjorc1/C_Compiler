@@ -1,0 +1,8 @@
+Error near incloop3d.h line 4
+	#include cycle:
+	File incloop3c.h includes incloop3f.h
+	File incloop3f.h includes incloop3e.h
+	File incloop3e.h includes incloop3d.h
+	File incloop3d.h includes incloop3c.h
+Error near incloop3d.h line 4
+	Couldn't open included file incloop3c.h

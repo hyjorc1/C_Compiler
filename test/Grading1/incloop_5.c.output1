@@ -1,0 +1,6 @@
+incloop_5.c line 12 text 'just' token IDENT
+incloop_5.c line 12 text ';' token SEMI
+incloop_5.c line 16 text 'wow' token IDENT
+incloop_5.c line 16 text ';' token SEMI
+incloop_5.c line 20 text 'done' token IDENT
+incloop_5.c line 20 text ';' token SEMI

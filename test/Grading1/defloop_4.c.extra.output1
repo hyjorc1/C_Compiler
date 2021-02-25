@@ -1,0 +1,15 @@
+defloop_4.c line 8 text 'a' token IDENT
+defloop_4.c line 8 text 'B' token IDENT
+defloop_4.c line 9 text 'B' token IDENT
+defloop_4.c line 10 text 'c' token IDENT
+defloop_4.c line 10 text 'd' token IDENT
+defloop_4.c line 10 text 'a' token IDENT
+defloop_4.c line 10 text 'B' token IDENT
+defloop_4.c line 11 text 'd' token IDENT
+defloop_4.c line 11 text 'a' token IDENT
+defloop_4.c line 11 text 'B' token IDENT
+defloop_4.c line 13 text '"refreshing"' token STRCONST
+defloop_4.c line 17 text 'c' token IDENT
+defloop_4.c line 17 text 'd' token IDENT
+defloop_4.c line 17 text 'a' token IDENT
+defloop_4.c line 17 text 'b' token IDENT

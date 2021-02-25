@@ -1,0 +1,6 @@
+define_4.c line 6 text 'A' token IDENT
+define_4.c line 6 text ';' token SEMI
+define_4.c line 7 text 'B' token IDENT
+define_4.c line 7 text ';' token SEMI
+define_4.c line 8 text 'C' token IDENT
+define_4.c line 8 text ';' token SEMI

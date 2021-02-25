@@ -1,0 +1,7 @@
+constants_6.c line 1 text ''\a'' token CHARCONST
+constants_6.c line 2 text ''\b'' token CHARCONST
+constants_6.c line 3 text ''\n'' token CHARCONST
+constants_6.c line 4 text ''\r'' token CHARCONST
+constants_6.c line 5 text ''\t'' token CHARCONST
+constants_6.c line 6 text ''\\'' token CHARCONST
+constants_6.c line 7 text ''\''' token CHARCONST

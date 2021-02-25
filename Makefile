@@ -10,7 +10,7 @@ MAIN	:= $(SRC)/$(EXE)
 UTIL	:= $(SRC)/util
 
 LEX1	:= $(SRC)/lexer
-TEXT1	:= test/Tests1
+TEXT1	:= test/Grading1
 
 INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
 LIBDIRS		:= $(shell find $(LIB) -type d)
@@ -19,8 +19,8 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
 
 
-all: link latex
-
+all: link
+	./$(EXE) -1 ifdef_3.c
 
 # d.c d.c d.c d.c d.c d.c d.c d.c d.c d.c
 # ./$(EXE) -1 ifdefs2.c
@@ -29,7 +29,7 @@ all: link latex
 # hello.c tricky.txt d.c defines.c ifdefs1.c ifdefs2.c 
 
 ################################ project ############################
-TESTCMD	:= ./Check.sh mycc -s *.c tricky.txt
+TESTCMD	:= ./Check.sh mycc -s *.c
 # TESTCMD	:= ./Check.sh mycc -d *.c tricky.txt
 
 test: link

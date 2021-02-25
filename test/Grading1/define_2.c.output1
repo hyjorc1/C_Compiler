@@ -1,0 +1,5 @@
+define_2.c line 4 text 'YESS' token IDENT
+define_2.c line 5 text 'YES' token IDENT
+define_2.c line 6 text 'ES' token IDENT
+define_2.c line 7 text 'S' token IDENT
+define_2.c line 8 text '"S"' token STRCONST

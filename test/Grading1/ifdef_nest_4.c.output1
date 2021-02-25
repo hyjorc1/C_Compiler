@@ -1,0 +1,7 @@
+ifdef_nest_4.c line 5 text 'GOOD1' token IDENT
+ifdef_nest_4.c line 8 text 'GOOD2' token IDENT
+ifdef_nest_4.c line 10 text 'bad1' token IDENT
+ifdef_nest_4.c line 12 text 'bad2' token IDENT
+ifdef_nest_4.c line 14 text 'bad3' token IDENT
+ifdef_nest_4.c line 16 text 'GOOD2' token IDENT
+ifdef_nest_4.c line 18 text 'GOOD3' token IDENT

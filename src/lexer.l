@@ -55,12 +55,12 @@ char *symbolname = 0;
 
 %%
 
-^"#"[ \t]*"ifdef"[ \t]*             {   /* handle #ifdef  */
+"#"[ \t]*"ifdef"[ \t]*              {   /* handle #ifdef  */
                                         BEGIN(IFDEF);
                                         print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
                                         newifdef(1, 0);
                                     }
-^"#"[ \t]*"ifndef"[ \t]*            {   /* handle #ifndef  */
+"#"[ \t]*"ifndef"[ \t]*             {   /* handle #ifndef  */
                                         BEGIN(IFDEF);
                                         print("find '%s' enter IFDEF state at line %d\n", yytext, yylineno);
                                         newifdef(0, 0);
@@ -87,11 +87,12 @@ char *symbolname = 0;
                                             }
                                         }
                                     }
-^"#"[ \t]*"else"[ \t]*              {   /* handle #else  */
+"#"[ \t]*"else"[ \t]*               {   /* handle #else  */
                                         print("find #else\n");
                                         if (!iflist) {
-                                            fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
-                                            END;
+                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "\t#endif with no matching #ifdef/#ifndef, ignoring\n");
+                                            BEGIN(INITIAL);
                                         }
                                         if (iflist->else_lineno > 0) {
                                             fprintf(stderr, "Error near %s line %d\n", curfilename, yylineno);
@@ -107,27 +108,30 @@ char *symbolname = 0;
                                             iflist->else_lineno = yylineno;
                                         }
                                     }
-^"#"[ \t]*"endif"[ \t]*             {   /* handle #endif  */
+"#"[ \t]*"endif"[ \t]*              {   /* handle #endif  */
                                         print("find #endif\n");
                                         if (!iflist) {
-                                            fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
-                                            END;
+                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "\t#endif with no matching #ifdef/#ifndef, ignoring\n");
+                                            BEGIN(INITIAL);
+                                        } else {
+                                            popifdef();
                                         }
-                                        popifdef();
                                     }
-<SKIP>^"#"[ \t]*"ifdef"[ \t]*       {   /* handle <SKIP>#ifdef  */
+<SKIP>"#"[ \t]*"ifdef"[ \t]*        {   /* handle <SKIP>#ifdef  */
                                         print("find <SKIP>#ifdef at line %d\n", yylineno);
                                         newifdef(1, 1);
                                     }
-<SKIP>^"#"[ \t]*"ifndef"[ \t]*      {   /* handle <SKIP>#ifndef  */
+<SKIP>"#"[ \t]*"ifndef"[ \t]*       {   /* handle <SKIP>#ifndef  */
                                         print("find <SKIP>#ifndef at line %d\n", yylineno);
                                         newifdef(0, 1);
                                     }
-<SKIP>^"#"[ \t]*"else"[ \t]*        {   /* handle <SKIP>#else  */
+<SKIP>"#"[ \t]*"else"[ \t]*         {   /* handle <SKIP>#else  */
                                         print("find <SKIP>#else enter INITIAL state at line %d\n", yylineno);
                                         if (!iflist) {
-                                            fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
-                                            END;
+                                            fprintf(stderr, "Error near %s line %d text '%s'\n", curfilename, yylineno, yytext);
+                                            fprintf(stderr, "\t#endif with no matching #ifdef/#ifndef, ignoring\n");
+                                            BEGIN(INITIAL);
                                         }
                                         if (iflist->else_lineno > 0) {
                                             fprintf(stderr, "Error near %s line %d\n", curfilename, yylineno);
@@ -138,7 +142,7 @@ char *symbolname = 0;
                                             iflist->else_lineno = yylineno;
                                         }
                                     }
-<SKIP>^"#"[ \t]*"endif"[ \t]*       {   /* handle <SKIP>#endif */
+<SKIP>"#"[ \t]*"endif"[ \t]*       {   /* handle <SKIP>#endif */
                                         print("find #endif enter INITIAL state at line %d\n", yylineno);
                                         if (!iflist) {
                                             fprintf(stderr, "Error near %s line %d missing #ifdef/#ifndef\n", curfilename, yylineno);
@@ -148,10 +152,10 @@ char *symbolname = 0;
                                             BEGIN(INITIAL);
                                         popifdef();
                                     }
-<SKIP>.|\n                          {   /* ignore  */  /* print("SKIP -%s-\n", yytext); */ }
+<SKIP>\".*\"|.|\n                   {   /* ignore string and anything else */  }
 
 
-^"#"[ \t]*"include"[ \t]*[\"]       {   /* handle #include statement up through the quote */
+"#"[ \t]*"include"[ \t]*[\"]        {   /* handle #include statement up through the quote */
                                         BEGIN(IFILE);
                                         print("enter IFILE state\n");
                                         err_lineno = yylineno;
@@ -178,7 +182,7 @@ char *symbolname = 0;
                                     }
 
 
-^"#"[ \t]*"define"[ \t]*            {   /* handle #define  */
+"#"[ \t]*"define"[ \t]*             {   /* handle #define  */
                                         BEGIN(DEFINE_KEY);
                                         print("enter DEFINE_KEY state\n");
                                         err_lineno = yylineno;
@@ -222,7 +226,7 @@ char *symbolname = 0;
                                     }
 
 
-^"#"[ \t]*"undef"[ \t]*             {   /* handle #undef  */
+"#"[ \t]*"undef"[ \t]*              {   /* handle #undef  */
                                         BEGIN(UNDEFINE);
                                         print("enter UNDEFINE state\n");
                                         err_lineno = yylineno;

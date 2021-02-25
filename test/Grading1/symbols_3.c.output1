@@ -1,0 +1,6 @@
+symbols_3.c line 1 text '+' token PLUS
+symbols_3.c line 2 text '-' token MINUS
+symbols_3.c line 3 text '*' token STAR
+symbols_3.c line 4 text '/' token SLASH
+symbols_3.c line 5 text '%' token MOD
+symbols_3.c line 6 text '~' token TILDE

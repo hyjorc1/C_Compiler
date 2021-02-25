@@ -1,0 +1,5 @@
+ifdef_nest_2.c line 2 text 'GOOD1' token IDENT
+ifdef_nest_2.c line 5 text 'GOOD2' token IDENT
+ifdef_nest_2.c line 7 text 'GOOD3' token IDENT
+ifdef_nest_2.c line 9 text 'GOOD4' token IDENT
+ifdef_nest_2.c line 13 text 'GOOD5' token IDENT

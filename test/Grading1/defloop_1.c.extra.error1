@@ -1,0 +1,3 @@
+Error near defloop_1.c line 6
+	#define substitution cycle:
+	GNU macro contains GNU

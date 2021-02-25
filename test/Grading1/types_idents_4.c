@@ -1,0 +1,11 @@
+structurally
+worthwhile
+breakpoint
+forward
+dodo
+thereshouldbenolimittothelengthofanidentifieratleastfromthelexerpointofviewmaybelaterwhenthereisasymboltablewecanrestrictthelengthbutnotnow
+A_B
+The_quick_brown_fox_jumped_over_the_lazy_dogs
+_
+_1
+__________

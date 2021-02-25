@@ -1,0 +1,4 @@
+incloop_3.c line 4 text 'bad_now' token IDENT
+incloop_3.c line 4 text ';' token SEMI
+incloop_3.c line 8 text 'done' token IDENT
+incloop_3.c line 8 text ';' token SEMI

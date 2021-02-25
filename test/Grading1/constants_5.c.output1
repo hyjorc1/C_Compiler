@@ -1,0 +1,11 @@
+constants_5.c line 1 text ''c'' token CHARCONST
+constants_5.c line 2 text ''h'' token CHARCONST
+constants_5.c line 3 text ''a'' token CHARCONST
+constants_5.c line 4 text ''r'' token CHARCONST
+constants_5.c line 5 text ''s'' token CHARCONST
+constants_5.c line 6 text ''W'' token CHARCONST
+constants_5.c line 7 text ''H'' token CHARCONST
+constants_5.c line 8 text ''Y'' token CHARCONST
+constants_5.c line 9 text '' '' token CHARCONST
+constants_5.c line 10 text ''*'' token CHARCONST
+constants_5.c line 11 text ''-'' token CHARCONST

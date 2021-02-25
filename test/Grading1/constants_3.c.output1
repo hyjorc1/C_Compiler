@@ -1,0 +1,5 @@
+constants_3.c line 1 text '.1' token REALCONST
+constants_3.c line 2 text '.234567890' token REALCONST
+constants_3.c line 3 text '.02e12' token REALCONST
+constants_3.c line 4 text '.15e-7' token REALCONST
+constants_3.c line 5 text '.000000' token REALCONST

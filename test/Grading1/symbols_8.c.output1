@@ -1,0 +1,9 @@
+symbols_8.c line 1 text '&&' token DAMP
+symbols_8.c line 1 text '&' token AMP
+symbols_8.c line 2 text '*' token STAR
+symbols_8.c line 2 text '*=' token STARASSIGN
+symbols_8.c line 2 text '=' token ASSIGN
+symbols_8.c line 3 text '/' token SLASH
+symbols_8.c line 3 text '/' token SLASH
+symbols_8.c line 3 text '/' token SLASH
+symbols_8.c line 3 text '/' token SLASH

@@ -1,0 +1,4 @@
+incloop_4.c line 2 text 'starting' token IDENT
+incloop_4.c line 2 text ';' token SEMI
+incloop_4.c line 6 text 'done' token IDENT
+incloop_4.c line 6 text ';' token SEMI

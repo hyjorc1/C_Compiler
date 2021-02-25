@@ -1,0 +1,7 @@
+Error near incloop4f.h line 3
+	#include cycle:
+	File incloop4d.h includes incloop4e.h
+	File incloop4e.h includes incloop4f.h
+	File incloop4f.h includes incloop4d.h
+Error near incloop4f.h line 3
+	Couldn't open included file incloop4d.h

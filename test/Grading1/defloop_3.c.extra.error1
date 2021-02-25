@@ -1,0 +1,4 @@
+Error near defloop_3.c line 10
+	#define substitution cycle:
+	MC macro contains MD
+	MD macro contains MC

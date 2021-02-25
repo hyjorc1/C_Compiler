@@ -1,0 +1,12 @@
+define_3.c line 6 text '4' token INTCONST
+define_3.c line 6 text ';' token SEMI
+define_3.c line 7 text '4' token INTCONST
+define_3.c line 7 text '+' token PLUS
+define_3.c line 7 text '1' token INTCONST
+define_3.c line 7 text ';' token SEMI
+define_3.c line 8 text '4' token INTCONST
+define_3.c line 8 text '+' token PLUS
+define_3.c line 8 text '1' token INTCONST
+define_3.c line 8 text '+' token PLUS
+define_3.c line 8 text '1' token INTCONST
+define_3.c line 8 text ';' token SEMI

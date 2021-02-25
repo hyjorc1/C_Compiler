@@ -1,0 +1,6 @@
+Error near incloop2b.h line 4
+	#include cycle:
+	File incloop2a.h includes incloop2b.h
+	File incloop2b.h includes incloop2a.h
+Error near incloop2b.h line 4
+	Couldn't open included file incloop2a.h

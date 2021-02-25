@@ -1,0 +1,7 @@
+symbols_5.c line 1 text '=' token ASSIGN
+symbols_5.c line 2 text '+=' token PLUSASSIGN
+symbols_5.c line 3 text '-=' token MINUSASSIGN
+symbols_5.c line 4 text '*=' token STARASSIGN
+symbols_5.c line 5 text '/=' token SLASHASSIGN
+symbols_5.c line 6 text '++' token INCR
+symbols_5.c line 7 text '--' token DECR

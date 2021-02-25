@@ -1,0 +1,5 @@
+ifdef_4.c line 2 text 'GOOD1' token IDENT
+ifdef_4.c line 6 text 'GOOD2' token IDENT
+ifdef_4.c line 9 text 'GOOD3' token IDENT
+ifdef_4.c line 11 text '"Too many endifs, make sure there's a warning or error message"' token STRCONST
+ifdef_4.c line 14 text 'ALIVE' token IDENT
