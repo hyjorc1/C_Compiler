@@ -1,0 +1,172 @@
+
+More bison tricks
+======================================================================
+
+How to handle unary -?
+
+Issue: precedence
+
+  Want unary - to have higher precedence than binary -
+
+    3 + -4 * 5
+
+  How to do that?
+
+  There's a hack for this in bison:
+
+  (1) Define a pseudotoken and give it precedence
+      For unary - this should be %nonassoc
+
+  (2) Define the production as usual (with the non-pseudotoken)
+      and after the production use:
+
+          %prec pseudotoken
+
+      to set the precedence of that production to the appropriate pseudotoken.
+
+      This goes before the action of that production.
+
+
+
+How to handle dangling else?
+
+  Recall: the solution was to give higher precedence to if-then-else than to if-then.
+          (based on productions)
+
+  How to do that in yacc/bison?
+
+    * use a pseudo-token for "unmatched else"
+    * give that lower precedence than else token
+
+  For instance:
+
+    %token .... ELSE
+
+    %nonassoc WITHOUT_ELSE
+    %nonassoc ELSE
+
+  %%
+
+    stmt : ...
+         | IF '(' expr ')' stmt SEMI    %prec WITHOUT_ELSE
+         | IF ( expr ) stmt SEMI ELSE stmt SEMI
+
+
+======================================================================
+Code with productions/reductions
+
+* How do we get the yacc parser to do something more interesting?
+
+* Can specify code to execute with each production/reduction
+
+* Put code in braces after the production (like lex)
+
+* We will do several examples
+
+* Let's add some print statements to our wimpy compiler
+
+
+======================================================================
+Attributes:
+
+* We can associate data (called attributes) to terminal and non-terminal symbols.
+
+* We can use those attributes in our C code
+
+* Think of this as assigning attributes to nodes in the parse tree
+
+* Theory behind this: Chapter 5
+
+* For now: how to do this in yacc/bison
+
+
+How do attributes work in yacc and lex?
+
+  * For tokens: use lex to set attributes
+  
+  * need to specify attributes for symbols in yacc
+
+  * need to specify rules in yacc
+
+
+Specifying attributes in yacc/bison
+
+  * Each symbol has at most one attribute
+      -> just use a struct if you need more
+
+  * In the declarations section, need to declare all the attribute types
+    that could be associated with any symbol:
+
+    %union
+    {
+          type   field_name ;
+          type   field_name ;
+    }
+
+
+    Like a union in C (because underneath, it will be one)
+
+
+  * Then, assign types to symbols (both terminals and non-terminals) if needed
+    -> also in declarations section
+
+  For terminals:
+    
+    %token <type> SYMBOL SYMBOL
+  or
+    %token <field_name> SYMBOL SYMBOL
+
+  For non-terminals:
+    %type <field_name> SYMBOL SYMBOL
+
+
+
+How to use attributes in the actions?
+
+
+Suppose we have a production      A-> X1 X2 X3 X4
+
+in Yacc file we have:
+
+  A : X1 X2 X3 X4
+    ;
+
+The action goes after in braces:
+
+  A : X1 X2 X3 X4   { /* C code */ }
+    ;
+
+Attributes?
+
+  $$ : variable for the LHS attribute (A in the above production)
+        will have the type of whatever attribute we set for symbol A
+  
+  $1 : variable for the RHS first symbol (X1 in the above production)
+        will have the type of whatever attribute we set for symbol X1
+
+  $2 : variable for the RHS second symbol (X2 in the above production)
+
+  etc.
+
+    { $$ = .... some expression with $1 and $2 etc }
+
+
+
+What about tokens?  In lex:
+
+  * Global variable: yylval
+    will have type: the union of everything specified in %union
+
+    this union will appear in the header file if we do bison -d
+
+    
+  * when matching tokens, we set the appropriate field of the union
+    of the yylval variable
+
+
+For fun:
+  try to update our wimpy compiler as a calculator (integers)
+  first example next time: using attributes to build an integer calculator
+
+
+  

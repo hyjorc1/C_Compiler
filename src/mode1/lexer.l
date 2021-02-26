@@ -43,6 +43,9 @@ char *symbolname = 0;
 
 /*  --------------------------------------------------- */
 
+const int BUFFER_LIST_SIZE_LIMIT = 256;
+const int REPRESENTATION_SIZE_LIMIT = 4096;
+
 %}
 
 %option yylineno noyywrap nodefault

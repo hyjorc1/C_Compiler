@@ -27,17 +27,7 @@ int main(int argc, char *argv[]) {
         if (fileIdx >= argc) {
             fprintf(stderr, "Modes 1 to 5 need input files\n");
         } else if (!strcmp(argv[1], "-1")) {
-            for (int i = fileIdx; i < argc; i++) {
-                print("\nstart file %s\n", argv[i]);
-                if (newfile(argv[i])) {
-                    int token;
-                    while ((token = yylex())) {
-                        fprintf(stdout, "%s line %d text '%s' token %s\n", curfilename, yylineno, yytext, token_str);
-                    }
-                } else {
-                    fprintf(stderr, "THe input file %s doesn't exist\n", argv[i]);
-                }
-            }
+            mode1(argc, argv, fileIdx);
         } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {
             fprintf(stderr, "The other modes are not implemented.\n");
         } else {

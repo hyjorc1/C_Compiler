@@ -1,0 +1,96 @@
+
+Parsing theory now!  Yay!  Chapter 4 stuff
+
+Shift reduce parsing:
+
+Conceptual idea:
+  * bottom-up parser
+  * rightmost derivations
+  * prefer left recrsion
+
+  * Scan input (stream of tokens) always left to right
+  * We have a current position arrow ^
+    Stuff to the left of ^: we've seen this and are still processing
+    Stuff to the right of ^: the rest of the input stream that we haven't seen yet
+
+  * Left of ^: implemented as a stack
+    will contain tokens (terminal symbols) and nonterminals
+
+  * Based on top of stack (possibly several symbols), and next input
+    do an action
+
+  * We can build a table of rules for these actions
+    How? later
+
+  * Accept when input stream is empty, and stack contains only the start symbol
+
+
+In detail:
+The four possible actions of a shift-reduce parser
+
+(1) Shift
+    Conceptually: move ^ to the right
+    In practice: consume the next input symbol, and push it onto the stack
+
+(2) Reduce, using a given production rule (in reverse)
+      Right side of the production rule WILL BE the top of the stack.
+      Pop off all of those items, and push the LHS of the production
+      (which is a nonterminal) onto the stack.
+
+(3) Accept
+      Typically when input stream is empty
+      We usually will write $ to indicate end of the input stream.
+
+(4) Error
+      Syntax error
+      Error recovery?
+
+
+Here's an example.
+
+Our grammar:
+
+(1)   S -> S + P
+(2)   S -> P
+(3)   P -> P * number
+(4)   P -> number
+
+Is this left or right recursive?
+
+Parsing rules:
+
+Top of stack      Next symbol       Action
+---------------   ---------------   ---------------
+_|_ (empty)       number            shift 
+number            +, *, $           reduce (4)
+P                 *                 shift
+P                 +, $              reduce (2)
+P *               number            shift
+P * number        +, *, $           reduce (3)
+S                 $                 accept
+S                 +                 shift
+S +               number            shift
+S + number        +, *, $           reduce (4)
+S + P             +, $              reduce (1)
+S + P             *                 shift
+
+Notes:
+Anything not specified: error
+
+Use the rule that matches the most off the top of the stack.
+
+Let's run this on an input string
+
+Stack                 Input                           Action
+--------------------  ------------------------------  ----------
+                      number + number * number        shift
+number                + number * number               reduce 4
+P                     + number * number               reduce 2
+S                     + number * number               shift
+S +                   number * number                 shift
+S + number            * number                        reduce 4
+...
+
+to be continued
+
+

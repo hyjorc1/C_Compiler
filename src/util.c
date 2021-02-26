@@ -3,9 +3,6 @@
 #include <stdarg.h>
 #include "global.h"
 
-const int BUFFER_LIST_SIZE_LIMIT = 256;
-const int REPRESENTATION_SIZE_LIMIT = 4096;
-
 void print(const char *format, ...) {
     if (debug) {
         va_list args;
@@ -34,3 +31,4 @@ void printversion() {
     fprintf(stdout, "\tVersion 0.1\n");
     fprintf(stdout, "\t16 Feb, 2021\n");
 }
+

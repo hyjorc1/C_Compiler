@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include "global.h"
+#include "m1global.h"
 
 struct symbol {
     char *name;
