@@ -1,17 +1,21 @@
 
-all: wimpy1 calc 
+all: wimpy1 
+# calc 
 # tree
 
 clean:
 	rm -rf *.yy.* *.tab.* *.o wimpy1 calc
 
 wimpy1: wimpy1.tab.o wimpy1.yy.o
+	@echo '---------here wimpy1'
 	gcc -o wimpy1 wimpy1.tab.o wimpy1.yy.o
 
 wimpy1.tab.h wimpy1.tab.c: wimpy1.y
+	@echo '---------here wimpy1.tab.h wimpy1.tab.c'
 	bison -d wimpy1.y
 
 wimpy1.yy.c: wimpy1.l
+	@echo '---------here wimpy1.yy.c'
 	flex -o wimpy1.yy.c wimpy1.l
 
 
@@ -36,7 +40,8 @@ tree.yy.c: tree.l
 
 
 %.o: %.c
-	gcc -Wall -c $<
+	@echo 'auto .c to .o'
+	gcc -c $<
 
 # dependencies
 
