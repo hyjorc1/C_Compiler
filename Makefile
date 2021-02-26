@@ -1,4 +1,3 @@
-
 all: link 
 # latex
 # ./$(EXE) -1 ifdefs2.c
@@ -17,15 +16,15 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
 UTIL		:= $(SRC)/util
-OBJ 		= $(MAIN).o $(UTIL).o $(OBJ1)
+OBJ 		= $(MAIN).o $(UTIL).o $(OBJ1) $(OBJ2)
 
 link: mycc $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(OBJ)
 	@echo '>>>>>>>>>>>>>>>>>>>> Built mycc <<<<<<<<<<<<<<<<<<<<<<<'
 
-mycc: $(MAIN).o $(UTIL).o mode1
+mycc: $(MAIN).o $(UTIL).o mode1 mode2
 
-compiler-clean: mode1-clean
+compiler-clean: mode1-clean mode2-clean
 	rm -rf $(MAIN).o $(UTIL).o $(EXE)
 	@echo '================= Cleaned Compiler ===================='
 
@@ -34,8 +33,9 @@ TEST_CMD	:= ./Check.sh mycc -s *.c
 # TEST_CMD	:= ./Check.sh mycc -d *.c
 
 #------------------------------ mode 1 ---------------------------#
-LEX1	:= $(SRC)/mode1/lexer
-MODE1	:= $(SRC)/mode1/mode1
+SRC1	:= $(SRC)/mode1
+LEX1	:= $(SRC1)/lexer1
+MODE1	:= $(SRC1)/mode1
 OBJ1 	:= $(LEX1).yy.o $(MODE1).o
 TEST1	:= test/Grading1
 
@@ -43,7 +43,7 @@ test1: link
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode1 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST1) && cd $(TEST1) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
-mode1: $(LEX1).yy.o $(MODE1).o
+mode1: $(OBJ1)
 	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode1 <<<<<<<<<<<<<<<<<<<<<<'
 
 $(LEX1).yy.c:
@@ -54,8 +54,24 @@ mode1-clean:
 	@echo '=================== Cleaned Mode1 ====================='
 
 #------------------------------ mode 2 ---------------------------#
+LEX2	:= $(SRC)/mode2/lexer2
+PASER2	:= $(SRC)/mode2/parser2
+MODE2	:= $(SRC)/mode2/mode2
+OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o
+TEST2	:= test/Test2
 
+mode2: $(OBJ2)
+	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode2 <<<<<<<<<<<<<<<<<<<<<<'
 
+$(PASER2).tab.h $(PASER2).tab.c: $(PASER2).y
+	bison -d -o $(PASER2).tab.c $(PASER2).y
+
+$(LEX2).yy.c: $(LEX2).l
+	flex -o $(LEX2).yy.c $(LEX2).l
+
+mode2-clean:
+	rm -rf $(LEX2).yy.c $(PASER2).tab.* $(OBJ2)
+	@echo '=================== Cleaned Mode2 ====================='
 
 #----------------------- GNU auto variables ----------------------#
 %.o: %.c

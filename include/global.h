@@ -12,4 +12,6 @@ extern void printversion();
 
 extern void mode1(int argc, char *argv[], int fileIdx);
 
+extern void mode2(int argc, char *argv[], int fileIdx);
+
 #endif
