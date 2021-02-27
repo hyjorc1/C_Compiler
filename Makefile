@@ -1,4 +1,5 @@
-all: link 
+all: link
+	./$(EXE) -2 input.txt
 # latex
 # ./$(EXE) -1 ifdefs2.c
 

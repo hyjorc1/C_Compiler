@@ -14,9 +14,17 @@ void m2error(const char* mesg) {
 
 %}
 
-%name-prefix "m2"
+%define api.prefix {m2}
 
-%token PLUS MINUS STAR SLASH NUMBER SEMI
+
+%union {
+  long number;
+}
+
+%token <number> NUMBER
+%token PLUS MINUS STAR SLASH SEMI
+
+%type <number> expr
 
 %left PLUS MINUS
 %left STAR SLASH
@@ -25,15 +33,15 @@ void m2error(const char* mesg) {
 %%
 
 stmt :                                  { /* empty */ }
-     | stmt expr SEMI                   { printf(" ;\n"); }
+     | stmt expr SEMI                   { printf(" ; "); printf("evaluated to %ld\n", $2); }
      ;
 
-expr : expr PLUS expr                   { printf("+ "); }
-     | expr MINUS expr                  { printf("- "); }
-     | expr STAR expr                   { printf("* "); }
-     | expr SLASH expr                  { printf("/ "); }
-     | MINUS expr   %prec UMINUS        { printf("uminus ");  }
-     | NUMBER                           { printf("%s ", m2text); }
+expr : expr PLUS expr                   { $$ = $1 + $3; printf("+ "); }
+     | expr MINUS expr                  { $$ = $1 - $3; printf("- "); }
+     | expr STAR expr                   { $$ = $1 * $3; printf("* "); }
+     | expr SLASH expr                  { $$ = $1 / $3; printf("/ "); }
+     | MINUS expr   %prec UMINUS        { $$ = -$2; printf("uminus "); }
+     | NUMBER                           { $$ = $1; printf("%s ", m2text); }
      ;
 
 %%

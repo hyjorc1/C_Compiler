@@ -11,7 +11,7 @@
 
 %%
 
-[0-9]+        { return NUMBER; }
+[0-9]+        { m2lval.number = atol(m2text);  return NUMBER; }
 "+"           { return PLUS; }
 "-"           { return MINUS; }
 "*"           { return STAR; }
@@ -21,6 +21,4 @@
 .             { fprintf(stderr, "Unexpected text: %s\n", m2text); }
 
 %%
-
-/* No extra C code here */
 

@@ -14,6 +14,7 @@ extern int m2lineno;
 /* interface to the lexer with prefix 'm2' */
 extern int m2lex();
 extern void m2error(const char* mesg);
+extern void m2restart(FILE *input_file);
 
 /* interface to the parser with prefix 'm2' */
 extern int m2parse();
