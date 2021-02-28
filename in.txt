@@ -1,0 +1,106 @@
+
+int a=e[1], b=3, c, d=b+1;
+
+int f1(int a, int b[]);
+
+int b=2;
+
+int f2() {
+    int a;
+    a = 1;
+}
+
+int f3() {
+    ;
+    id;
+    break;
+    continue;
+    return id;
+    return;
+}
+
+int f4() {
+    1;
+    1.1;
+    "hi";
+    'I';
+}
+
+int f5() {
+    f1(a, b, c);
+    arr[i];
+    i = 1;
+    i++;
+    ++i;
+    i--;
+    --i;
+    !b;
+    a + b;
+    b ? a1 : a2;
+    (int) a;
+
+    (a);
+
+    if (a1) { b1; }
+
+    if (a2) b2;
+
+    if (a3) { b3; } else { c3; }
+
+    if (a4) { b4; } else c4;
+
+    if (a5) { 
+        if (b5) { 
+            c5; 
+        }  
+    } else if (d5) { 
+        e5; 
+    } else { 
+        f5; 
+    }
+
+    for (;;;) ;
+
+    for (;;;) {}
+
+    while (b) {}
+
+    while (b) ;
+
+    do a; while (b);
+
+    do {} while (b);
+
+    (i++);
+
+    a - b * c;
+
+    a - -b;
+
+    a - ~b;
+
+    a - !b;
+
+    a - b++;
+
+    a - b + c;
+
+    a + b - c;
+
+    a - b * c;
+
+    a * b / c;
+
+    a / b * c;
+
+    a / b * c++;
+
+    a = b + c++;
+
+    !-~i++;
+
+    f1(a, b) + arr[i];
+
+    a = b += c -= d;
+
+}

@@ -18,7 +18,7 @@ str         \".*\"
 char        \'([^\\\']|\\[abnrt\\\'])\'
 %%
 
-{type}          { return TYPE; }
+{type}          { m2lval.str = strdup(m2text); return TYPE; }
 const           { return CONST; }
 struct          { return STRUCT; }
 for             { return FOR; }
@@ -31,10 +31,10 @@ continue        { return CONTINUE; }
 return          { return RETURN; }
 {identifier}    { m2lval.str = strdup(m2text); return IDENT; }
 
-{int}           { return INTCONST; }
-{real}          { return REALCONST; }
-{str}           { return STRCONST; }
-{char}          { return CHARCONST; }
+{int}           { m2lval.str = strdup(m2text); return INTCONST; }
+{real}          { m2lval.str = strdup(m2text); return REALCONST; }
+{str}           { m2lval.str = strdup(m2text); return STRCONST; }
+{char}          { m2lval.str = strdup(m2text); return CHARCONST; }
 
 "("             { return LPAR; }
 ")"             { return RPAR; }
