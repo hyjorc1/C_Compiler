@@ -16,11 +16,6 @@ int         [0-9]+
 real        [0-9]*\.[0-9]+([eE][-+]?[0-9]+)?
 str         \".*\"
 char        \'([^\\\']|\\[abnrt\\\'])\'
-unary_op    [-!~]
-bianry_op   "=="|"!="|">"|">="|"<"|"<="|"+"|"-"|"*"|"/"|"%"|"|"|"&"|"||"|"&&"
-assign_op   "="|"+="|"-="|"*="|"/="
-increment   "++"
-decrement   "--"
 %%
 
 {type}          { return TYPE; }
@@ -54,12 +49,33 @@ return          { return RETURN; }
 "?"             { return QUEST; }
 ":"             { return COLON; }
 
-{unary_op}      { return UN_OP; }
-{bianry_op}     { return BIN_OP; }
-{assign_op}     { return ASSN_OP; }
+"+"             { return PLUS; }
+"-"             { return MINUS; }
+"*"             { return STAR; }
+"/"             { return SLASH; }
+"%"             { return MOD; }
+"~"             { return TILDE; }
 
-{increment}     { return INCREMENT; }
-{decrement}     { return DECREMENT; }
+"|"             { return PIPE; }
+"&"             { return AMP; }
+"!"             { return BANG; }
+"||"            { return DPIPE; }
+"&&"            { return DAMP; }
+
+"="             { return ASSIGN; }
+"+="            { return PLUSASSIGN; }
+"-="            { return MINUSASSIGN; }
+"*="            { return STARASSIGN; }
+"/="            { return SLASHASSIGN; }
+"++"            { return INCR; }
+"--"            { return DECR; }
+
+"=="            { return EQUALS; }
+"!="            { return NEQUAL; }
+">"             { return GT; }
+">="            { return GE; }
+"<"             { return LT; }
+"<="            { return LE; }
 
 {whitespace}    { /* whitespace ingnore */ }
 

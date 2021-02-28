@@ -5,7 +5,7 @@
 #include "tokens.h"
 #include "global.h"
 
-int debug = 0;
+int debug = 1;
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
         } else {
             printusage();
         }
-    }
+    }    
     return 0;
 }
 

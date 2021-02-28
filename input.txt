@@ -54,4 +54,48 @@ if (a5) {
     f5; 
 }
 
+for (;;;) ;
+
+for (;;;) {}
+
+while (b) {}
+
+while (b) ;
+
+do a; while (b);
+
+do {} while (b);
+
+(i++);
+
+a - b * c;
+
+a - -b;
+
+a - ~b;
+
+a - !b;
+
+a - b++;
+
+a - b + c;
+
+a + b - c;
+
+a - b * c;
+
+a * b / c;
+
+a / b * c;
+
+a / b * c++;
+
+a = b + c++;
+
+!-~i++;
+
+f1(a, b) + arr[i];
+
+a = b += c -= d;
+
 }
