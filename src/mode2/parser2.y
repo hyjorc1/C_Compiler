@@ -27,7 +27,7 @@ void dprint(const char* s1, const char* s2) {
 }
 
 /* 3. A type name is‡ one of the simple types: void, char, int, float. */
-%token <str> TYPE
+%token <str> PRIMTYPE
 %token CONST
 %token STRUCT
 %token FOR WHILE DO IF ELSE BREAK CONTINUE RETURN
@@ -64,28 +64,58 @@ void dprint(const char* s1, const char* s2) {
 /* 1. A C program is‡ a sequence of zero or more (global) variable declarations, 
     function prototypes, and function definitions, appearing in any order. */
 root : %empty                           { dprint("empty root", ""); }
-    | root var_dec                      { dprint("global var_dec", "============== global var_dec  ============="); }
+    | root var_decl                     { dprint("global var_decl", "============== global var_decl  ============="); }
     | root func_proto                   { dprint("global func_proto", "============== global func_proto ============="); }
     | root func_def                     { dprint("global func_def ", "============== global func_def ============="); }
+    | root struct_decl                  { dprint("global struct_decl ", "============== global struct_decl ============="); }
     ;
 
 /* 2. A variable declaration is‡ a type name, followed by a comma-separated list of 
     one or more identifiers, each identifier optionally followed by a left bracket, 
     an integer constant, and a right bracket. The list is terminated with a semicolon. 
     Note that this restricts arrays to a single dimension. */
-var_dec : TYPE var_list SEMI            { dprint("TYPE var_list SEMI", $1); }
+var_decl : type init_var_list SEMI      { dprint("type init_var_list SEMI", ""); }
     ;
 
-var_list : var_exp                      { dprint("single var_exp var_list", ""); }
-    | var_list COMMA var_exp            { dprint("var_list COMMA var_exp", ","); }
+/* 2.3 Extra credit: constants */
+type : all_type                         { dprint("all_type", ""); }
+    | CONST all_type                    { dprint("CONST all_type", ""); }
+    | all_type CONST                    { dprint("all_type CONST", ""); }
     ;
 
-var_exp : var                           { dprint("var", ""); }
+all_type : PRIMTYPE                     { dprint("PRIMTYPE", $1); }
+    | STRUCT IDENT                      { dprint("STRUCT IDENT", $2); }
+    ;
+
+init_var_list : init_var                { dprint("single init_var init_var_list", ""); }
+    | init_var_list COMMA init_var      { dprint("init_var_list COMMA init_var", ","); }
+    ;
+
+/* 2.2 Extra credit: variable initialization */
+init_var : var                          { dprint("init_var var", ""); }
     | var ASSIGN exp                    { dprint("var ASSIGN exp", "="); }
     ;
 
 var : IDENT                             { dprint("IDENT", $1); }
     | IDENT LBRACKET INTCONST RBRACKET  { dprint("IDENT LBRACKET INTCONST RBRACKET", $1); }
+    ;
+
+/* 2.4 Extra credit: user-defined structs 
+    A user-defined type declaration is† the keyword struct, followed by an 
+    identifier, a left brace, zero or more variable declarations (without 
+    initializations), a right brace, and a semicolon. */
+struct_decl : STRUCT IDENT LBRACE noinit_var_decls RBRACE SEMI  { dprint("STRUCT DECL", $2); }
+    ;
+
+noinit_var_decls : noinit_var_decl      { dprint("single noinit_var_decl", ""); }
+    | noinit_var_decls noinit_var_decl  { dprint("noinit_var_decls noinit_var_decl", ""); }
+    ;
+
+noinit_var_decl : type var_ni_list SEMI { dprint("type var_ni_list SEMI", ""); }
+    ;
+
+var_ni_list : var                       { dprint("var_ni_list var", ""); }
+    | var_ni_list COMMA var             { dprint("var_ni_list COMMA var", ","); }
     ;
 
 /* 4. A function prototype is a function declaration followed by a semicolon. */
@@ -95,7 +125,7 @@ func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); }
 /* 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : TYPE IDENT LPAR para_list RPAR  { dprint("func_decl", $2); }
+func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); }
     ;
 
 para_list : %empty                      { dprint("empty para_list", ""); }
@@ -105,8 +135,8 @@ para_list : %empty                      { dprint("empty para_list", ""); }
 
 /* 6. A formal parameter is† a type name, followed by an identifier, and optionally 
     followed by a left and right bracket. */
-para : TYPE IDENT                       { dprint("TYPE IDENT", $2); }
-    | TYPE IDENT LBRACKET RBRACKET      { dprint("TYPE IDENT LBRACKET RBRACKET", $2); }
+para : type IDENT                       { dprint("type IDENT", $2); }
+    | type IDENT LBRACKET RBRACKET      { dprint("type IDENT LBRACKET RBRACKET", $2); }
     ;
 
 /* 7. A function definition is‡ a function declaration followed by a left brace, 
@@ -116,9 +146,10 @@ para : TYPE IDENT                       { dprint("TYPE IDENT", $2); }
 func_def : func_decl LBRACE func_body RBRACE    { dprint("func_decl RBRACE func_body LBRACE", ""); }
     ;
 
-func_body : var_dec func_body           { dprint("var_dec func_body", ""); }
+func_body : var_decl func_body          { dprint("var_decl func_body", ""); }
     | stmt_list                         { dprint("stmt_list", ""); }
     ;
+
 
 /* 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
 block_stmt : LBRACE stmt_list RBRACE    { dprint("LBRACE stmt_list RBRACE", ""); };
@@ -138,7 +169,8 @@ stmt : SEMI                             { dprint("SEMI", ""); }
     | for_stmt                          { dprint("for_stmt", ""); }
     | while_stmt                        { dprint("while_stmt", ""); }
     | do_stmt                           { dprint("do_stmt", ""); }
-    | var_dec                           { dprint("local var_dec", ""); }
+    | var_decl                          { dprint("local var_decl", "============== local var_decl ============="); }
+    | struct_decl                       { dprint("local struct_decl", "============== local struct_decl ============="); }
     ;
 
 return_stmt : RETURN SEMI               { dprint("RETURN SEMI", ""); }
@@ -154,8 +186,8 @@ if_stmt : IF LPAR exp RPAR block_stmt %prec WITHOUT_ELSE    { dprint("IF block_s
     | IF LPAR exp RPAR stmt ELSE stmt                       { dprint("IF stmt ELSE stmt", ""); };
     ;
 
-for_stmt : FOR LPAR exp_b SEMI exp_b SEMI exp_b SEMI RPAR block_stmt   { dprint("FOR block_stmt", ""); }
-    | FOR LPAR exp_b SEMI exp_b SEMI exp_b SEMI RPAR stmt              { dprint("FOR stmt", ""); }
+for_stmt : FOR LPAR exp_b SEMI exp_b SEMI exp_b RPAR block_stmt   { dprint("FOR block_stmt", ""); }
+    | FOR LPAR exp_b SEMI exp_b SEMI exp_b RPAR stmt              { dprint("FOR stmt", ""); }
     ;
 
 exp_b : %empty                          { dprint("false exp_b", ""); }
@@ -167,7 +199,7 @@ while_stmt : WHILE LPAR exp RPAR block_stmt   { dprint("WHILE block_stmt", ""); 
     ;
 
 do_stmt : DO block_stmt WHILE LPAR exp RPAR SEMI    { dprint("DO block_stmt WIHILE", ""); }
-    | DO stmt WHILE LPAR exp RPAR SEMI        { dprint("DO stmt WIHILE", ""); }
+    | DO stmt WHILE LPAR exp RPAR SEMI              { dprint("DO stmt WIHILE", ""); }
     ;
 
 /* 10. expression */
@@ -215,7 +247,7 @@ exp : INTCONST                          { dprint("INTCONST", $1); }
 
     /* 14. Assignment operators are: =, +=, -=, *=, /= */
     | exp QUEST exp COLON exp           { dprint("exp QUEST exp COLON exp", ""); }
-    | LPAR TYPE RPAR exp                { dprint("LPAR TYPE RPAR exp", ""); }
+    | LPAR type RPAR exp                { dprint("LPAR type RPAR exp", ""); }
     | LPAR exp RPAR                     { dprint("LPAR exp RPAR", ""); }
     ;
 
@@ -224,7 +256,12 @@ exp_list : %empty                       { dprint("empty exp_list", ""); }
     | exp                               { dprint("single exp exp_list", ""); }
     ; 
 
-l_val : IDENT                           { dprint("IDENT", $1); }
+/* 2.5 Extra credit: struct member selection */
+l_val : l_value                         { dprint("single l_value", ""); }
+    | l_val DOT l_value                 { dprint("l_val DOT l_value", "."); }
+    ;
+
+l_value : IDENT                         { dprint("IDENT", $1); }
     | IDENT LBRACKET exp RBRACKET       { dprint("IDENT LBRACKET exp RBRACKET", $1); }
     ;
 

@@ -1,5 +1,5 @@
 all: link
-	./$(EXE) -2 in.txt
+	./$(EXE) -2 extra.c
 # latex
 # ./$(EXE) -1 ifdefs2.c
 

@@ -104,3 +104,24 @@ int f5() {
     a = b += c -= d;
 
 }
+
+char f6(const int a) {
+    int const b, c = i;
+}
+
+struct point {
+    int x, y;
+};
+
+struct rectangle {
+    struct point upperleft;
+    struct point lowerright;
+};
+
+struct window {
+    struct rectangle area;
+    char text[1024];
+};
+
+const float pi = 3.1415926535897932384626433; /* approximately */
+

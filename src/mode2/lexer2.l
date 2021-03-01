@@ -8,8 +8,9 @@
 
 %option prefix = "m2"
 %option noyywrap yylineno
+%x COMMENT CXXCOMMENT
 
-type void|char|short|int|long|float|double
+primtype    void|char|short|int|long|float|double
 whitespace  [ \t\r\n]+
 identifier  [a-zA-Z_][a-zA-Z_0-9]*
 int         [0-9]+ 
@@ -18,7 +19,7 @@ str         \".*\"
 char        \'([^\\\']|\\[abnrt\\\'])\'
 %%
 
-{type}          { m2lval.str = strdup(m2text); return TYPE; }
+{primtype}      { m2lval.str = strdup(m2text); return PRIMTYPE; }
 const           { return CONST; }
 struct          { return STRUCT; }
 for             { return FOR; }
@@ -76,6 +77,32 @@ return          { return RETURN; }
 ">="            { return GE; }
 "<"             { return LT; }
 "<="            { return LE; }
+
+"/*"                                {   /* handle c comment */
+                                        BEGIN(COMMENT); 
+                                        err_lineno = yylineno; 
+                                        print("enter COMMENT state\n");
+                                    }
+<COMMENT>.|\n                       {   /* ignore */    }
+<COMMENT>"*/"                       {   BEGIN(INITIAL); print("leave COMMENT state\n"); }
+<COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
+                                        int tmp = m2lineno;
+                                        m2lineno = err_lineno;
+                                        m2error("unclosed comment");
+                                        m2lineno = tmp;
+                                        BEGIN(INITIAL);
+                                    }
+
+
+"//"                                {   /* handle c++ comment */
+                                        BEGIN(CXXCOMMENT);
+                                        print("enter CXXCOMMENT state\n");
+                                    }
+<CXXCOMMENT>"\n"                    {   BEGIN(INITIAL);    
+                                        print("leave CXXCOMMENT state\n");
+                                    }
+<CXXCOMMENT>.                       {   /* ignore */  }
+
 
 {whitespace}    { /* whitespace ingnore */ }
 
