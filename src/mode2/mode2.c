@@ -6,11 +6,17 @@
 
 #include "m2global.h"
 
-
-void print_str(void *x) {
-    char *data = *(char **)x;
-    printf("%s, ", data);
-    free(data);
+void print_strs(gll_t *list) {
+    gll_node_t *currNode = list->first;
+    while (currNode != NULL) {
+        gll_node_t *nextNode = currNode->next;
+        char *data = *(char **)currNode->data;
+        printf("%s", data);
+        free(data);
+        if (nextNode != NULL)
+            printf(", ");
+        currNode = nextNode;
+    }
 }
 
 void print_global_struct(void *x) { 
@@ -18,8 +24,8 @@ void print_global_struct(void *x) {
     printf("Global struct %s\n\t", data->name);
     free(data->name);
     if (data->members) {
-        gll_each(data->members, &print_str);
-        free(data->members);
+        print_strs(data->members);
+        gll_destroy(data->members);
     }
     free(data);
     printf("\n\n");
@@ -28,17 +34,17 @@ void print_global_struct(void *x) {
 void print_global_structs() {
     if (!global_structs)
         return;
-    gll_each(global_structs, &print_global_struct);
-    gll_destroy(global_structs);
+    gll_each(global_structs, print_global_struct);
+    gll_clear(global_structs);
 }
 
 void print_global_vars() {
     if (!global_vars)
         return;
     printf("Global variables\n\t");
-    gll_each(global_vars, &print_str);
-    gll_destroy(global_vars);
+    print_strs(global_vars);
     printf("\n\n");
+    gll_clear(global_vars);
 }
 
 void print_func(void *x) {
@@ -50,30 +56,33 @@ void print_func(void *x) {
     }
     if (data->paras) {
         printf("Parameters: ");
-        gll_each(data->paras, &print_str);
-        free(data->paras);
+        print_strs(data->paras);
+        gll_destroy(data->paras);
         printf("\n\t");
     }
     if (data->local_structs) {
         printf("Local structs: ");
-        gll_each(data->local_structs, &print_str);
-        free(data->local_structs);
+        print_strs(data->local_structs);
+        gll_destroy(data->local_structs);
         printf("\n\t");
     }
     if (data->local_vars) {
         printf("Local variables: ");
-        gll_each(data->local_vars, &print_str);
-        free(data->local_vars);
+        print_strs(data->local_vars);
+        gll_destroy(data->local_vars);
     }
+    free(data);
     printf("\n\n");
 }
 
 void print_funcs() {
     if (!funcs)
         return;
-    gll_each(funcs, &print_func);
-    gll_destroy(funcs);
+    gll_each(funcs, print_func);
+    gll_clear(funcs);
 };
+
+
 
 void mode2(int argc, char *argv[], int fileIdx) {
     for (int i = fileIdx; i < argc; i++) {
@@ -82,15 +91,12 @@ void mode2(int argc, char *argv[], int fileIdx) {
         if (!f)
             perror(argv[i]);
         m2restart(f);
-        int code = m2parse();
-        // global structs
+        m2parse();
+
         print_global_structs();
-        // global vars
         print_global_vars();
-        // funcs
         print_funcs();
 
-        printf("yyparse returned %d\n", code);
         fclose(f);
     }
 }

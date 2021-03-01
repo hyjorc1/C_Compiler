@@ -72,5 +72,7 @@ void gll_eachReverse(gll_t *, void (*f)(void *));
 void gll_clear(gll_t *);
 void gll_destroy(gll_t *);
 
+/*  merge functions */
+void merge_and_destory(gll_t *l1, gll_t *l2);
 
 #endif

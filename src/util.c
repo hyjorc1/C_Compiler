@@ -366,11 +366,11 @@ void *gll_popBack(gll_t *list)
 void gll_each(gll_t *list, void (*f)(void *))
 {
     gll_node_t *currNode = list->first;
-
     while (currNode != NULL)
     {
+        gll_node_t *nextNode = currNode->next;
         (*f)(currNode->data);
-        currNode = currNode->next;
+        currNode = nextNode;
     }
 }
 
@@ -388,8 +388,9 @@ void gll_eachReverse(gll_t *list, void (*f)(void *))
 
     while (currNode != NULL)
     {
+        gll_node_t *prevNode = currNode->next;
         (*f)(currNode->data);
-        currNode = currNode->prev;
+        currNode = prevNode;
     }
 }
 
@@ -433,3 +434,17 @@ void gll_destroy(gll_t *list)
     }
     free(list);
 }
+
+/*
+ * merge two lists to the 1st one and destroy the 2nd one
+ * Does not touch the data stored at the nodes!
+ * in:        pointer to list
+ */
+void merge_and_destory(gll_t *l1, gll_t *l2) {
+    gll_node_t *cur = l2->first;
+    while (cur != NULL) {
+        gll_pushBack(l1, cur->data);
+        cur = cur->next;
+    }
+    gll_destroy(l2);
+};

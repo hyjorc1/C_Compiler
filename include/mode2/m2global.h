@@ -37,4 +37,6 @@ extern gll_t *global_structs;   /* list of struct struct_node **data */
 extern gll_t *global_vars;      /* list of char **data */
 extern gll_t *funcs;            /* list of struct func_node **data */
 
+
+
 #endif
