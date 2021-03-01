@@ -7,10 +7,73 @@
 #include "m2global.h"
 
 
-void gll_print(void *x) 
-{ 
-    printf("Value of a is %s\n", *(char **)x);
+void print_str(void *x) {
+    char *data = *(char **)x;
+    printf("%s, ", data);
+    free(data);
 }
+
+void print_global_struct(void *x) { 
+    struct struct_node *data = *(struct struct_node **)x;
+    printf("Global struct %s\n\t", data->name);
+    free(data->name);
+    if (data->members) {
+        gll_each(data->members, &print_str);
+        free(data->members);
+    }
+    free(data);
+    printf("\n\n");
+}
+
+void print_global_structs() {
+    if (!global_structs)
+        return;
+    gll_each(global_structs, &print_global_struct);
+    gll_destroy(global_structs);
+}
+
+void print_global_vars() {
+    if (!global_vars)
+        return;
+    printf("Global variables\n\t");
+    gll_each(global_vars, &print_str);
+    gll_destroy(global_vars);
+    printf("\n\n");
+}
+
+void print_func(void *x) {
+    struct func_node *data = *(struct func_node **)x;
+    if (data->ast_type) {
+        printf("Function %s\n\t", data->name);
+    } else {
+        printf("Prototype %s\n\t", data->name);
+    }
+    if (data->paras) {
+        printf("Parameters: ");
+        gll_each(data->paras, &print_str);
+        free(data->paras);
+        printf("\n\t");
+    }
+    if (data->local_structs) {
+        printf("Local structs: ");
+        gll_each(data->local_structs, &print_str);
+        free(data->local_structs);
+        printf("\n\t");
+    }
+    if (data->local_vars) {
+        printf("Local variables: ");
+        gll_each(data->local_vars, &print_str);
+        free(data->local_vars);
+    }
+    printf("\n\n");
+}
+
+void print_funcs() {
+    if (!funcs)
+        return;
+    gll_each(funcs, &print_func);
+    gll_destroy(funcs);
+};
 
 void mode2(int argc, char *argv[], int fileIdx) {
     for (int i = fileIdx; i < argc; i++) {
@@ -19,46 +82,17 @@ void mode2(int argc, char *argv[], int fileIdx) {
         if (!f)
             perror(argv[i]);
         m2restart(f);
-        // yylex();
         int code = m2parse();
+        // global structs
+        print_global_structs();
+        // global vars
+        print_global_vars();
+        // funcs
+        print_funcs();
+
         printf("yyparse returned %d\n", code);
         fclose(f);
     }
-
-    // gll_t *list = gll_init();
-    // char *a = "1";
-    // char *b = "2";
-    // char *c = "3";
-
-    // void *p = &a;
-
-
-    // gll_pushBack(list, &a);
-    // gll_pushBack(list, &b);
-    // gll_pushBack(list, &c);
-    // assert(list->size == 3);
-
-    // gll_each(list, &gll_print);
-
-    // assert(gll_popBack(list) == &c);
-    // assert(list->first->data == &a);
-    // assert(list->first->next->data == &b);
-    // assert(list->last->data == &b);
-    // assert(list->last->prev->data == &a);
-    // assert(list->last->next == NULL);
-    // assert(list->size == 2);
-
-    // assert(gll_popBack(list) == &b);
-    // assert(list->size == 1);
-
-    // assert(gll_popBack(list) == &a);
-    // assert(list->first == NULL);
-    // assert(list->last == NULL);
-    // assert(list->size == 0);
-
-    
-
-    // gll_destroy(list);
 }
 
 

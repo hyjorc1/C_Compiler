@@ -26,15 +26,15 @@ struct struct_node {
 };
 
 struct func_node {
-    int ast_type;
+    int ast_type;               /* 0 for prototype and 1 for function */
     char *name;
     gll_t *paras;               /* list of char **data */
-    gll_t *local_structs;       /* list of struct struct_node *data */
+    gll_t *local_structs;       /* list of char **data */
     gll_t *local_vars;          /* list of char **data */
 };
 
-extern gll_t *global_structs;   /* list of struct struct_node *data */
+extern gll_t *global_structs;   /* list of struct struct_node **data */
 extern gll_t *global_vars;      /* list of char **data */
-extern gll_t *funcs;            /* list of struct func_node *data */
+extern gll_t *funcs;            /* list of struct func_node **data */
 
 #endif

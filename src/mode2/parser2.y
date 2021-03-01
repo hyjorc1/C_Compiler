@@ -17,6 +17,10 @@ void dprint(const char* s1, const char* s2) {
     }
 }
 
+gll_t *global_structs;   /* list of struct struct_node **data */
+gll_t *global_vars;      /* list of char **data */
+gll_t *funcs;            /* list of struct func_node **data */
+
 %}
 
 %define api.prefix {m2}
