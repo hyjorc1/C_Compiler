@@ -20,23 +20,49 @@ extern int m2parse();
 
 extern int err_lineno;
 
-struct struct_node {
-    char *name;
-    gll_t *members;             /* list of char **data */
+struct node {
+    char* data;
+    struct node *prev;
+    struct node *next;
 };
 
-struct func_node {
-    int ast_type;               /* 0 for prototype and 1 for function */
-    char *name;
-    gll_t *paras;               /* list of char **data */
-    gll_t *local_structs;       /* list of char **data */
-    gll_t *local_vars;          /* list of char **data */
+struct list {
+    int size;
+    struct node *first;
+    struct node *last;
 };
 
-extern gll_t *global_structs;   /* list of struct struct_node **data */
-extern gll_t *global_vars;      /* list of char **data */
-extern gll_t *funcs;            /* list of struct func_node **data */
+extern struct node* new_node(char *data);
+extern struct list* new_list_data(char *data);
+extern struct list* new_list();
+extern void add_first(struct list *l, char *data);
+extern void add_last(struct list *l, char *data);
+extern void clear_list(struct list *l);
+extern void destroy_list(struct list *l);
+extern void print_list(struct list *l);
+extern struct list* merge(struct list *l1, struct list *l2);
 
+// struct struct_node {
+//     char *name;
+//     gll_t *members;             /* list of char **data */
+// };
 
+// struct func_node {
+//     int ast_type;               /* 0 for prototype and 1 for function */
+//     char *name;
+//     gll_t *paras;               /* list of char **data */
+//     gll_t *local_structs;       /* list of char **data */
+//     gll_t *local_vars;          /* list of char **data */
+// };
+
+// extern gll_t *global_structs;   /* list of struct struct_node **data */
+// extern gll_t *global_vars;      /* list of char **data */
+// extern gll_t *funcs;            /* list of struct func_node **data */
+
+// extern gll_t *gll_init_str(char *str);
+
+// extern void print_gll(gll_t *list);
+
+extern struct list *global_vars;
 
 #endif

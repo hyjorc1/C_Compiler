@@ -17,17 +17,15 @@ void dprint(const char* s1, const char* s2) {
     }
 }
 
-gll_t *global_structs;   /* list of struct struct_node **data */
-gll_t *global_vars;      /* list of char **data */
-gll_t *funcs;            /* list of struct func_node **data */
+struct list *global_vars = NULL;
 
 %}
 
 %define api.prefix {m2}
 
-
 %union {
-  char *str;
+    char *str;
+    struct list *l;
 }
 
 /* 3. A type name is‡ one of the simple types: void, char, int, float. */
@@ -63,12 +61,18 @@ gll_t *funcs;            /* list of struct func_node **data */
 
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
+%type <l> init_var_list var_decl
+%type <str> var init_var
+
 %%
 
 /* 1. A C program is‡ a sequence of zero or more (global) variable declarations, 
     function prototypes, and function definitions, appearing in any order. */
 root : %empty                           { dprint("empty root", ""); }
-    | root var_decl                     { dprint("global var_decl", "============== global var_decl  ============="); }
+    | root var_decl                     { 
+                                            dprint("global var_decl", "============== global var_decl  =============");
+                                            global_vars = global_vars == NULL ? $2 : merge(global_vars, $2);
+                                        }
     | root func_proto                   { dprint("global func_proto", "============== global func_proto ============="); }
     | root func_def                     { dprint("global func_def ", "============== global func_def ============="); }
     | root struct_decl                  { dprint("global struct_decl ", "============== global struct_decl ============="); }
@@ -78,7 +82,7 @@ root : %empty                           { dprint("empty root", ""); }
     one or more identifiers, each identifier optionally followed by a left bracket, 
     an integer constant, and a right bracket. The list is terminated with a semicolon. 
     Note that this restricts arrays to a single dimension. */
-var_decl : type init_var_list SEMI      { dprint("type init_var_list SEMI", ""); }
+var_decl : type init_var_list SEMI      { dprint("type init_var_list SEMI", ""); $$ = $2; }
     ;
 
 /* 2.3 Extra credit: constants */
@@ -91,17 +95,17 @@ all_type : PRIMTYPE                     { dprint("PRIMTYPE", $1); }
     | STRUCT IDENT                      { dprint("STRUCT IDENT", $2); }
     ;
 
-init_var_list : init_var                { dprint("single init_var init_var_list", ""); }
-    | init_var_list COMMA init_var      { dprint("init_var_list COMMA init_var", ","); }
+init_var_list : init_var                { dprint("single init_var init_var_list", ""); $$ = new_list_data($1); }
+    | init_var_list COMMA init_var      { dprint("init_var_list COMMA init_var", ","); add_last($1, $3); $$ = $1; }
     ;
 
 /* 2.2 Extra credit: variable initialization */
-init_var : var                          { dprint("init_var var", ""); }
-    | var ASSIGN exp                    { dprint("var ASSIGN exp", "="); }
+init_var : var                          { dprint("init_var var", ""); $$ = $1; }
+    | var ASSIGN exp                    { dprint("var ASSIGN exp", "="); $$ = $1; }
     ;
 
-var : IDENT                             { dprint("IDENT", $1); }
-    | IDENT LBRACKET INTCONST RBRACKET  { dprint("IDENT LBRACKET INTCONST RBRACKET", $1); }
+var : IDENT                             { dprint("IDENT", $1); $$ = $1; }
+    | IDENT LBRACKET INTCONST RBRACKET  { dprint("IDENT LBRACKET INTCONST RBRACKET", $1); $$ = $1; }
     ;
 
 /* 2.4 Extra credit: user-defined structs 

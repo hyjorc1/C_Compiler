@@ -1,8 +1,9 @@
 
 %{
 
-#include "parser2.tab.h"      // Bison-generated header file with token names
 #include "m2global.h"
+#include "parser2.tab.h"      // Bison-generated header file with token names
+
 
 %}
 

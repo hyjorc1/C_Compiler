@@ -6,85 +6,146 @@
 
 #include "m2global.h"
 
-void print_strs(gll_t *list) {
-    gll_node_t *currNode = list->first;
-    while (currNode != NULL) {
-        gll_node_t *nextNode = currNode->next;
-        char *data = *(char **)currNode->data;
-        printf("%s", data);
-        free(data);
-        if (nextNode != NULL)
-            printf(", ");
-        currNode = nextNode;
-    }
+
+
+struct node* new_node(char *data) {
+    struct node *n = (struct node*) malloc(sizeof(struct node));
+    n->data = data;
+    n->prev = NULL;
+    n->next = NULL;
+    return n;
 }
 
-void print_global_struct(void *x) { 
-    struct struct_node *data = *(struct struct_node **)x;
-    printf("Global struct %s\n\t", data->name);
-    free(data->name);
-    if (data->members) {
-        print_strs(data->members);
-        gll_destroy(data->members);
-    }
-    free(data);
-    printf("\n\n");
+struct list* new_list() {
+    struct list *l = (struct list*) malloc(sizeof(struct list));
+    l->size = 0;
+    l->first = NULL;
+    l->last = NULL;
+    return l;
 }
 
-void print_global_structs() {
-    if (!global_structs)
+struct list* new_list_data(char *data) {
+    struct list *l = new_list();
+    add_first(l, data);
+    return l;
+}
+
+void add_first(struct list *l, char *data) {
+    struct node *n = new_node(data);
+    if (l->size == 0) {
+        l->first = n;
+        l->last = n;
+    } else {
+        n->next = l->first;
+        l->first->prev = n;
+        l->first = n;
+    }
+    l->size++;
+}
+
+void add_last(struct list *l, char *data) {
+    struct node *n = new_node(data);
+    if (l->size == 0) {
+        l->first = n;
+        l->last = n;
+    } else {
+        n->prev = l->last;
+        l->last->next = n;
+        l->last = n;
+    }
+    l->size++;
+}
+
+void clear_list(struct list *l) {
+    if (l == NULL)
         return;
-    gll_each(global_structs, print_global_struct);
-    gll_clear(global_structs);
+    struct node *cur = l->first;
+    while (cur != NULL) {
+        struct node *next = cur->next;
+        free(cur->data);
+        free(cur);
+        cur = next;
+    }
+    l->first = NULL;
+    l->last = NULL;
+    l->size = 0;
+}
+
+void destroy_list(struct list *l) {
+    clear_list(l);
+    free(l);
+}
+
+void print_list(struct list *l) {
+    if (l == NULL)
+        return;
+    print("list with size %d: ", l->size);
+    struct node *cur = l->first;
+    while (cur != NULL) {
+        struct node *next = cur->next;
+        print("%s", cur->data);
+        if (next != NULL)
+            print(", ");
+        cur = next;
+    }
+    print("\n");
+}
+
+struct list* merge(struct list *l1, struct list *l2) {
+    if (l2->size == 0)
+        return NULL;
+
+    l1->last->next = l2->first;
+    l2->first->prev = l1->last;
+    l1->last = l2->last;
+    l1->size += l2->size;
+
+    l2->size = 0;
+    l2->first = NULL;
+    l2->last = NULL;
+    free(l2);
+
+    return l1;
 }
 
 void print_global_vars() {
-    if (!global_vars)
+    if (global_vars == NULL)
         return;
     printf("Global variables\n\t");
-    print_strs(global_vars);
-    printf("\n\n");
-    gll_clear(global_vars);
+    struct node *cur = global_vars->first;
+    while (cur != NULL) {
+        struct node *next = cur->next;
+        printf("%s", cur->data);
+        if (next != NULL)
+            printf(", ");
+        cur = next;
+    }
+    printf("\n");
 }
-
-void print_func(void *x) {
-    struct func_node *data = *(struct func_node **)x;
-    if (data->ast_type) {
-        printf("Function %s\n\t", data->name);
-    } else {
-        printf("Prototype %s\n\t", data->name);
-    }
-    if (data->paras) {
-        printf("Parameters: ");
-        print_strs(data->paras);
-        gll_destroy(data->paras);
-        printf("\n\t");
-    }
-    if (data->local_structs) {
-        printf("Local structs: ");
-        print_strs(data->local_structs);
-        gll_destroy(data->local_structs);
-        printf("\n\t");
-    }
-    if (data->local_vars) {
-        printf("Local variables: ");
-        print_strs(data->local_vars);
-        gll_destroy(data->local_vars);
-    }
-    free(data);
-    printf("\n\n");
-}
-
-void print_funcs() {
-    if (!funcs)
-        return;
-    gll_each(funcs, print_func);
-    gll_clear(funcs);
-};
-
-
 
 void mode2(int argc, char *argv[], int fileIdx) {
+
+    // struct list *l = new_list();
+    // add_last(l, strdup("1"));
+    // add_last(l, strdup("2"));
+    // add_last(l, strdup("3"));
+
+    // add_first(l, strdup("1"));
+    // add_first(l, strdup("2"));
+    // add_first(l, strdup("3"));
+
+    // print_list(l);
+
+    // print("%s %s\n", l->first->data, l->last->data);
+
+    // struct list *l1 = new_list();
+    // add_last(l1, strdup("4"));
+    // add_last(l1, strdup("5"));
+    // add_last(l1, strdup("6"));
+
+    // merge(l, l1);
+
+
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
         FILE *f = fopen(argv[i], "r");
@@ -93,12 +154,15 @@ void mode2(int argc, char *argv[], int fileIdx) {
         m2restart(f);
         m2parse();
 
-        print_global_structs();
+        // print_global_structs();
+
         print_global_vars();
-        print_funcs();
+
+        // print_funcs();
 
         fclose(f);
     }
+
 }
 
 
