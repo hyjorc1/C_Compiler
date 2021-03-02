@@ -1,5 +1,5 @@
 all: link
-	./$(EXE) -2 extra.c
+	./$(EXE) -2 extra.c p2test.c p2error.c fcall.c
 # latex
 # ./$(EXE) -1 ifdefs2.c
 
@@ -60,7 +60,11 @@ LEX2	:= $(SRC2)/lexer2
 PASER2	:= $(SRC2)/parser2
 MODE2	:= $(SRC2)/mode2
 OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o $(SRC2)/node_list.o $(SRC2)/struct_list.o $(SRC2)/func_list.o
-TEST2	:= test/Test2
+TEST2	:= test/Tests2
+
+test2: link
+	@echo '@@@@@@@@@@@@@@@@@@@@ Mode1 Test @@@@@@@@@@@@@@@@@@@@@@@'
+	cp $(EXE) $(TEST2) && cd $(TEST2) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
 mode2: $(OBJ2)
 	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode2 <<<<<<<<<<<<<<<<<<<<<<'

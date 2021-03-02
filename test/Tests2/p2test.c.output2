@@ -1,0 +1,24 @@
+Global variables
+    x, y, z[], more, global[], variables
+
+Function foo
+    Parameters: z
+
+Function bar
+    Parameters: a, b
+    Local variables: a
+
+Prototype proto_only
+    Parameters: x, y[], z
+
+Function test
+    Parameters: lots, more, useless
+    Local variables: variables[], just, to, show
+
+Function bar
+    Parameters: a, b
+    Local variables: d
+
+Function main
+    Local variables: how, this, part, should, work
+

@@ -1,0 +1,20 @@
+Global struct point
+    x, y
+
+Global struct rectangle
+    upperleft, lowerright
+
+Global struct window
+    area, text[]
+
+Global variables
+    pi
+
+Prototype display
+    Parameters:	W[], n
+
+Function strange
+    Parameters:	z
+    Local structs: 	mything
+    Local variables:	y, A
+

@@ -7,8 +7,9 @@
 
 #include "m2global.h" 
 
+
 void m2error(const char* mesg) {
-    fprintf(stderr, "Dude, there was a problem on line %d at text '%s':\n\t%s\n", m2lineno, m2text, mesg);
+    fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", cur_file_name, m2lineno, m2text, mesg);
 }
 
 void dprint(const char* s1, const char* s2) {
@@ -16,6 +17,8 @@ void dprint(const char* s1, const char* s2) {
         fprintf(stdout, "line %d at text '%s' as '%s' => '%s'\n", m2lineno, m2text, s1, s2);
     }
 }
+
+char *cur_file_name;
 
 struct list *global_vars = NULL;
 struct struct_list *global_structs = NULL;
@@ -156,11 +159,11 @@ func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_
 /* 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0);}
+func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl w/ args", $2); $$ = new_func($2, $4, NULL, NULL, 0);}
+    | type IDENT LPAR RPAR                  { dprint("func_decl w/o args", $2); $$ = new_func($2, NULL, NULL, NULL, 0);}
     ;
 
-para_list : %empty                      { dprint("empty para_list", ""); $$ = NULL; }
-    | para                              { dprint("single para para_list", ""); $$ = new_init_list($1); }
+para_list : para                        { dprint("single para para_list", ""); $$ = new_init_list($1); }
     | para_list COMMA para              { dprint("para_list COMMA para", ","); add_last($1, $3); $$ = $1; }
     ;
 
@@ -185,8 +188,9 @@ func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
                                                                 }
     ;
 
-func_local_decls : func_local_decls local_decl
-    | local_decl
+func_local_decls : %empty               { dprint("empty func_local_decls", ""); }
+    | local_decl                        { dprint("single local_decl", ""); }
+    | func_local_decls local_decl       { dprint("multiple local_decl", ""); }
     ;
 
 local_decl : var_decl                   {
@@ -259,7 +263,8 @@ exp : INTCONST                          { dprint("INTCONST", $1); }
     | REALCONST                         { dprint("REALCONST", $1); }
     | STRCONST                          { dprint("STRCONST", $1); }
     | CHARCONST                         { dprint("CHARCONST", $1); }
-    | IDENT LPAR exp_list RPAR          { dprint("IDENT LPAR exp_list RPAR", $1); }
+    | IDENT LPAR exp_list RPAR          { dprint("IDENT(exp_list)", $1); }
+    | IDENT LPAR RPAR                   { dprint("IDENT()", $1); }
 
     /* 11. An l-value is‡ an identifier, optionally followed by a left bracket, 
         an expression, and a right bracket. Note that this restricts array 
@@ -303,9 +308,8 @@ exp : INTCONST                          { dprint("INTCONST", $1); }
     | LPAR exp RPAR                     { dprint("LPAR exp RPAR", ""); }
     ;
 
-exp_list : %empty                       { dprint("empty exp_list", ""); }
+exp_list : exp                          { dprint("single exp exp_list", ""); }
     | exp_list COMMA exp                { dprint("multiple exps exp_list", ""); }
-    | exp                               { dprint("single exp exp_list", ""); }
     ; 
 
 /* 2.5 Extra credit: struct member selection */

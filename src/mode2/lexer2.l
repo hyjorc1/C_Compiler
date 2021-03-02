@@ -107,7 +107,7 @@ return          { return RETURN; }
 
 {whitespace}    { /* whitespace ingnore */ }
 
-.               { fprintf(stderr, "Unexpected text: %s\n", m2text); }
+.               { fprintf(stderr, "Unexpected text: %s\n", m2text); BEGIN(INITIAL); }
 
 
 

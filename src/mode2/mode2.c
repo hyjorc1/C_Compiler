@@ -71,16 +71,26 @@ void mode2(int argc, char *argv[], int fileIdx) {
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
         FILE *f = fopen(argv[i], "r");
-        if (!f)
+        if (!f) {
             perror(argv[i]);
+            return;
+        }
+        cur_file_name = argv[i];
+        m2lineno = 1;
         m2restart(f);
-        m2parse();
+        print("Parse return %d\n", m2parse());
 
         print_global_structs();
+        destroy_struct_list(global_structs);
+        global_structs = NULL;
 
         print_global_vars();
+        destroy_list(global_vars);
+        global_vars = NULL;
 
         print_funcs();
+        destroy_func_list(global_funcs);
+        global_funcs = NULL;
 
         fclose(f);
     }
