@@ -1,11 +1,13 @@
 all: link
-	./$(EXE) -2 extra.c p2test.c p2error.c fcall.c
+
+# ./$(EXE) -2 extra.c p2test.c p2error.c fcall.c
 # latex
 # ./$(EXE) -1 ifdefs2.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
 
+test: link mode1-test mode2-test
 ############################## compiler ###########################
 CC 			:= gcc
 CFLAGS		:= -Wall -Wextra -g
@@ -40,7 +42,9 @@ MODE1	:= $(SRC1)/mode1
 OBJ1 	:= $(LEX1).yy.o $(MODE1).o
 TEST1	:= test/Grading1
 
-test1: link
+test1: link mode1-test
+
+mode1-test:
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode1 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST1) && cd $(TEST1) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
@@ -62,7 +66,9 @@ MODE2	:= $(SRC2)/mode2
 OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o $(SRC2)/node_list.o $(SRC2)/struct_list.o $(SRC2)/func_list.o
 TEST2	:= test/Tests2
 
-test2: link
+test2: link mode2-test
+
+mode2-test:
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode1 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST2) && cd $(TEST2) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
