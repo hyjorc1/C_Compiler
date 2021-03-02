@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-
 #include "m2global.h" 
 
 
@@ -23,6 +22,9 @@ char *cur_file_name;
 struct list *global_vars = NULL;
 struct struct_list *global_structs = NULL;
 struct func_list *global_funcs = NULL;
+
+int is_global = 1;
+
 struct list *local_structs = NULL;
 struct list *local_vars = NULL;
 
@@ -71,7 +73,7 @@ struct list *local_vars = NULL;
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
 %type <str> var init_var para
-%type <l> init_var_list var_decl noinit_var_decls noinit_var_decl var_ni_list para_list
+%type <l> init_var_list var_decl struct_body_decls struct_body_decl noinit_var_decl var_ni_list para_list
 %type <sn> struct_decl
 %type <fn> func_proto func_def func_decl
 
@@ -97,10 +99,10 @@ root : %empty                           {   dprint("empty root", "");   }
                                             add_last_func(global_funcs, $2);
                                         }
     | root struct_decl                  { 
-                                            dprint("global struct_decl ", "============== global struct_decl ============="); 
-                                            if (global_structs == NULL)
-                                                global_structs = new_struct_list();
-                                            add_last_struct(global_structs, $2);
+                                            // dprint("global struct decl ", "============== global struct decl ============="); 
+                                            // if (global_structs == NULL)
+                                            //     global_structs = new_struct_list();
+                                            // add_last_struct(global_structs, $2);
                                         }
     ;
 
@@ -138,11 +140,32 @@ var : IDENT                             { dprint("IDENT", $1); $$ = $1; }
     A user-defined type declaration is† the keyword struct, followed by an 
     identifier, a left brace, zero or more variable declarations (without 
     initializations), a right brace, and a semicolon. */
-struct_decl : STRUCT IDENT LBRACE noinit_var_decls RBRACE SEMI  { dprint("STRUCT DECL", $2); $$ = new_struct($2, $4); }
+struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI 
+                                        {
+                                            dprint("STRUCT { struct_body_decls }", $2);
+                                            if (is_global) {
+                                                dprint("global struct decl ", "============== global struct decl =============");
+                                                if (global_structs == NULL)
+                                                    global_structs = new_struct_list();
+                                                add_last_struct(global_structs, new_struct($2, $4));
+                                            } else {
+                                                dprint("local struct decl", "============== local struct decl =============");
+                                                if  (local_structs == NULL)
+                                                    local_structs = new_list();
+                                                add_last(local_structs, strdup($2));
+                                                free($2);
+                                                destroy_list($4);
+                                            }
+                                        }
     ;
 
-noinit_var_decls : noinit_var_decl      { dprint("single noinit_var_decl", ""); $$ = $1; }
-    | noinit_var_decls noinit_var_decl  { dprint("noinit_var_decls noinit_var_decl", ""); $$ = merge($1, $2); }
+struct_body_decls : %empty              { dprint("empty struct body decls", ""); $$ = NULL; }
+    | struct_body_decl                  { dprint("sinlge struct_body_decl", ""); $$ = $1; }
+    | struct_body_decls struct_body_decl{ dprint("multiple struct_body_decl", ""); $$ = merge($1, $2); }
+    ;
+
+struct_body_decl : noinit_var_decl      { dprint("noinit var decl", ""); $$ = $1; }
+    | struct_decl                       { dprint("nested struct decl", ""); $$ = NULL; }
     ;
 
 noinit_var_decl : type var_ni_list SEMI { dprint("type var_ni_list SEMI", ""); $$ = $2; }
@@ -153,17 +176,17 @@ var_ni_list : var                       { dprint("var_ni_list var", ""); $$ = ne
     ;
 
 /* 4. A function prototype is a function declaration followed by a semicolon. */
-func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; }
+func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; is_global = 1; }
     ;
 
 /* 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl w/ args", $2); $$ = new_func($2, $4, NULL, NULL, 0);}
-    | type IDENT LPAR RPAR                  { dprint("func_decl w/o args", $2); $$ = new_func($2, NULL, NULL, NULL, 0);}
+func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0); is_global = 0; }
     ;
 
-para_list : para                        { dprint("single para para_list", ""); $$ = new_init_list($1); }
+para_list : %empty                      { dprint("sempty para list", ""); $$ = NULL; }
+    | para                              { dprint("single para", ""); $$ = new_init_list($1); }
     | para_list COMMA para              { dprint("para_list COMMA para", ","); add_last($1, $3); $$ = $1; }
     ;
 
@@ -185,6 +208,7 @@ func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
                                                                     $$ = $1;
                                                                     local_vars = NULL;
                                                                     local_structs = NULL;
+                                                                    is_global = 1;
                                                                 }
     ;
 
@@ -198,13 +222,13 @@ local_decl : var_decl                   {
                                             local_vars = local_vars == NULL ? $1 : merge(local_vars, $1);
                                         }
     | struct_decl                       { 
-                                            dprint("local struct_decl", "============== local struct_decl =============");
-                                            if  (local_structs == NULL)
-                                                local_structs = new_list();
-                                            add_last(local_structs, strdup($1->name));
-                                            free($1->name);
-                                            destroy_list($1->members);
-                                            free($1);
+                                            // dprint("local struct decl", "============== local struct decl =============");
+                                            // if  (local_structs == NULL)
+                                            //     local_structs = new_list();
+                                            // add_last(local_structs, strdup($1->name));
+                                            // free($1->name);
+                                            // destroy_list($1->members);
+                                            // free($1);
                                         }
     ;
 

@@ -57,6 +57,8 @@ void clear_func_list(struct func_list *l) {
 }
 
 void destroy_func_list(struct func_list *l) {
+    if (l == NULL)
+        return;
     clear_func_list(l);
     free(l);
 }

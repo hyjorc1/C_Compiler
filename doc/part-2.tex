@@ -1,0 +1,23 @@
+\section*{PART 2}
+
+Mode 2 read the specified input file and check that the file has correct C syntax. If the input file is not syntactically correct, then display an appropriate error message. This mode is implemented with flex and Bison. Doubly linked lists are utilized to store the syntax tree information.
+
+\subsection*{1.1 \large\textbf{src/mode2}}
+\begin{enumerate}
+    \item \textbf{lexer2.l} is scanner to tokenize the input content.
+
+    \item \textbf{parser2.l} is the parser to construct the relations between the tokens based on the syntax tree.
+
+    \item \textbf{node$\_$list.l} contains the implementation of doubly linked list for storing string information. This data structure is mainly used for storing global variables detected from the input C program.
+    
+    \item \textbf{struct$\_$list.l} contains the implementation of doubly linked list for storing string and nested string list. This data structure is mainly used for storing global, local, and nested structs.
+
+    \item \textbf{func$\_$list.l} contains the implementation of doubly linked list for storing string and nested string list. This data structure is mainly used for storing function prototype or definition.
+
+    \item \textbf{mode1.c} contains the main program for mode 2 to process the input files and output results.
+\end{enumerate}
+
+\subsection*{1.2 \large\textbf{include/mode2}}
+\begin{enumerate}
+    \item \textbf{m2global.h} contains local variables and methods designated for mode 2.
+\end{enumerate} 

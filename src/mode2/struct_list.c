@@ -52,6 +52,8 @@ void clear_struct_list(struct struct_list *l) {
 }
 
 void destroy_struct_list(struct struct_list *l) {
+    if (l == NULL)
+        return;
     clear_struct_list(l);
     free(l);
 }

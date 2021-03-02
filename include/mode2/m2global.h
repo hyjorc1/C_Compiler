@@ -15,9 +15,7 @@ extern void m2restart(FILE *input_file);
 /* interface to the parser with prefix 'm2' */
 extern int m2parse();
 
-
 /* global data structures and variables for mode 2 */
-
 extern int err_lineno;
 extern char *cur_file_name;
 
@@ -95,7 +93,5 @@ extern struct func_list* new_func_list();
 extern void add_last_func(struct func_list *l, struct func_node *n);
 extern void clear_func_list(struct func_list *l);
 extern void destroy_func_list(struct func_list *l);
-
-/* -------------- function node and list -------------------- */
 
 #endif

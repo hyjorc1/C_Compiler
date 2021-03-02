@@ -1,7 +1,6 @@
-all: link
+all: link latex
 
-# ./$(EXE) -2 extra.c p2test.c p2error.c fcall.c
-# latex
+# ./$(EXE) -2 fcall.c
 # ./$(EXE) -1 ifdefs2.c
 
 .PHONY: clean

@@ -79,8 +79,8 @@ void print_list(struct list *l) {
 }
 
 struct list* merge(struct list *l1, struct list *l2) {
-    if (l2->size == 0)
-        return NULL;
+    if (l2 == NULL || l2->size == 0)
+        return l1;
 
     l1->last->next = l2->first;
     l2->first->prev = l1->last;

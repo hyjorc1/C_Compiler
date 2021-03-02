@@ -50,6 +50,8 @@ void print_global_structs() {
 }
 
 void print_funcs() {
+    if (global_funcs == NULL)
+        return;
     struct func_node *cur = global_funcs->first;
     while (cur != NULL) {
         struct func_node *next = cur->next;
