@@ -19,6 +19,9 @@ void dprint(const char* s1, const char* s2) {
 
 struct list *global_vars = NULL;
 struct struct_list *global_structs = NULL;
+struct func_list *global_funcs = NULL;
+struct list *local_structs = NULL;
+struct list *local_vars = NULL;
 
 %}
 
@@ -28,6 +31,7 @@ struct struct_list *global_structs = NULL;
     char *str;
     struct list *l;
     struct struct_node *sn;
+    struct func_node *fn;
 }
 
 /* 3. A type name is‡ one of the simple types: void, char, int, float. */
@@ -63,21 +67,32 @@ struct struct_list *global_structs = NULL;
 
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
-%type <str> var init_var
-%type <l> init_var_list var_decl noinit_var_decls noinit_var_decl var_ni_list
+%type <str> var init_var para
+%type <l> init_var_list var_decl noinit_var_decls noinit_var_decl var_ni_list para_list
 %type <sn> struct_decl
+%type <fn> func_proto func_def func_decl
 
 %%
 
 /* 1. A C program is‡ a sequence of zero or more (global) variable declarations, 
     function prototypes, and function definitions, appearing in any order. */
-root : %empty                           { dprint("empty root", ""); }
+root : %empty                           {   dprint("empty root", "");   }
     | root var_decl                     { 
                                             dprint("global var_decl", "============== global var_decl  =============");
                                             global_vars = global_vars == NULL ? $2 : merge(global_vars, $2);
                                         }
-    | root func_proto                   { dprint("global func_proto", "============== global func_proto ============="); }
-    | root func_def                     { dprint("global func_def ", "============== global func_def ============="); }
+    | root func_proto                   { 
+                                            dprint("global func_proto", "============== global func_proto =============");
+                                            if (global_funcs == NULL)
+                                                global_funcs = new_func_list();
+                                            add_last_func(global_funcs, $2);
+                                        }
+    | root func_def                     {   
+                                            dprint("global func_def ", "============== global func_def =============");
+                                            if (global_funcs == NULL)
+                                                global_funcs = new_func_list();
+                                            add_last_func(global_funcs, $2);
+                                        }
     | root struct_decl                  { 
                                             dprint("global struct_decl ", "============== global struct_decl ============="); 
                                             if (global_structs == NULL)
@@ -113,7 +128,7 @@ init_var : var                          { dprint("init_var var", ""); $$ = $1; }
     ;
 
 var : IDENT                             { dprint("IDENT", $1); $$ = $1; }
-    | IDENT LBRACKET INTCONST RBRACKET  { dprint("IDENT LBRACKET INTCONST RBRACKET", $1); $$ = $1; }
+    | IDENT LBRACKET INTCONST RBRACKET  { dprint("IDENT [int]", $1); $$ = concat($1, "[]"); }
     ;
 
 /* 2.4 Extra credit: user-defined structs 
@@ -135,35 +150,58 @@ var_ni_list : var                       { dprint("var_ni_list var", ""); $$ = ne
     ;
 
 /* 4. A function prototype is a function declaration followed by a semicolon. */
-func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); }
+func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; }
     ;
 
 /* 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); }
+func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0);}
     ;
 
-para_list : %empty                      { dprint("empty para_list", ""); }
-    | para                              { dprint("single para para_list", ""); }
-    | para_list COMMA para              { dprint("para_list COMMA para", ","); }
+para_list : %empty                      { dprint("empty para_list", ""); $$ = NULL; }
+    | para                              { dprint("single para para_list", ""); $$ = new_init_list($1); }
+    | para_list COMMA para              { dprint("para_list COMMA para", ","); add_last($1, $3); $$ = $1; }
     ;
 
 /* 6. A formal parameter is† a type name, followed by an identifier, and optionally 
     followed by a left and right bracket. */
-para : type IDENT                       { dprint("type IDENT", $2); }
-    | type IDENT LBRACKET RBRACKET      { dprint("type IDENT LBRACKET RBRACKET", $2); }
+para : type IDENT                       { dprint("type IDENT", $2); $$ = $2; }
+    | type IDENT LBRACKET RBRACKET      { dprint("type IDENT []", $2); $$ = concat($2, "[]"); }
     ;
 
 /* 7. A function definition is‡ a function declaration followed by a left brace, 
     a sequence of zero or more variable declarations, a sequence of zero or more 
     statements, and a right brace. Note that this definition requires all variable 
     declarations to appear before statements. */
-func_def : func_decl LBRACE func_body RBRACE    { dprint("func_decl RBRACE func_body LBRACE", ""); }
+func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
+                                                                    dprint("func_decl RBRACE func_body LBRACE", ""); 
+                                                                    $1->is_proto = 0;
+                                                                    $1->local_vars = local_vars;
+                                                                    $1->local_structs = local_structs; 
+                                                                    $$ = $1;
+                                                                    local_vars = NULL;
+                                                                    local_structs = NULL;
+                                                                }
     ;
 
-func_body : var_decl func_body          { dprint("var_decl func_body", ""); }
-    | stmt_list                         { dprint("stmt_list", ""); }
+func_local_decls : func_local_decls local_decl
+    | local_decl
+    ;
+
+local_decl : var_decl                   {
+                                            dprint("local var_decl", "============== local var_decl =============");
+                                            local_vars = local_vars == NULL ? $1 : merge(local_vars, $1);
+                                        }
+    | struct_decl                       { 
+                                            dprint("local struct_decl", "============== local struct_decl =============");
+                                            if  (local_structs == NULL)
+                                                local_structs = new_list();
+                                            add_last(local_structs, strdup($1->name));
+                                            free($1->name);
+                                            destroy_list($1->members);
+                                            free($1);
+                                        }
     ;
 
 
@@ -185,8 +223,6 @@ stmt : SEMI                             { dprint("SEMI", ""); }
     | for_stmt                          { dprint("for_stmt", ""); }
     | while_stmt                        { dprint("while_stmt", ""); }
     | do_stmt                           { dprint("do_stmt", ""); }
-    | var_decl                          { dprint("local var_decl", "============== local var_decl ============="); }
-    | struct_decl                       { dprint("local struct_decl", "============== local struct_decl ============="); }
     ;
 
 return_stmt : RETURN SEMI               { dprint("RETURN SEMI", ""); }
@@ -278,7 +314,7 @@ l_val : l_value                         { dprint("single l_value", ""); }
     ;
 
 l_value : IDENT                         { dprint("IDENT", $1); }
-    | IDENT LBRACKET exp RBRACKET       { dprint("IDENT LBRACKET exp RBRACKET", $1); }
+    | IDENT LBRACKET exp RBRACKET       { dprint("IDENT [exp]", $1); }
     ;
 
 %%

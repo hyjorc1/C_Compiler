@@ -14,12 +14,14 @@ struct window {
   char text[1024];
 };
 
-/*
 void display(const struct window W[], int n);
 
 struct point strange(int z)
 {
- 
+  /*
+    Syntactically correct.
+    Will fail type checking in part 3.
+  */
   int y;
   struct mything {
     float a, b, c;
@@ -36,4 +38,3 @@ struct point strange(int z)
   }
   return A.x;
 }
-*/

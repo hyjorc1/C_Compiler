@@ -22,8 +22,10 @@ void print_global_vars() {
 }
 
 void print_list_member(char *label, struct list *l) {
+    if (l == NULL || l->size == 0)
+        return;
     struct node *cur = l->first;
-    printf("%s", label);
+    printf("\t%s", label);
     while (cur != NULL) {
         struct node *next = cur->next;
         printf("%s", cur->data);
@@ -35,18 +37,37 @@ void print_list_member(char *label, struct list *l) {
 }
 
 void print_global_structs() {
+    if (global_structs == NULL)
+        return;
     struct struct_node *cur = global_structs->first;
     while (cur != NULL) {
         struct struct_node *next = cur->next;
-        printf("Global struct %s\n\t", cur->name);
-        print_list_member("Parameters: ", cur->members);
+        printf("Global struct %s\n", cur->name);
+        print_list_member("", cur->members);
+        cur = next;
+        printf("\n");
+    }
+}
+
+void print_funcs() {
+    struct func_node *cur = global_funcs->first;
+    while (cur != NULL) {
+        struct func_node *next = cur->next;
+        if (cur->is_proto) {
+            printf("Prototype %s\n", cur->name);
+            print_list_member("Parameters: ", cur->paras);   
+        } else {
+            printf("Function %s\n", cur->name);
+            print_list_member("Parameters: ", cur->paras);
+            print_list_member("Local structs: ", cur->local_structs);
+            print_list_member("Local variables: ", cur->local_vars);
+        }
         cur = next;
         printf("\n");
     }
 }
 
 void mode2(int argc, char *argv[], int fileIdx) {
-
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
         FILE *f = fopen(argv[i], "r");
@@ -59,12 +80,10 @@ void mode2(int argc, char *argv[], int fileIdx) {
 
         print_global_vars();
 
-
-        // print_funcs();
+        print_funcs();
 
         fclose(f);
     }
-
 }
 
 

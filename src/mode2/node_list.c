@@ -57,6 +57,8 @@ void clear_list(struct list *l) {
 }
 
 void destroy_list(struct list *l) {
+    if (l == NULL)
+        return;
     clear_list(l);
     free(l);
 }

@@ -32,3 +32,10 @@ void printversion() {
     fprintf(stdout, "\tVersion 0.1\n");
     fprintf(stdout, "\t16 Feb, 2021\n");
 }
+
+char *concat(char *s1, char *s2) {
+    char * s3 = (char *) malloc(1 + strlen(s1)+ strlen(s2) );
+    strcpy(s3, s1);
+    strcat(s3, s2);
+    return s3;
+}

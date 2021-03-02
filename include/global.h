@@ -11,6 +11,7 @@ extern int debug;
 extern void print(const char *format, ...);
 extern void printusage();
 extern void printversion();
+extern char *concat(char *s1, char *s2);
 
 extern void mode1(int argc, char *argv[], int fileIdx);
 extern void mode2(int argc, char *argv[], int fileIdx);

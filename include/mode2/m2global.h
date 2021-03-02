@@ -71,30 +71,30 @@ extern void destroy_struct_list(struct struct_list *l);
 
 /* -------------- function node and list -------------------- */
 
+struct func_node {
+    char* name;
+    int is_proto;
+    struct list *paras;
+    struct list *local_structs;
+    struct list *local_vars;
+    struct func_node *prev;
+    struct func_node *next;
+};
 
+struct func_list {
+    int size;
+    struct func_node *first;
+    struct func_node *last;
+};
 
-// struct struct_node {
-//     char *name;
-//     gll_t *members;             /* list of char **data */
-// };
+extern struct func_list *global_funcs;
 
-// struct func_node {
-//     int ast_type;               /* 0 for prototype and 1 for function */
-//     char *name;
-//     gll_t *paras;               /* list of char **data */
-//     gll_t *local_structs;       /* list of char **data */
-//     gll_t *local_vars;          /* list of char **data */
-// };
+extern struct func_node* new_func(char *name, struct list *paras, struct list *local_structs, struct list *local_vars, int is_proto);
+extern struct func_list* new_func_list();
+extern void add_last_func(struct func_list *l, struct func_node *n);
+extern void clear_func_list(struct func_list *l);
+extern void destroy_func_list(struct func_list *l);
 
-// extern gll_t *global_structs;   /* list of struct struct_node **data */
-// extern gll_t *global_vars;      /* list of char **data */
-// extern gll_t *funcs;            /* list of struct func_node **data */
-
-// extern gll_t *gll_init_str(char *str);
-
-// extern void print_gll(gll_t *list);
-
-
-
+/* -------------- function node and list -------------------- */
 
 #endif
