@@ -18,6 +18,7 @@ void dprint(const char* s1, const char* s2) {
 }
 
 struct list *global_vars = NULL;
+struct struct_list *global_structs = NULL;
 
 %}
 
@@ -26,6 +27,7 @@ struct list *global_vars = NULL;
 %union {
     char *str;
     struct list *l;
+    struct struct_node *sn;
 }
 
 /* 3. A type name is‡ one of the simple types: void, char, int, float. */
@@ -61,8 +63,9 @@ struct list *global_vars = NULL;
 
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
-%type <l> init_var_list var_decl
 %type <str> var init_var
+%type <l> init_var_list var_decl noinit_var_decls noinit_var_decl var_ni_list
+%type <sn> struct_decl
 
 %%
 
@@ -75,7 +78,12 @@ root : %empty                           { dprint("empty root", ""); }
                                         }
     | root func_proto                   { dprint("global func_proto", "============== global func_proto ============="); }
     | root func_def                     { dprint("global func_def ", "============== global func_def ============="); }
-    | root struct_decl                  { dprint("global struct_decl ", "============== global struct_decl ============="); }
+    | root struct_decl                  { 
+                                            dprint("global struct_decl ", "============== global struct_decl ============="); 
+                                            if (global_structs == NULL)
+                                                global_structs = new_struct_list();
+                                            add_last_struct(global_structs, $2);
+                                        }
     ;
 
 /* 2. A variable declaration is‡ a type name, followed by a comma-separated list of 
@@ -95,7 +103,7 @@ all_type : PRIMTYPE                     { dprint("PRIMTYPE", $1); }
     | STRUCT IDENT                      { dprint("STRUCT IDENT", $2); }
     ;
 
-init_var_list : init_var                { dprint("single init_var init_var_list", ""); $$ = new_list_data($1); }
+init_var_list : init_var                { dprint("single init_var init_var_list", ""); $$ = new_init_list($1); }
     | init_var_list COMMA init_var      { dprint("init_var_list COMMA init_var", ","); add_last($1, $3); $$ = $1; }
     ;
 
@@ -112,18 +120,18 @@ var : IDENT                             { dprint("IDENT", $1); $$ = $1; }
     A user-defined type declaration is† the keyword struct, followed by an 
     identifier, a left brace, zero or more variable declarations (without 
     initializations), a right brace, and a semicolon. */
-struct_decl : STRUCT IDENT LBRACE noinit_var_decls RBRACE SEMI  { dprint("STRUCT DECL", $2); }
+struct_decl : STRUCT IDENT LBRACE noinit_var_decls RBRACE SEMI  { dprint("STRUCT DECL", $2); $$ = new_struct($2, $4); }
     ;
 
-noinit_var_decls : noinit_var_decl      { dprint("single noinit_var_decl", ""); }
-    | noinit_var_decls noinit_var_decl  { dprint("noinit_var_decls noinit_var_decl", ""); }
+noinit_var_decls : noinit_var_decl      { dprint("single noinit_var_decl", ""); $$ = $1; }
+    | noinit_var_decls noinit_var_decl  { dprint("noinit_var_decls noinit_var_decl", ""); $$ = merge($1, $2); }
     ;
 
-noinit_var_decl : type var_ni_list SEMI { dprint("type var_ni_list SEMI", ""); }
+noinit_var_decl : type var_ni_list SEMI { dprint("type var_ni_list SEMI", ""); $$ = $2; }
     ;
 
-var_ni_list : var                       { dprint("var_ni_list var", ""); }
-    | var_ni_list COMMA var             { dprint("var_ni_list COMMA var", ","); }
+var_ni_list : var                       { dprint("var_ni_list var", ""); $$ = new_init_list($1); }
+    | var_ni_list COMMA var             { dprint("var_ni_list COMMA var", ","); add_last($1, $3); $$ = $1; }
     ;
 
 /* 4. A function prototype is a function declaration followed by a semicolon. */

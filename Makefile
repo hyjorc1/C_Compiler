@@ -55,10 +55,11 @@ mode1-clean:
 	@echo '=================== Cleaned Mode1 ====================='
 
 #------------------------------ mode 2 ---------------------------#
-LEX2	:= $(SRC)/mode2/lexer2
-PASER2	:= $(SRC)/mode2/parser2
-MODE2	:= $(SRC)/mode2/mode2
-OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o
+SRC2	:= $(SRC)/mode2
+LEX2	:= $(SRC2)/lexer2
+PASER2	:= $(SRC2)/parser2
+MODE2	:= $(SRC2)/mode2
+OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o $(SRC2)/node_list.o $(SRC2)/struct_list.o $(SRC2)/func_list.o
 TEST2	:= test/Test2
 
 mode2: $(OBJ2)
