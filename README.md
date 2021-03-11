@@ -5,7 +5,7 @@ The project should be tested at `ssh usr@pyrite.cs.iastate.edu`.
 Original repository: `https://git.linux.iastate.edu/hyj/540-project.git`.
 
 ## Building, Testing, and Cleaning
-This project is implemented in C, FLex(2.6.4), and GNU Bison(3.7.5).
+This project is implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5).
 
 1. `make` will build both the documentation `developers.pdf` and the executable compiler `mycc`.
 
