@@ -8,11 +8,11 @@ Original repository: `https://git.linux.iastate.edu/hyj/540-project.git`.
 
 This project is implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5).
 
-1. `make` will build both the documentation `developers.pdf` and the executable compiler `mycc`.
+1. `make` builds both the documentation `developers.pdf` and the executable compiler `mycc`.
 
-2. `make clean` will remove all generated files.
+2. `make clean` removes all generated files.
 
-3. `make test` will test mode 1 and 2. For testing mode X only then `make testX`.
+3. `make test` tests mode 1 and 2. For testing mode X only then `make testX`.
 
 ### New Features
 
