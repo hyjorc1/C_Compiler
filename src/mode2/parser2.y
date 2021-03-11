@@ -342,7 +342,11 @@ l_val : l_value                         { dprint("single l_value", ""); }
     ;
 
 l_value : IDENT                         { dprint("IDENT", $1); }
-    | IDENT LBRACKET exp RBRACKET       { dprint("IDENT [exp]", $1); }
+    | IDENT dimen                       { dprint("IDENT dimen", $1); }
+    ;
+
+dimen : LBRACKET l_value RBRACKET            { dprint("[l_value]", ""); }
+    | dimen LBRACKET l_value RBRACKET        { dprint("dimen [l_value]", ""); }
     ;
 
 %%
