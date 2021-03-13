@@ -1,0 +1,8 @@
+Function bar
+    Parameters: a
+    Local variables: A[]
+
+Function strange
+    Parameters: A[]
+    Local variables: b
+

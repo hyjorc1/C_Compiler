@@ -1,0 +1,8 @@
+const5.c line 2 text 'void' token TYPE
+const5.c line 3 text 'error' token IDENT
+const5.c line 4 text '(' token LPAR
+const5.c line 5 text 'const' token CONST
+const5.c line 6 text 'const' token CONST
+const5.c line 7 text 'x' token IDENT
+const5.c line 8 text ')' token RPAR
+const5.c line 9 text ';' token SEMI

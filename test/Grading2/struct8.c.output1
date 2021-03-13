@@ -1,0 +1,9 @@
+struct8.c line 2 text 'struct' token STRUCT
+struct8.c line 3 text 'pair' token IDENT
+struct8.c line 4 text '{' token LBRACE
+struct8.c line 5 text 'x' token IDENT
+struct8.c line 6 text ';' token SEMI
+struct8.c line 7 text 'y' token IDENT
+struct8.c line 8 text ';' token SEMI
+struct8.c line 9 text '}' token RBRACE
+struct8.c line 10 text ';' token SEMI

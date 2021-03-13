@@ -1,0 +1,16 @@
+Global struct coords
+    x, y
+
+Global struct rectangle
+    top_left, bottom_right
+
+Prototype writeMessage
+    Parameters:	C, message[]
+
+Function buildPoint
+    Parameters:	a, x, y
+    Local variables:	C
+
+Prototype buildRect
+    Parameters:	tl, br
+

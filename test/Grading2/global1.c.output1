@@ -1,0 +1,6 @@
+global1.c line 2 text 'float' token TYPE
+global1.c line 2 text 'var' token IDENT
+global1.c line 2 text ';' token SEMI
+global1.c line 3 text 'int' token TYPE
+global1.c line 3 text 'A' token IDENT
+global1.c line 3 text ';' token SEMI

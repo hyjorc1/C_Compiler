@@ -1,0 +1,13 @@
+Prototype two
+    Parameters: a, b
+
+Prototype three
+    Parameters: a, b, c
+
+Prototype four
+    Parameters: a, b, c, d
+
+Function bar
+    Parameters: a
+    Local variables: b
+

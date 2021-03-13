@@ -183,11 +183,11 @@ func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
 func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0); is_global = 0; }
+    | type IDENT LPAR RPAR                  { dprint("sempty para list", ""); $$ = new_func($2, NULL, NULL, NULL, 0); is_global = 0; }
     ;
 
-para_list : %empty                      { dprint("sempty para list", ""); $$ = NULL; }
-    | para                              { dprint("single para", ""); $$ = new_init_list($1); }
-    | para_list COMMA para              { dprint("para_list COMMA para", ","); add_last($1, $3); $$ = $1; }
+para_list : para_list COMMA para        { dprint("multiple para list", ","); add_last($1, $3); $$ = $1; }
+    | para                              { dprint("single para list", ""); $$ = new_init_list($1); }
     ;
 
 /* 6. A formal parameter is† a type name, followed by an identifier, and optionally 
@@ -213,12 +213,12 @@ func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
     ;
 
 func_local_decls : %empty               { dprint("empty func_local_decls", ""); }
-    | local_decl                        { dprint("single local_decl", ""); }
     | func_local_decls local_decl       { dprint("multiple local_decl", ""); }
+    | local_decl                        { dprint("single local_decl", ""); }
     ;
 
 local_decl : var_decl                   {
-                                            dprint("local var_decl", "============== local var_decl =============");
+                                            dprint("local var decl", "============== local var decl =============");
                                             local_vars = local_vars == NULL ? $1 : merge(local_vars, $1);
                                         }
     | struct_decl                       { 
@@ -232,11 +232,10 @@ local_decl : var_decl                   {
                                         }
     ;
 
-
 /* 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
-block_stmt : LBRACE stmt_list RBRACE    { dprint("LBRACE stmt_list RBRACE", ""); };
+block_stmt : LBRACE stmt_list RBRACE    { dprint("{ stmt list }", ""); };
 
-stmt_list : %empty                      { dprint("empty stmt_list", ""); }
+stmt_list : %empty                      { dprint("empty stmt list", ""); }
     | stmt_list stmt                    { dprint("stmt_list stmt", ""); }
     | stmt                              { dprint("stmt", ""); }
     ;
@@ -345,8 +344,8 @@ l_value : IDENT                         { dprint("IDENT", $1); }
     | IDENT dimen                       { dprint("IDENT dimen", $1); }
     ;
 
-dimen : LBRACKET l_value RBRACKET            { dprint("[l_value]", ""); }
-    | dimen LBRACKET l_value RBRACKET        { dprint("dimen [l_value]", ""); }
+dimen : LBRACKET exp RBRACKET            { dprint("[ exp ]", ""); }
+    | dimen LBRACKET exp RBRACKET        { dprint("dimen [ exp ]", ""); }
     ;
 
 %%

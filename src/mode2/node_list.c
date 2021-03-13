@@ -29,6 +29,8 @@ struct list* new_init_list(char *data) {
 }
 
 void add_last(struct list *l, char *data) {
+    if (l == NULL)
+        return;
     struct node *n = new_node(data);
     if (l->size == 0) {
         l->first = n;

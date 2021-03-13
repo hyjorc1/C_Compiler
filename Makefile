@@ -1,6 +1,5 @@
 all: link
-	./$(EXE) -2 fcall.c
-# ./$(EXE) -1 ifdefs2.c
+	# ./$(EXE) -2 struct3.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
@@ -62,7 +61,7 @@ LEX2	:= $(SRC2)/lexer2
 PASER2	:= $(SRC2)/parser2
 MODE2	:= $(SRC2)/mode2
 OBJ2 	:= $(PASER2).tab.o $(LEX2).yy.o $(MODE2).o $(SRC2)/node_list.o $(SRC2)/struct_list.o $(SRC2)/func_list.o
-TEST2	:= test/Tests2
+TEST2	:= test/Grading2
 
 test2: link mode2-test
 

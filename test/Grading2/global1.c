@@ -1,0 +1,4 @@
+
+float var;
+int A;
+

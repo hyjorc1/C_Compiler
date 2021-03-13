@@ -1,0 +1,11 @@
+Function bar
+    Parameters: a
+    Local variables: b, c
+
+Function flip
+    Parameters: a
+
+Function dist
+    Parameters: x1, y1, z1
+    Local variables: x2, y2, z2
+

@@ -1,0 +1,7 @@
+Function proto1
+    Local variables: a
+
+Function proto2
+    Parameters: a
+    Local variables: b, c, d
+

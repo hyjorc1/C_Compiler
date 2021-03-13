@@ -1,0 +1,17 @@
+loop7.c line 2 text 'void' token TYPE
+loop7.c line 2 text 'bad' token IDENT
+loop7.c line 2 text '(' token LPAR
+loop7.c line 2 text ')' token RPAR
+loop7.c line 3 text '{' token LBRACE
+loop7.c line 4 text 'int' token TYPE
+loop7.c line 4 text 'x' token IDENT
+loop7.c line 4 text ';' token SEMI
+loop7.c line 6 text 'while' token WHILE
+loop7.c line 7 text '(' token LPAR
+loop7.c line 7 text ')' token RPAR
+loop7.c line 8 text '{' token LBRACE
+loop7.c line 9 text 'x' token IDENT
+loop7.c line 9 text '++' token INCR
+loop7.c line 9 text ';' token SEMI
+loop7.c line 10 text '}' token RBRACE
+loop7.c line 11 text '}' token RBRACE

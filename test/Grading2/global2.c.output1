@@ -1,0 +1,7 @@
+global2.c line 4 text 'int' token TYPE
+global2.c line 5 text 'a' token IDENT
+global2.c line 6 text ',' token COMMA
+global2.c line 7 text 'b' token IDENT
+global2.c line 8 text ',' token COMMA
+global2.c line 9 text 'c' token IDENT
+global2.c line 10 text ';' token SEMI

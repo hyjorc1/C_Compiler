@@ -1,0 +1,8 @@
+Global struct point
+    x, y
+
+Function foo
+    Parameters:	a
+    Local structs: 	inner
+    Local variables:	e
+

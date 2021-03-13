@@ -1,0 +1,16 @@
+array2.c line 2 text 'int' token TYPE
+array2.c line 2 text 'bar' token IDENT
+array2.c line 2 text '(' token LPAR
+array2.c line 2 text 'int' token TYPE
+array2.c line 2 text 'A' token IDENT
+array2.c line 2 text '[' token LBRACKET
+array2.c line 2 text ']' token RBRACKET
+array2.c line 2 text ')' token RPAR
+array2.c line 3 text '{' token LBRACE
+array2.c line 4 text 'return' token RETURN
+array2.c line 4 text 'A' token IDENT
+array2.c line 4 text '[' token LBRACKET
+array2.c line 4 text '5' token INTCONST
+array2.c line 4 text ']' token RBRACKET
+array2.c line 4 text ';' token SEMI
+array2.c line 5 text '}' token RBRACE

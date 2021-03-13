@@ -1,0 +1,12 @@
+funcproto1.c line 2 text 'void' token TYPE
+funcproto1.c line 2 text 'proto1' token IDENT
+funcproto1.c line 2 text '(' token LPAR
+funcproto1.c line 2 text ')' token RPAR
+funcproto1.c line 2 text ';' token SEMI
+funcproto1.c line 4 text 'void' token TYPE
+funcproto1.c line 4 text 'proto2' token IDENT
+funcproto1.c line 4 text '(' token LPAR
+funcproto1.c line 4 text 'int' token TYPE
+funcproto1.c line 4 text 'a' token IDENT
+funcproto1.c line 4 text ')' token RPAR
+funcproto1.c line 4 text ';' token SEMI
