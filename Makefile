@@ -30,7 +30,7 @@ compiler-clean: mode1-clean mode2-clean
 
 #------------------------------ test -----------------------------#
 TEST_CMD	:= ./Check.sh mycc -s *.c
-# TEST_CMD	:= ./Check.sh mycc -d *.c
+# TEST_CMD	:= ./Check.sh mycc -d struct3.c
 
 #------------------------------ mode 1 ---------------------------#
 SRC1	:= $(SRC)/mode1

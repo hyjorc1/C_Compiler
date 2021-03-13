@@ -22,8 +22,9 @@ void print_global_vars() {
 }
 
 void print_list_member(char *label, struct list *l) {
-    if (l == NULL || l->size == 0)
+    if (l == NULL || l->size == 0) {
         return;
+    }
     struct node *cur = l->first;
     printf("\t%s", label);
     while (cur != NULL) {
@@ -43,7 +44,11 @@ void print_global_structs() {
     while (cur != NULL) {
         struct struct_node *next = cur->next;
         printf("Global struct %s\n", cur->name);
-        print_list_member("", cur->members);
+        if (cur->members == NULL || cur->members->size == 0) {
+            printf("\n");
+        } else {
+            print_list_member("", cur->members);
+        }
         cur = next;
         printf("\n");
     }

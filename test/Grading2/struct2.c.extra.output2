@@ -12,7 +12,7 @@ Prototype proto1
 
 Function random
     Parameters:	x
-    Local structs: 	pair, triple
+    Local structs: 	triple, pair
     Local variables:	y
 
 Function another_one

@@ -160,8 +160,8 @@ struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI
     ;
 
 struct_body_decls : %empty              { dprint("empty struct body decls", ""); $$ = NULL; }
-    | struct_body_decl                  { dprint("sinlge struct_body_decl", ""); $$ = $1; }
-    | struct_body_decls struct_body_decl{ dprint("multiple struct_body_decl", ""); $$ = merge($1, $2); }
+    | struct_body_decl                  { dprint("sinlge struct body decl", ""); $$ = $1; }
+    | struct_body_decls struct_body_decl{ dprint("multiple struct body decl", ""); $$ = merge($1, $2); }
     ;
 
 struct_body_decl : noinit_var_decl      { dprint("noinit var decl", ""); $$ = $1; }
@@ -336,11 +336,11 @@ exp_list : exp                          { dprint("single exp exp_list", ""); }
     ; 
 
 /* 2.5 Extra credit: struct member selection */
-l_val : l_value                         { dprint("single l_value", ""); }
-    | l_val DOT l_value                 { dprint("l_val DOT l_value", "."); }
+l_val : l_member                         { dprint("single l_member", ""); }
+    | l_val DOT l_member                 { dprint("l_val DOT l_member", "."); }
     ;
 
-l_value : IDENT                         { dprint("IDENT", $1); }
+l_member : IDENT                         { dprint("IDENT", $1); }
     | IDENT dimen                       { dprint("IDENT dimen", $1); }
     ;
 
