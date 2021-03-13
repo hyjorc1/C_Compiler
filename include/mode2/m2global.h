@@ -39,6 +39,7 @@ extern struct node* new_node(char *data);
 extern struct list* new_init_list(char *data);
 extern struct list* new_list();
 extern void add_last(struct list *l, char *data);
+extern void add_first(struct list *l, char *data);
 extern void clear_list(struct list *l);
 extern void destroy_list(struct list *l);
 extern struct list* merge(struct list *l1, struct list *l2);

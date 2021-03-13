@@ -28,6 +28,21 @@ struct list* new_init_list(char *data) {
     return l;
 }
 
+void add_first(struct list *l, char *data) {
+    if (l == NULL)
+        return;
+    struct node *n = new_node(data);
+    if (l->size == 0) {
+        l->first = n;
+        l->last = n;
+    } else {
+        n->next = l->first;
+        l->first->prev = n;
+        l->first = n;
+    }
+    l->size++;
+}
+
 void add_last(struct list *l, char *data) {
     if (l == NULL)
         return;
