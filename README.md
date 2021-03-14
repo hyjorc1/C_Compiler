@@ -1,12 +1,6 @@
-# 540-project
+## Building, Cleaning, and Testing
 
-The project should be tested at `ssh usr@pyrite.cs.iastate.edu`.
-
-Original repository: `https://git.linux.iastate.edu/hyj/540-project.git`.
-
-## Building, Testing, and Cleaning
-
-This project is implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5).
+This project is a C compiler implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5).
 
 1. `make` builds both the documentation `developers.pdf` and the executable compiler `mycc`.
 
@@ -14,7 +8,7 @@ This project is implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5
 
 3. `make test` tests mode 1 and 2. For testing mode X only then `make testX`.
 
-### New Features
+## New Features
 
 1. **Executable Compiler**
    - `mycc -mode [-o outfile] [infile] ... [infile]`
@@ -34,3 +28,9 @@ This project is implemented in C(clang 12.0.0), FLex(2.6.4), and GNU Bison(3.7.5
 4) **[Mode 2](./doc/post-2.pdf)**: This mode utilizes a lexer and a parser to read the specified input file and check
    that the file has correct C syntax. If the input file is not syntactically correct, then display
    an appropriate error message. The implemented rules are [here](./doc/mode2.md).
+
+## Note
+
+The project should be tested at `ssh usr@pyrite.cs.iastate.edu`.
+
+The original repository: `https://git.linux.iastate.edu/hyj/540-project.git`.
