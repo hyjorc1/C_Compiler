@@ -19,14 +19,14 @@ void dprint(const char* s1, const char* s2) {
 
 char *m2_cur_file_name;
 
-struct list *global_vars = NULL;
-struct struct_list *global_structs = NULL;
-struct func_list *global_funcs = NULL;
+struct list *m2_global_vars = NULL;
+struct struct_list *m2_global_structs = NULL;
+struct func_list *m2_global_funcs = NULL;
 
-int is_global = 1;
+int m2_is_global = 1;
 
-struct list *local_structs = NULL;
-struct list *local_vars = NULL;
+struct list *m2_local_structs = NULL;
+struct list *m2_local_vars = NULL;
 
 %}
 
@@ -84,25 +84,25 @@ struct list *local_vars = NULL;
 root : %empty                           {   dprint("empty root", "");   }
     | root var_decl                     { 
                                             dprint("global var_decl", "============== global var_decl  =============");
-                                            global_vars = global_vars == NULL ? $2 : merge(global_vars, $2);
+                                            m2_global_vars = m2_global_vars == NULL ? $2 : merge(m2_global_vars, $2);
                                         }
     | root func_proto                   { 
                                             dprint("global func_proto", "============== global func_proto =============");
-                                            if (global_funcs == NULL)
-                                                global_funcs = new_func_list();
-                                            add_last_func(global_funcs, $2);
+                                            if (m2_global_funcs == NULL)
+                                                m2_global_funcs = new_func_list();
+                                            add_last_func(m2_global_funcs, $2);
                                         }
     | root func_def                     {   
                                             dprint("global func_def ", "============== global func_def =============");
-                                            if (global_funcs == NULL)
-                                                global_funcs = new_func_list();
-                                            add_last_func(global_funcs, $2);
+                                            if (m2_global_funcs == NULL)
+                                                m2_global_funcs = new_func_list();
+                                            add_last_func(m2_global_funcs, $2);
                                         }
     | root struct_decl                  { 
                                             // dprint("global struct decl ", "============== global struct decl ============="); 
-                                            // if (global_structs == NULL)
-                                            //     global_structs = new_struct_list();
-                                            // add_last_struct(global_structs, $2);
+                                            // if (m2_global_structs == NULL)
+                                            //     m2_global_structs = new_struct_list();
+                                            // add_last_struct(m2_global_structs, $2);
                                         }
     ;
 
@@ -143,16 +143,16 @@ var : IDENT                             { dprint("IDENT", $1); $$ = $1; }
 struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI 
                                         {
                                             dprint("STRUCT { struct_body_decls }", $2);
-                                            if (is_global) {
+                                            if (m2_is_global) {
                                                 dprint("global struct decl ", "============== global struct decl =============");
-                                                if (global_structs == NULL)
-                                                    global_structs = new_struct_list();
-                                                add_last_struct(global_structs, new_struct($2, $4));
+                                                if (m2_global_structs == NULL)
+                                                    m2_global_structs = new_struct_list();
+                                                add_last_struct(m2_global_structs, new_struct($2, $4));
                                             } else {
                                                 dprint("local struct decl", "============== local struct decl =============");
-                                                if  (local_structs == NULL)
-                                                    local_structs = new_list();
-                                                add_first(local_structs, strdup($2));
+                                                if  (m2_local_structs == NULL)
+                                                    m2_local_structs = new_list();
+                                                add_first(m2_local_structs, strdup($2));
                                                 free($2);
                                                 destroy_list($4);
                                             }
@@ -176,14 +176,14 @@ var_ni_list : var                       { dprint("var_ni_list var", ""); $$ = ne
     ;
 
 /* 4. A function prototype is a function declaration followed by a semicolon. */
-func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; is_global = 1; }
+func_proto : func_decl SEMI             { dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; m2_is_global = 1; }
     ;
 
 /* 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0); is_global = 0; }
-    | type IDENT LPAR RPAR                  { dprint("sempty para list", ""); $$ = new_func($2, NULL, NULL, NULL, 0); is_global = 0; }
+func_decl : type IDENT LPAR para_list RPAR  { dprint("func_decl", $2); $$ = new_func($2, $4, NULL, NULL, 0); m2_is_global = 0; }
+    | type IDENT LPAR RPAR                  { dprint("sempty para list", ""); $$ = new_func($2, NULL, NULL, NULL, 0); m2_is_global = 0; }
     ;
 
 para_list : para_list COMMA para        { dprint("multiple para list", ","); add_last($1, $3); $$ = $1; }
@@ -203,12 +203,12 @@ para : type IDENT                       { dprint("type IDENT", $2); $$ = $2; }
 func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
                                                                     dprint("func_decl RBRACE func_body LBRACE", ""); 
                                                                     $1->is_proto = 0;
-                                                                    $1->local_vars = local_vars;
-                                                                    $1->local_structs = local_structs; 
+                                                                    $1->local_vars = m2_local_vars;
+                                                                    $1->local_structs = m2_local_structs; 
                                                                     $$ = $1;
-                                                                    local_vars = NULL;
-                                                                    local_structs = NULL;
-                                                                    is_global = 1;
+                                                                    m2_local_vars = NULL;
+                                                                    m2_local_structs = NULL;
+                                                                    m2_is_global = 1;
                                                                 }
     ;
 
@@ -219,13 +219,13 @@ func_local_decls : %empty               { dprint("empty func_local_decls", ""); 
 
 local_decl : var_decl                   {
                                             dprint("local var decl", "============== local var decl =============");
-                                            local_vars = local_vars == NULL ? $1 : merge(local_vars, $1);
+                                            m2_local_vars = m2_local_vars == NULL ? $1 : merge(m2_local_vars, $1);
                                         }
     | struct_decl                       { 
                                             // dprint("local struct decl", "============== local struct decl =============");
-                                            // if  (local_structs == NULL)
-                                            //     local_structs = new_list();
-                                            // add_last(local_structs, strdup($1->name));
+                                            // if  (m2_local_structs == NULL)
+                                            //     m2_local_structs = new_list();
+                                            // add_last(m2_local_structs, strdup($1->name));
                                             // free($1->name);
                                             // destroy_list($1->members);
                                             // free($1);

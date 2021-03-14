@@ -22,8 +22,8 @@ int m2parse();
 int m2_err_lineno;
 char *m2_cur_file_name;
 
-struct list *global_vars;
-struct struct_list *global_structs;
-struct func_list *global_funcs;
+struct list *m2_global_vars;
+struct struct_list *m2_global_structs;
+struct func_list *m2_global_funcs;
 
 #endif

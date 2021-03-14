@@ -6,11 +6,11 @@
 
 #include "m2global.h"
 
-void print_global_vars() {
-    if (global_vars == NULL)
+void print_m2_global_vars() {
+    if (m2_global_vars == NULL)
         return;
     printf("Global variables\n\t");
-    struct node *cur = global_vars->first;
+    struct node *cur = m2_global_vars->first;
     while (cur != NULL) {
         struct node *next = cur->next;
         printf("%s", cur->data);
@@ -37,10 +37,10 @@ void print_list_member(char *label, struct list *l) {
     printf("\n");
 }
 
-void print_global_structs() {
-    if (global_structs == NULL)
+void print_m2_global_structs() {
+    if (m2_global_structs == NULL)
         return;
-    struct struct_node *cur = global_structs->first;
+    struct struct_node *cur = m2_global_structs->first;
     while (cur != NULL) {
         struct struct_node *next = cur->next;
         printf("Global struct %s\n", cur->name);
@@ -55,9 +55,9 @@ void print_global_structs() {
 }
 
 void print_funcs() {
-    if (global_funcs == NULL)
+    if (m2_global_funcs == NULL)
         return;
-    struct func_node *cur = global_funcs->first;
+    struct func_node *cur = m2_global_funcs->first;
     while (cur != NULL) {
         struct func_node *next = cur->next;
         if (cur->is_proto) {
@@ -87,17 +87,17 @@ void mode2(int argc, char *argv[], int fileIdx) {
         m2restart(f);
         print("Parse return %d\n", m2parse());
 
-        print_global_structs();
-        destroy_struct_list(global_structs);
-        global_structs = NULL;
+        print_m2_global_structs();
+        destroy_struct_list(m2_global_structs);
+        m2_global_structs = NULL;
 
-        print_global_vars();
-        destroy_list(global_vars);
-        global_vars = NULL;
+        print_m2_global_vars();
+        destroy_list(m2_global_vars);
+        m2_global_vars = NULL;
 
         print_funcs();
-        destroy_func_list(global_funcs);
-        global_funcs = NULL;
+        destroy_func_list(m2_global_funcs);
+        m2_global_funcs = NULL;
 
         fclose(f);
     }
