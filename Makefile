@@ -1,11 +1,13 @@
 all: link
-	# ./$(EXE) -2 struct3.c
+	./$(EXE) -3 array1.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
 
 test: link mode1-test mode2-test
+#=================================================================#
 ############################## compiler ###########################
+#=================================================================#
 CC 			:= gcc
 CFLAGS		:= -Wall -Wextra -g
 SRC			:= src
@@ -16,23 +18,27 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
 UTIL		:= $(SRC)/util
-OBJ 		= $(MAIN).o $(UTIL).o $(OBJ1) $(OBJ2)
+OBJ 		= $(MAIN).o $(UTIL).o $(OBJ1) $(OBJ2)  $(OBJ3)
 
 link: mycc $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(OBJ)
 	@echo '>>>>>>>>>>>>>>>>>>>> Built mycc <<<<<<<<<<<<<<<<<<<<<<<'
 
-mycc: $(MAIN).o $(UTIL).o mode1 mode2
+mycc: $(MAIN).o $(UTIL).o mode1 mode2 mode3
 
-compiler-clean: mode1-clean mode2-clean
+compiler-clean: mode1-clean mode2-clean mode3-clean
 	rm -rf $(MAIN).o $(UTIL).o $(EXE)
 	@echo '================= Cleaned Compiler ===================='
 
+#=================================================================#
 #------------------------------ test -----------------------------#
+#=================================================================#
 TEST_CMD	:= ./Check.sh mycc -s *.c
 # TEST_CMD	:= ./Check.sh mycc -d struct3.c
 
+#=================================================================#
 #------------------------------ mode 1 ---------------------------#
+#=================================================================#
 SRC1	:= $(SRC)/mode1
 LEX1	:= $(SRC1)/lexer1
 MODE1	:= $(SRC1)/mode1
@@ -55,7 +61,9 @@ mode1-clean:
 	rm -rf $(LEX1).yy.c $(OBJ1)
 	@echo '=================== Cleaned Mode1 ====================='
 
+#=================================================================#
 #------------------------------ mode 2 ---------------------------#
+#=================================================================#
 SRC2	:= $(SRC)/mode2
 LEX2	:= $(SRC2)/lexer2
 PASER2	:= $(SRC2)/parser2
@@ -66,7 +74,7 @@ TEST2	:= test/Grading2
 test2: link mode2-test
 
 mode2-test:
-	@echo '@@@@@@@@@@@@@@@@@@@@ Mode1 Test @@@@@@@@@@@@@@@@@@@@@@@'
+	@echo '@@@@@@@@@@@@@@@@@@@@ Mode2 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST2) && cd $(TEST2) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
 mode2: $(OBJ2)
@@ -82,12 +90,45 @@ mode2-clean:
 	rm -rf $(LEX2).yy.c $(PASER2).tab.* $(OBJ2)
 	@echo '=================== Cleaned Mode2 ====================='
 
+#=================================================================#
+#------------------------------ mode 3 ---------------------------#
+#=================================================================#
+SRC3	:= $(SRC)/mode3
+LEX3	:= $(SRC3)/lexer3
+PASER3	:= $(SRC3)/parser3
+MODE3	:= $(SRC3)/mode3
+OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o
+TEST3	:= test/Grading2
+
+test3: link mode3-test
+
+mode3-test:
+	@echo '@@@@@@@@@@@@@@@@@@@@ Mode3 Test @@@@@@@@@@@@@@@@@@@@@@@'
+	cp $(EXE) $(TEST3) && cd $(TEST3) && $(TEST_CMD) && rm $(EXE) && cd ../../
+
+mode3: $(OBJ3)
+	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode3 <<<<<<<<<<<<<<<<<<<<<<'
+
+$(PASER3).tab.h $(PASER3).tab.c: $(PASER3).y
+	bison -d -o $(PASER3).tab.c $(PASER3).y
+
+$(LEX3).yy.c: $(LEX3).l
+	flex -o $(LEX3).yy.c $(LEX3).l
+
+mode3-clean:
+	rm -rf $(LEX3).yy.c $(PASER3).tab.* $(OBJ3)
+	@echo '=================== Cleaned Mode3 ====================='
+
+#=================================================================#
 #----------------------- GNU auto variables ----------------------#
+#=================================================================#
 %.o: %.c
 	@echo '>>>>>>>>>>>>>>>>>> auto .c to .o <<<<<<<<<<<<<<<<<<<<<<'
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+#=================================================================#
 ################################ latex ############################
+#=================================================================#
 latex:
 	pdflatex developer.tex
 	@echo '>>>>>>>>>>>>>>>>>>>> Built Latex <<<<<<<<<<<<<<<<<<<<<<'

@@ -30,6 +30,8 @@ int main(int argc, char *argv[]) {
             mode1(argc, argv, fileIdx);
         } else if (!strcmp(argv[1], "-2")) {
             mode2(argc, argv, fileIdx);
+        } else if (!strcmp(argv[1], "-3")) {
+            mode3(argc, argv, fileIdx);
         } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {
             fprintf(stderr, "The other modes are not implemented.\n");
         } else {

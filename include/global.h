@@ -15,5 +15,6 @@ extern char *concat(char *s1, char *s2);
 
 extern void mode1(int argc, char *argv[], int fileIdx);
 extern void mode2(int argc, char *argv[], int fileIdx);
+extern void mode3(int argc, char *argv[], int fileIdx);
 
 #endif
