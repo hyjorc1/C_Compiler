@@ -8,7 +8,7 @@
 
 
 void m2error(const char* mesg) {
-    fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", cur_file_name, m2lineno, m2text, mesg);
+    fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", m2_cur_file_name, m2lineno, m2text, mesg);
 }
 
 void dprint(const char* s1, const char* s2) {
@@ -17,7 +17,7 @@ void dprint(const char* s1, const char* s2) {
     }
 }
 
-char *cur_file_name;
+char *m2_cur_file_name;
 
 struct list *global_vars = NULL;
 struct struct_list *global_structs = NULL;

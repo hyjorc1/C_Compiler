@@ -4,6 +4,7 @@
 #include "m2global.h"
 #include "parser2.tab.h"      // Bison-generated header file with token names
 
+int m2_err_lineno = 0;
 
 %}
 
@@ -81,14 +82,14 @@ return          { return RETURN; }
 
 "/*"                                {   /* handle c comment */
                                         BEGIN(COMMENT); 
-                                        err_lineno = yylineno; 
+                                        m2_err_lineno = yylineno; 
                                         print("enter COMMENT state\n");
                                     }
 <COMMENT>.|\n                       {   /* ignore */    }
 <COMMENT>"*/"                       {   BEGIN(INITIAL); print("leave COMMENT state\n"); }
 <COMMENT><<EOF>>                    {   /* handle bad input in COMMENT state */
                                         int tmp = m2lineno;
-                                        m2lineno = err_lineno;
+                                        m2lineno = m2_err_lineno;
                                         m2error("unclosed comment");
                                         m2lineno = tmp;
                                         BEGIN(INITIAL);

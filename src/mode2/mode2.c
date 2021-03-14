@@ -82,7 +82,7 @@ void mode2(int argc, char *argv[], int fileIdx) {
             perror(argv[i]);
             return;
         }
-        cur_file_name = argv[i];
+        m2_cur_file_name = argv[i];
         m2lineno = 1;
         m2restart(f);
         print("Parse return %d\n", m2parse());

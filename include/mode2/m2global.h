@@ -7,23 +7,23 @@
 #include  "func_list.h"
 
 /* interface to the lexer with prefix 'm2' */
-extern char *m2text;
-extern int m2lineno;
+char *m2text;
+int m2lineno;
 
 /* interface to the lexer with prefix 'm2' */
-extern int m2lex();
-extern void m2error(const char* msg);
-extern void m2restart(FILE *input_file);
+int m2lex();
+void m2error(const char* msg);
+void m2restart(FILE *input_file);
 
 /* interface to the parser with prefix 'm2' */
-extern int m2parse();
+int m2parse();
 
 /* global data structures and variables for mode 2 */
-extern int err_lineno;
-extern char *cur_file_name;
+int m2_err_lineno;
+char *m2_cur_file_name;
 
-extern struct list *global_vars;
-extern struct struct_list *global_structs;
-extern struct func_list *global_funcs;
+struct list *global_vars;
+struct struct_list *global_structs;
+struct func_list *global_funcs;
 
 #endif
