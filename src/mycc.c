@@ -5,7 +5,7 @@
 
 #include "global.h"
 
-int debug = 0;
+int debug = 0; /* set 1 to trigger debug mode */
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(argv[1], "-1")) {
             mode1(argc, argv, fileIdx);
         } else if (!strcmp(argv[1], "-2")) {
-            mode2(argc, argv, fileIdx);
+            mode3(argc, argv, fileIdx);
         } else if (!strcmp(argv[1], "-3")) {
             mode3(argc, argv, fileIdx);
         } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {

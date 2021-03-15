@@ -4,6 +4,15 @@
         "locale": "cpp",
         "__node_handle": "c",
         "typeinfo": "cpp",
-        "tuple": "c"
+        "tuple": "c",
+        "__config": "c",
+        "__debug": "c",
+        "chrono": "c",
+        "functional": "c",
+        "memory": "c",
+        "unordered_map": "c",
+        "algorithm": "c",
+        "complex": "c",
+        "new": "c"
     }
 }
