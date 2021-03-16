@@ -151,7 +151,7 @@ struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI
                                                 m3dprint("local struct decl", "============== local struct decl =============");
                                                 if  (m3_local_structs == NULL)
                                                     m3_local_structs = new_list();
-                                                add_first(m3_local_structs, strdup($2));
+                                                add_last(m3_local_structs, strdup($2));
                                                 free($2);
                                                 destroy_list($4);
                                             }
@@ -338,7 +338,7 @@ exp_list : exp                          { m3dprint("single exp exp_list", ""); }
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */
 l_val : l_member                        { m3dprint("single l_member", ""); }
-    | l_val DOT l_member                { m3dprint("l_val DOT l_member", "."); }
+    | l_val DOT l_member                { /* part 3 - R15 */ m3dprint("l_val DOT l_member", "."); }
     ;
 
 l_member : IDENT                        { m3dprint("IDENT", $1); }

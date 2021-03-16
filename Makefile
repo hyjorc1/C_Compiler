@@ -98,7 +98,7 @@ SRC3	:= $(SRC)/mode3
 LEX3	:= $(SRC3)/lexer3
 PASER3	:= $(SRC3)/parser3
 MODE3	:= $(SRC3)/mode3
-OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o
+OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o $(SRC3)/map.o $(SRC3)/type.o
 TEST3	:= test/Grading2
 
 test3: link mode3-test

@@ -44,11 +44,7 @@ void print_m2_global_structs() {
     while (cur != NULL) {
         struct struct_node *next = cur->next;
         printf("Global struct %s\n", cur->name);
-        if (cur->members == NULL || cur->members->size == 0) {
-            printf("\n");
-        } else {
-            print_m2_list_member("", cur->members);
-        }
+        print_m2_list_member("", cur->members);
         cur = next;
         printf("\n");
     }

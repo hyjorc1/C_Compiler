@@ -152,7 +152,7 @@ struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI
                                                 m2dprint("local struct decl", "============== local struct decl =============");
                                                 if  (m2_local_structs == NULL)
                                                     m2_local_structs = new_list();
-                                                add_first(m2_local_structs, strdup($2));
+                                                add_last(m2_local_structs, strdup($2));
                                                 free($2);
                                                 destroy_list($4);
                                             }
