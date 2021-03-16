@@ -44,7 +44,11 @@ void print_m3_global_structs() {
     while (cur != NULL) {
         struct struct_node *next = cur->next;
         printf("Global struct %s\n", cur->name);
-        print_m3_list_member("", cur->members);
+        if (cur->members == NULL || cur->members->size == 0) {
+            printf("\n");
+        } else {
+            print_m3_list_member("", cur->members);
+        }
         cur = next;
         printf("\n");
     }
