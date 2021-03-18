@@ -83,16 +83,16 @@ void destroy_list(struct list *l) {
 void print_list(struct list *l) {
     if (l == NULL)
         return;
-    print("list with size %d: ", l->size);
+    printf("list with size %d: ", l->size);
     struct node *cur = l->first;
     while (cur != NULL) {
         struct node *next = cur->next;
-        print("%s", cur->data);
+        printf("%s", cur->data);
         if (next != NULL)
             print(", ");
         cur = next;
     }
-    print("\n");
+    printf("\n");
 }
 
 struct list* merge(struct list *l1, struct list *l2) {
