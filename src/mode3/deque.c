@@ -1,14 +1,12 @@
 #include "deque.h"
 
-ListNode* node_new(void *data, size_t data_size, void (*free_data)(void *)) {
+ListNode* node_new(void *data, size_t data_size) {
     assert(data_size > 0);
     ListNode *n = (ListNode *)malloc(sizeof(ListNode));
     n->data = (void *)malloc(data_size);
     memcpy(n->data, data, data_size);
     n->prev = NULL;
     n->next = NULL;
-    if (free_data)
-        (*free_data)(data);     // free source data
     return n;
 }
 
@@ -40,7 +38,7 @@ void list_destroy(List *l) {
 void list_add_first(List *l, void *data) {
     if (l == NULL)
         return;
-    ListNode *n = node_new(data, l->data_size, l->free_data);
+    ListNode *n = node_new(data, l->data_size);
     if (l->size == 0) {
         l->first = n;
         l->last = n;
@@ -55,7 +53,7 @@ void list_add_first(List *l, void *data) {
 void list_add_last(List *l, void *data) {
     if (l == NULL)
         return;
-    ListNode *n = node_new(data, l->data_size, l->free_data);
+    ListNode *n = node_new(data, l->data_size);
     if (l->size == 0) {
         l->first = n;
         l->last = n;

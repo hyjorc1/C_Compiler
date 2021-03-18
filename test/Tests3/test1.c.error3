@@ -1,0 +1,28 @@
+Error near test1.c line 9
+	Undeclared identifier: b
+Error near test1.c line 9
+	Operation not supported: int = error
+Error near test1.c line 10
+	Operation not supported: int + char[]
+Error near test1.c line 20
+	Condition of while loop has invalid type: void
+Error near test1.c line 25
+	Returning void in a function of type float
+Error near test1.c line 28
+	Returning int in a function of type float
+Error near test1.c line 33
+	Parameter mismatch in function call
+	f(char)
+Error near test1.c line 34
+	Parameter mismatch in function call
+	f(int, int, int)
+Error near test1.c line 35
+	Parameter mismatch in function call
+	g(int)
+Error near test1.c line 36
+	Parameter mismatch in function call
+	h(int)
+Error near test1.c line 37
+	Function i has not been declared.
+Error near test1.c line 38
+	Array index should be an integer (was: float)

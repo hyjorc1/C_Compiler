@@ -1,0 +1,25 @@
+Error near test1.c line 9
+	Undeclared identifier: b
+Error near test1.c line 10
+	Operation not supported: int + const char[]
+Error near test1.c line 20
+	Condition of while loop has invalid type: void
+Error near test1.c line 25
+	Function must return a value of type float
+Error near test1.c line 34
+	No match for function call f(const int, const int, const int)
+	Candidates are:
+	    int f(int) declared in test1.c near line 7
+Error near test1.c line 35
+	No match for function call g(const int)
+	Candidates are:
+	    float g(int, int) declared in test1.c near line 16
+Error near test1.c line 36
+	No match for function call h(const int)
+	Candidates are:
+	    void h() declared in test1.c near line 31
+Error near test1.c line 37
+	No match for function call i(const char[])
+	No functions with this name
+Error near test1.c line 38
+	Index to array A is not an integer

@@ -8,10 +8,10 @@
 typedef struct {
     char *name;
     char is_const;
-    char is_array;
+    char is_struct;
 } Type;
 
-Type *new_type_ast(char *name, char is_const, char is_array);
+Type *new_type_ast(char *name, char is_const, char is_struct);
 
 void free_type_ast(void *p);
 
@@ -20,10 +20,11 @@ void free_type_ast(void *p);
 typedef struct {
     Type *type;
     char *name;
+    char is_array;
     char is_init;
 } Variable;
 
-Variable *new_variable_ast(Type *type, char *name, char is_init);
+Variable *new_variable_ast(Type *type, char *name, char is_array, char is_init);
 
 void free_variable_ast(void *p);
 

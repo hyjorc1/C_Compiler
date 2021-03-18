@@ -1,10 +1,8 @@
 #ifndef M3_GLOBAL_H
 #define M3_GLOBAL_H
 
-#include  "global.h"
-#include  "node_list.h"
-#include  "struct_list.h"
-#include  "func_list.h"
+#include "global.h"
+#include "ast.h"
 
 /* interface to the lexer with prefix 'm3' */
 char *m3text;
@@ -22,8 +20,10 @@ int m3parse();
 int m3_err_lineno;
 char *m3_cur_file_name;
 
-struct list *m3_global_vars;
-struct struct_list *m3_global_structs;
-struct func_list *m3_global_funcs;
+// struct list *m3_global_vars;
+// struct struct_list *m3_global_structs;
+// struct func_list *m3_global_funcs;
+
+List *m3_global_vars;
 
 #endif

@@ -1,0 +1,6 @@
+Error near struct1.c line 20
+	struct pair already defined near struct1.c line 4
+Error near struct1.c line 25
+	No definition for 'struct triple'
+Error near struct1.c line 28
+	Undeclared identifier: T
