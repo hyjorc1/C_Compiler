@@ -13,6 +13,8 @@ typedef struct {
 
 Type *new_type_ast(char *name, char is_const, char is_struct);
 
+Type *deep_copy_type_ast(Type *t);
+
 void free_type_ast(void *p);
 
 /* -------------------- Variable AST -------------------- */
@@ -46,22 +48,23 @@ typedef struct {
     List *vars;
 } Struct;
 
-Struct *new_struct_ast(char *name);
+Struct *new_struct_ast(char *name, List *vars);
 
 void free_struct_ast(void *p);
 
 /* -------------------- Function AST -------------------- */
 
 typedef struct {
+    Type *return_type;
     char *name;
     List *parameters;
-    Type *return_type;
     List *local_structs;
     List *local_vars;
     List *statements;
+    char is_proto;
 } Function;
 
-Function *new_function_ast(char *name, Type *return_type);
+Function *new_function_ast(Type *return_type, char *name, List *parameters);
 
 void free_function_ast(void *p);
 

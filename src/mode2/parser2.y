@@ -233,7 +233,8 @@ local_decl : var_decl                   {
     ;
 
 /* 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
-block_stmt : LBRACE stmt_list RBRACE    { m2dprint("{ stmt list }", ""); };
+block_stmt : LBRACE stmt_list RBRACE    { m2dprint("{ stmt list }", ""); }
+    ;
 
 stmt_list : %empty                      { m2dprint("empty stmt list", ""); }
     | stmt_list stmt                    { m2dprint("stmt_list stmt", ""); }
@@ -256,13 +257,13 @@ return_stmt : RETURN SEMI               { m2dprint("RETURN SEMI", ""); }
     | RETURN exp SEMI                   { m2dprint("RETURN exp SEMI", ""); }
     ;
 
-if_stmt : IF LPAR exp RPAR block_stmt %prec WITHOUT_ELSE    { m2dprint("IF block_stmt", ""); };
-    | IF LPAR exp RPAR block_stmt ELSE block_stmt           { m2dprint("IF block_stmt ELSE block_stmt", ""); };
-    | IF LPAR exp RPAR block_stmt ELSE stmt                 { m2dprint("IF block_stmt ELSE stmt", ""); };
+if_stmt : IF LPAR exp RPAR block_stmt %prec WITHOUT_ELSE    { m2dprint("IF block_stmt", ""); }
+    | IF LPAR exp RPAR block_stmt ELSE block_stmt           { m2dprint("IF block_stmt ELSE block_stmt", ""); }
+    | IF LPAR exp RPAR block_stmt ELSE stmt                 { m2dprint("IF block_stmt ELSE stmt", ""); }
     
-    | IF LPAR exp RPAR stmt %prec WITHOUT_ELSE              { m2dprint("IF stmt", ""); };
-    | IF LPAR exp RPAR stmt ELSE block_stmt                 { m2dprint("IF stmt ELSE block_stmt", ""); };
-    | IF LPAR exp RPAR stmt ELSE stmt                       { m2dprint("IF stmt ELSE stmt", ""); };
+    | IF LPAR exp RPAR stmt %prec WITHOUT_ELSE              { m2dprint("IF stmt", ""); }
+    | IF LPAR exp RPAR stmt ELSE block_stmt                 { m2dprint("IF stmt ELSE block_stmt", ""); }
+    | IF LPAR exp RPAR stmt ELSE stmt                       { m2dprint("IF stmt ELSE stmt", ""); }
     ;
 
 for_stmt : FOR LPAR exp_b SEMI exp_b SEMI exp_b RPAR block_stmt   { m2dprint("FOR block_stmt", ""); }

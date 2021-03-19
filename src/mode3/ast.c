@@ -12,6 +12,14 @@ Type *new_type_ast(char *name, char is_const, char is_struct) {
     return t;
 }
 
+Type *deep_copy_type_ast(Type *t) {
+    Type *copy = (Type *)malloc(sizeof(Type));
+    copy->name = strdup(t->name);
+    copy->is_const = t->is_const;
+    copy->is_struct = t->is_struct;
+    return copy;
+}
+
 void free_type_ast(void *p) {
     if (!p)
         return;
@@ -49,7 +57,7 @@ void free_variable_ast(void *p) {
     print(">>>>>>>>free_variable_ast 5\n");
 }
 
-/* -------------------- Variable AST -------------------- */
+/* -------------------- Statement AST -------------------- */
 
 Statement *new_statement_ast(int lineno, Type *type) {
     Statement *stmt = (Statement *)malloc(sizeof(Statement));
@@ -71,10 +79,10 @@ void free_statement_ast(void *p) {
 
 /* -------------------- Struct AST -------------------- */
 
-Struct *new_struct_ast(char *name) {
+Struct *new_struct_ast(char *name, List *vars) {
     Struct *s = (Struct *)malloc(sizeof(Struct));
     s->name = name;
-    s->vars = list_new(sizeof(Variable), free_variable_ast);
+    s->vars = vars;
     return s;
 }
 
@@ -93,14 +101,15 @@ void free_struct_ast(void *p) {
 
 /* -------------------- Function AST -------------------- */
 
-Function *new_function_ast(char *name, Type *return_type) {
+Function *new_function_ast(Type *return_type, char *name, List *parameters) {
     Function *f = (Function *)malloc(sizeof(Function));
-    f->name = name;
-    f->parameters = list_new(sizeof(Variable), free_variable_ast);
     f->return_type = return_type;
+    f->name = name;
+    f->parameters = parameters;
     f->local_structs = list_new(sizeof(Struct), free_struct_ast);
     f->local_vars = list_new(sizeof(Variable), free_variable_ast);
     f->statements = list_new(sizeof(Statement), free_statement_ast);
+    f->is_proto = 0;
     return f;
 }
 

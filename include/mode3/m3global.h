@@ -20,10 +20,8 @@ int m3parse();
 int m3_err_lineno;
 char *m3_cur_file_name;
 
-// struct list *m3_global_vars;
-// struct struct_list *m3_global_structs;
-// struct func_list *m3_global_funcs;
-
 List *m3_global_vars;
+List *m3_global_structs;
+List *m3_global_funcs;
 
 #endif

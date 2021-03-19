@@ -91,24 +91,36 @@ void mode3(int argc, char *argv[], int fileIdx) {
         while (cur != NULL) {
             ListNode *next = cur->next;
             Variable *v = (Variable *)cur->data;
-            printf("var1: '%s'\n", v->name);
-            printf("arr1: '%d'\n", v->is_array);
-            printf("t1: '%s'\n", v->type->name);
+            printf("var: '%s'\n", v->name);
+            printf("arr: '%d'\n", v->is_array);
+            printf("t: '%s'\n", v->type->name);
             cur = next;
         }
 
-        list_destroy(m3_global_vars);
-        // print_m3_global_structs();
-        // destroy_struct_list(m3_global_structs);
-        // m3_global_structs = NULL;
-
-        // print_m3_global_vars();
-        // destroy_list(m3_global_vars);
+        // list_destroy(m3_global_vars);
         // m3_global_vars = NULL;
 
-        // print_m3_funcs();
-        // destroy_func_list(m3_global_funcs);
-        // m3_global_funcs = NULL;
+        cur = m3_global_structs->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            Struct *s = (Struct *)cur->data;
+            printf("struct: '%s'\n", s->name);
+            printf("vars size: %zu\n", s->vars->size);
+            cur = next;
+        }
+
+        // list_destroy(m3_global_structs);
+        // m3_global_structs = NULL;
+
+        cur = m3_global_funcs->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            Function *f = (Function *)cur->data;
+            printf("function: '%s'\n", f->name);
+            printf("parameters: %lu\n", (f->parameters) ? f->parameters->size : 0);
+            printf("isProto: %d\n", f->is_proto);
+            cur = next;
+        }
 
         fclose(f);
     }

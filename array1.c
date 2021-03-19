@@ -1,8 +1,16 @@
 
 int global, A[50];
 
-// int foo(int i)
-// {
-//   int b = 10;
-// }
+struct A {
+    int a, c;
+};
+
+struct B {
+    struct A aa, bb;
+    struct A cc;
+};
+
+int fn1();
+
+int fn2(int i, int j);
 

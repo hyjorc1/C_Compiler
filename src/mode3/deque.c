@@ -3,8 +3,9 @@
 ListNode* node_new(void *data, size_t data_size) {
     assert(data_size > 0);
     ListNode *n = (ListNode *)malloc(sizeof(ListNode));
-    n->data = (void *)malloc(data_size);
-    memcpy(n->data, data, data_size);
+    n->data = data;
+    // n->data = (void *)malloc(data_size);
+    // memcpy(n->data, data, data_size);
     n->prev = NULL;
     n->next = NULL;
     return n;
@@ -35,9 +36,9 @@ void list_destroy(List *l) {
     free(l);
 }
 
-void list_add_first(List *l, void *data) {
-    if (l == NULL)
-        return;
+List *list_add_first(List *l, void *data) {
+    if (l == NULL || data == NULL)
+        return l;
     ListNode *n = node_new(data, l->data_size);
     if (l->size == 0) {
         l->first = n;
@@ -48,11 +49,12 @@ void list_add_first(List *l, void *data) {
         l->first = n;
     }
     l->size++;
+    return l;
 }
 
-void list_add_last(List *l, void *data) {
-    if (l == NULL)
-        return;
+List *list_add_last(List *l, void *data) {
+    if (l == NULL || data == NULL)
+        return l;
     ListNode *n = node_new(data, l->data_size);
     if (l->size == 0) {
         l->first = n;
@@ -63,6 +65,7 @@ void list_add_last(List *l, void *data) {
         l->last = n;
     }
     l->size++;
+    return l;
 }
 
 void list_print(List *l, void (*print_data)(void *)) {
