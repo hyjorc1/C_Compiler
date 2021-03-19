@@ -78,7 +78,7 @@ List *m3_local_stmts = NULL;
 
 %type <sm> stmt
 %type <v> var init_var para
-%type <l> init_var_list var_decl var_ni_list noinit_var_decl struct_body_decl struct_body_decls para_list
+%type <l> init_var_list var_decl var_ni_list noinit_var_decl struct_body_decl struct_body_decls para_list stmt_list block_stmt
 /* part 3 - exp returns type */
 %type <t> type all_type exp
 %type <st> struct_decl
@@ -227,7 +227,7 @@ func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
                                                                     m3dprint("func_decl RBRACE func_body LBRACE", ""); 
                                                                     $1->local_structs = m3_local_structs;
                                                                     $1->local_vars = m3_local_vars;
-                                                                    $1->statements = m3_local_stmts;
+                                                                    $1->statements = $4;
                                                                     $1->is_proto = 0;
                                                                     $$ = $1;
                                                                     m3_is_global = 1;
@@ -247,12 +247,12 @@ local_decl : var_decl                   { m3dprint("local var decl", ""); m3_loc
     ;
 
 /* part 2 - 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
-block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); }
+block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); $$ = $2; }
     ;
 
-stmt_list : %empty                      { m3dprint("empty stmt list", ""); }
-    | stmt_list stmt                    { m3dprint("stmt_list stmt", ""); }
-    | stmt                              { m3dprint("stmt", ""); if (m3_local_stmts == NULL) m3_local_stmts = list_new(sizeof(Statement), free_statement_ast); list_add_last(m3_local_stmts, $1); }
+stmt_list : %empty                      { m3dprint("empty stmt list", ""); $$ = NULL; }
+    | stmt_list stmt                    { m3dprint("stmt_list stmt", ""); $$ = list_merge($1, $2); }
+    | stmt                              { m3dprint("stmt", ""); $$ = list_add_last(list_new(sizeof(Statement), free_statement_ast), $1); }
     ;
 
 /* part 2 - 9. statement */

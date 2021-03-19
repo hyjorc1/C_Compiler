@@ -84,6 +84,8 @@ void list_print(List *l, void (*print_data)(void *)) {
 }
 
 List* list_merge(List *l1, List *l2) {
+    if (l1 == NULL || l1->size == 0)
+        return l2;
     if (l2 == NULL || l2->size == 0)
         return l1;
 
