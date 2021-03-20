@@ -5,7 +5,7 @@
 
 #include "global.h"
 
-int debug = 0; /* set 1 to trigger debug mode */
+int debug = 1; /* set 1 to trigger debug mode */
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {

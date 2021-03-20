@@ -2,31 +2,17 @@
 #define AST_H
 
 #include "deque.h"
-
-/* -------------------- Type AST -------------------- */
-
-typedef struct {
-    char *name;
-    char is_const;
-    char is_struct;
-} Type;
-
-Type *new_type_ast(char *name, char is_const, char is_struct);
-
-Type *deep_copy_type_ast(Type *t);
-
-void free_type_ast(void *p);
+#include "map.h"
 
 /* -------------------- Variable AST -------------------- */
 
 typedef struct {
-    Type *type;
     char *name;
     char is_array;
     char is_init;
 } Variable;
 
-Variable *new_variable_ast(Type *type, char *name, char is_array, char is_init);
+Variable *new_variable_ast(char *name, char is_array, char is_init);
 
 void free_variable_ast(void *p);
 
@@ -46,9 +32,10 @@ void free_statement_ast(void *p);
 typedef struct {
     char *name;
     List *vars;
+    HashMap *local_var_map;
 } Struct;
 
-Struct *new_struct_ast(char *name, List *vars);
+Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map);
 
 void free_struct_ast(void *p);
 
@@ -58,9 +45,13 @@ typedef struct {
     Type *return_type;
     char *name;
     List *parameters;
+
+    HashMap *local_var_map;
+
     List *local_structs;
     List *local_vars;
     List *statements;
+
     char is_proto;
 } Function;
 

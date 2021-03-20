@@ -1,16 +1,6 @@
 
-int global, A[50];
+int c, A[50], a = 100;
 
-struct A {
-    int a, c;
-};
+const int B[50];
 
-struct B {
-    struct A aa, bb;
-    struct A cc;
-};
-
-int fn1();
-
-int fn2(int i, int j);
 

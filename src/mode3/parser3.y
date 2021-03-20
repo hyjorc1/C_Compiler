@@ -1,33 +1,39 @@
 
 %{
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include "m3global.h"
 
-
-void m3error(const char* mesg) {
-    fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", m3_cur_file_name, m3lineno, m3text, mesg);
-}
-
-void m3dprint(const char* s1, const char* s2) {
-    if (debug) {
-        fprintf(stdout, "line %d at text '%s' as '%s' => '%s'\n", m3lineno, m3text, s1, s2);
-    }
-}
-
-char *m3_cur_file_name;
+char *m3_cur_file_name = NULL;
 
 List *m3_global_vars = NULL;
+HashMap *m3_global_var_map = NULL;
+
 List *m3_global_structs = NULL;
+HashMap *m3_global_struct_map = NULL;
+
 List *m3_global_funcs = NULL;
+HashMap *m3_global_func_map = NULL;
 
 int m3_is_global = 1;
 
+Type *cur_type = NULL;
+
+HashMap *m3_local_var_map = NULL;
 List *m3_local_structs = NULL;
 List *m3_local_vars = NULL;
 List *m3_local_stmts = NULL;
+
+/* constant types */
+Type *char_type = NULL;
+Type *const_char_type = NULL;
+Type *int_type = NULL;
+Type *const_int_type = NULL;
+Type *float_type = NULL;
+Type *const_float_type = NULL;
+
+const char *char_str = "char";
+const char *int_str = "int";
+const char *float_str = "float";
 
 %}
 
@@ -76,11 +82,10 @@ List *m3_local_stmts = NULL;
 
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
-%type <sm> stmt
 %type <v> var init_var para
-%type <l> init_var_list var_decl var_ni_list noinit_var_decl struct_body_decl struct_body_decls para_list stmt_list block_stmt
+%type <l> var_ni_list noinit_var_decl struct_body_decl struct_body_decls para_list
 /* part 3 - exp returns type */
-%type <t> type all_type exp
+%type <t> exp l_val l_member
 %type <st> struct_decl
 %type <fn> func_decl func_proto func_def
 
@@ -91,7 +96,7 @@ List *m3_local_stmts = NULL;
 root : %empty                           {   m3dprint("empty root", "");   }
     | root var_decl                     { 
                                             m3dprint("global var_decl", "============== global var_decl  =============");
-                                            m3_global_vars = (m3_global_vars == NULL) ? $2 : list_merge(m3_global_vars, $2);
+                                            // m3_global_vars = (m3_global_vars == NULL) ? $2 : list_merge(m3_global_vars, $2);
                                         }
     | root func_proto                   { 
                                             m3dprint("global func_proto", "============== global func_proto =============");
@@ -112,41 +117,30 @@ root : %empty                           {   m3dprint("empty root", "");   }
     one or more identifiers, each identifier optionally followed by a left bracket, 
     an integer constant, and a right bracket. The list is terminated with a semicolon. 
     Note that this restricts arrays to a single dimension. */
-var_decl : type init_var_list SEMI      {   
-                                            m3dprint("type init var list ;", "");
-                                            ListNode *cur = $2->first;
-                                            while (cur != NULL) {
-                                                ListNode *next = cur->next;
-                                                Variable *v = (Variable *)cur->data;
-                                                v->type = deep_copy_type_ast($1);
-                                                cur = next;
-                                            }
-                                            free_type_ast($1);
-                                            $$ = $2;
-                                        }
+var_decl : type init_var_list SEMI      { m3dprint("type init var list ;", ""); free_type_ast(cur_type); cur_type = NULL; }
     ;
 
 /* part 2 - 2.3 and part 3 - 2.6 Extra credit: constants */
-type : all_type                         { m3dprint("all_type", ""); $$ = $1; }
-    | CONST all_type                    { m3dprint("CONST all_type", ""); $2->is_const = 1; $$ = $2; }
-    | all_type CONST                    { m3dprint("all_type CONST", ""); $1->is_const = 1; $$ = $1; }
+type : all_type                         { m3dprint("all_type", ""); }
+    | CONST all_type                    { m3dprint("CONST all_type", ""); cur_type->is_const = 1; }
+    | all_type CONST                    { m3dprint("all_type CONST", ""); cur_type->is_const = 1; }
     ;
 
-all_type : PRIMTYPE                     { m3dprint("PRIMTYPE", $1); $$ = new_type_ast($1, 0, 0); }
-    | STRUCT IDENT                      { m3dprint("STRUCT IDENT", $2); $$ = new_type_ast($2, 0, 1); }
+all_type : PRIMTYPE                     { m3dprint("PRIMTYPE", $1); cur_type = new_type_ast($1, 0, 0, 0); }
+    | STRUCT IDENT                      { m3dprint("STRUCT IDENT", $2); cur_type = new_type_ast($2, 0, 1, 0); }
     ;
 
-init_var_list : init_var                { m3dprint("single init var init var list", ""); $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1); }
-    | init_var_list COMMA init_var      { m3dprint("init var list COMMA init_var", ","); $$ = list_add_last($1, $3); }
+init_var_list : init_var                { m3dprint("single init var init var list", ""); update_var_list($1); }
+    | init_var_list COMMA init_var      { m3dprint("init var list COMMA init_var", ","); update_var_list($3); }
     ;
 
 /* part 2 - 2.2 and part 3 - 2.5 Extra credit: variable initialization */
-init_var : var                          { m3dprint("init_var var", ""); $$ = $1; }
-    | var ASSIGN exp                    { m3dprint("var = exp", "="); $1->is_init = 1; $$ = $1; }
+init_var : var                          { m3dprint("init_var var", ""); $$ = update_type_map($1); }
+    | var ASSIGN exp                    { m3dprint("var = exp", "="); $$ = update_type_map(handle_init_var($1, $3)); }
     ;
 
-var : IDENT                             { m3dprint("IDENT", $1); $$ = new_variable_ast(NULL, $1, 0, 0); }
-    | IDENT LBRACKET INTCONST RBRACKET  { m3dprint("IDENT [int]", $1); $$ = new_variable_ast(NULL, $1, 1, 0); }
+var : IDENT                             { m3dprint("IDENT", $1); $$ = handle_var_ident($1, 0); }
+    | IDENT LBRACKET INTCONST RBRACKET  { m3dprint("IDENT [int]", $1); $$ = handle_var_ident($1, 1); }
     ;
 
 /* part 2 - 2.4 Extra credit: user-defined structs 
@@ -157,66 +151,66 @@ var : IDENT                             { m3dprint("IDENT", $1); $$ = new_variab
 struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI 
                                         {
                                             m3dprint("STRUCT { struct_body_decls }", $2);
-                                            if (m3_is_global) {
-                                                m3dprint("global struct decl ", "============== global struct decl =============");
-                                                if (m3_global_structs == NULL)
-                                                    m3_global_structs = list_new(sizeof(Struct), free_struct_ast);
-                                                list_add_last(m3_global_structs, new_struct_ast($2, $4));
-                                            } else {
-                                                m3dprint("local struct decl", "============== local struct decl =============");
-                                                if (m3_local_structs == NULL)
-                                                    m3_local_structs = list_new(sizeof(Struct), free_struct_ast);
-                                                list_add_last(m3_local_structs, new_struct_ast($2, $4));
-                                            }
+                                            // if (m3_is_global) {
+                                            //     m3dprint("global struct decl ", "============== global struct decl =============");
+                                            //     if (m3_global_structs == NULL)
+                                            //         m3_global_structs = list_new(sizeof(Struct), free_struct_ast);
+                                            //     list_add_last(m3_global_structs, new_struct_ast($2, $4));
+                                            // } else {
+                                            //     m3dprint("local struct decl", "============== local struct decl =============");
+                                            //     if (m3_local_structs == NULL)
+                                            //         m3_local_structs = list_new(sizeof(Struct), free_struct_ast);
+                                            //     list_add_last(m3_local_structs, new_struct_ast($2, $4));
+                                            // }
                                         }
     ;
 
-struct_body_decls : %empty              { m3dprint("empty struct body decls", ""); $$ = NULL; }
-    | struct_body_decl                  { m3dprint("sinlge struct body decl", ""); $$ = $1; }
-    | struct_body_decls struct_body_decl{ m3dprint("multiple struct body decl", ""); $$ = list_merge($1, $2); }
+struct_body_decls : %empty              { m3dprint("empty struct body decls", ""); /* $$ = NULL; */ }
+    | struct_body_decl                  { m3dprint("sinlge struct body decl", ""); /* $$ = $1; */ }
+    | struct_body_decls struct_body_decl{ m3dprint("multiple struct body decl", ""); /* $$ = list_merge($1, $2); */ }
     ;
 
-struct_body_decl : noinit_var_decl      { m3dprint("noinit var decl", ""); $$ = $1; }
-    | struct_decl                       { m3dprint("nested struct decl", ""); $$ = NULL; }
+struct_body_decl : noinit_var_decl      { m3dprint("noinit var decl", ""); /* $$ = $1; */ }
+    | struct_decl                       { m3dprint("nested struct decl", ""); /* $$ = NULL; */ }
     ;
 
 noinit_var_decl : type var_ni_list SEMI {   
                                             m3dprint("type var_ni_list SEMI", "");
-                                            ListNode *cur = $2->first;
-                                            while (cur != NULL) {
-                                                ListNode *next = cur->next;
-                                                Variable *v = (Variable *)cur->data;
-                                                v->type = deep_copy_type_ast($1);
-                                                cur = next;
-                                            }
-                                            free_type_ast($1);
-                                            $$ = $2;
+                                            // ListNode *cur = $2->first;
+                                            // while (cur != NULL) {
+                                            //     ListNode *next = cur->next;
+                                            //     Variable *v = (Variable *)cur->data;
+                                            //     v->type = deep_copy_type_ast($1);
+                                            //     cur = next;
+                                            // }
+                                            // free_type_ast($1);
+                                            // $$ = $2;
                                         }
     ;
 
-var_ni_list : var                       { m3dprint("var_ni_list var", ""); $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1); }
-    | var_ni_list COMMA var             { m3dprint("var_ni_list COMMA var", ","); $$ = list_add_last($1, $3); }
+var_ni_list : var                       { m3dprint("var_ni_list var", ""); /* $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1);  */ }
+    | var_ni_list COMMA var             { m3dprint("var_ni_list COMMA var", ","); /* $$ = list_add_last($1, $3); */ }
     ;
 
 /* part 2 - 4. A function prototype is a function declaration followed by a semicolon. */
-func_proto : func_decl SEMI             { m3dprint("func_proto SEMI", ""); $1->is_proto = 1; $$ = $1; m3_is_global = 1; }
+func_proto : func_decl SEMI             { m3dprint("func_proto SEMI", ""); /* $1->is_proto = 1; $$ = $1; m3_is_global = 1;  */ }
     ;
 
 /* part 2 - 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : type IDENT LPAR para_list RPAR  { m3dprint("func_decl", $2); $$ = new_function_ast($1, $2, $4); m3_is_global = 0; }
-    | type IDENT LPAR RPAR                  { m3dprint("sempty para list", ""); $$ = new_function_ast($1, $2, NULL); m3_is_global = 0; }
+func_decl : type IDENT LPAR para_list RPAR  { m3dprint("func_decl", $2); /* $$ = new_function_ast($1, $2, $4); m3_is_global = 0; */ }
+    | type IDENT LPAR RPAR                  { m3dprint("sempty para list", ""); /* $$ = new_function_ast($1, $2, NULL); m3_is_global = 0; */ }
     ;
 
-para_list : para_list COMMA para        { m3dprint("multiple para list", ","); $$ = list_add_last($1, $3); }
-    | para                              { m3dprint("single para list", ""); $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1); }
+para_list : para_list COMMA para        { m3dprint("multiple para list", ","); /* $$ = list_add_last($1, $3); */ }
+    | para                              { m3dprint("single para list", ""); /* $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1); */ }
     ;
 
 /* part 2 - 6. A formal parameter is† a type name, followed by an identifier, and optionally 
     followed by a left and right bracket. */
-para : type IDENT                       { m3dprint("type IDENT", $2); $$ = new_variable_ast($1, $2, 0, 0); }
-    | type IDENT LBRACKET RBRACKET      { m3dprint("type IDENT []", $2); $$ = new_variable_ast($1, $2, 1, 0); }
+para : type IDENT                       { m3dprint("type IDENT", $2); /* $$ = new_variable_ast($1, $2, 0, 0); */ }
+    | type IDENT LBRACKET RBRACKET      { m3dprint("type IDENT []", $2); /* $$ = new_variable_ast($1, $2, 1, 0); */ }
     ;
 
 /* part 2 - 7. A function definition is a function declaration followed by a left brace, 
@@ -225,15 +219,15 @@ para : type IDENT                       { m3dprint("type IDENT", $2); $$ = new_v
     declarations to appear before statements. */
 func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
                                                                     m3dprint("func_decl RBRACE func_body LBRACE", ""); 
-                                                                    $1->local_structs = m3_local_structs;
-                                                                    $1->local_vars = m3_local_vars;
-                                                                    $1->statements = $4;
-                                                                    $1->is_proto = 0;
-                                                                    $$ = $1;
-                                                                    m3_is_global = 1;
-                                                                    m3_local_structs = NULL;
-                                                                    m3_local_vars = NULL;
-                                                                    m3_local_stmts = NULL;
+                                                                    // $1->local_structs = m3_local_structs;
+                                                                    // $1->local_vars = m3_local_vars;
+                                                                    // $1->statements = m3_local_stmts;
+                                                                    // $1->is_proto = 0;
+                                                                    // $$ = $1;
+                                                                    // m3_is_global = 1;
+                                                                    // m3_local_structs = NULL;
+                                                                    // m3_local_vars = NULL;
+                                                                    // m3_local_stmts = NULL;
                                                                 }
     ;
 
@@ -242,22 +236,27 @@ func_local_decls : %empty               { m3dprint("empty func_local_decls", "")
     | local_decl                        { m3dprint("single local_decl", ""); }
     ;
 
-local_decl : var_decl                   { m3dprint("local var decl", ""); m3_local_vars = (m3_local_vars == NULL) ? $1 : list_merge(m3_local_vars, $1); }
+local_decl : var_decl                   { m3dprint("local var decl", ""); /* m3_local_vars = (m3_local_vars == NULL) ? $1 : list_merge(m3_local_vars, $1);  */ }
     | struct_decl                       { m3dprint("local_decl struct decl", ""); }
     ;
 
 /* part 2 - 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
-block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); $$ = $2; }
+block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); }
     ;
 
-stmt_list : %empty                      { m3dprint("empty stmt list", ""); $$ = NULL; }
-    | stmt_list stmt                    { m3dprint("stmt_list stmt", ""); $$ = list_merge($1, $2); }
-    | stmt                              { m3dprint("stmt", ""); $$ = list_add_last(list_new(sizeof(Statement), free_statement_ast), $1); }
+stmt_list : %empty                      { m3dprint("empty stmt list", ""); }
+    | stmt_list stmt                    { m3dprint("stmt_list stmt", ""); }
+    | stmt                              { m3dprint("stmt", ""); }
     ;
 
 /* part 2 - 9. statement */
 stmt : SEMI                             { m3dprint("SEMI", ""); }
-    | exp SEMI                          { m3dprint("exp SEMI", ""); }
+    | exp SEMI                          {   
+                                            m3dprint("exp SEMI", ""); 
+                                            // if (m3_local_stmts == NULL)
+                                            //     m3_local_stmts = list_new(sizeof(Statement), free_statement_ast);
+                                            // list_add_last(m3_local_stmts, new_statement_ast(m3lineno, $1)); 
+                                        }
     | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); }
     | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); }
     | return_stmt                       { m3dprint("return_stmt", ""); }
@@ -306,18 +305,18 @@ cond_exp : exp                          { m3dprint("cond exp", ""); }
     ;
 
 /* part 2 - 10. expression */
-exp : INTCONST                          { m3dprint("INTCONST", $1); }
-    | REALCONST                         { m3dprint("REALCONST", $1); }
-    | STRCONST                          { m3dprint("STRCONST", $1); }
-    | CHARCONST                         { m3dprint("CHARCONST", $1); }
-    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exp_list)", $1); }
-    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); }
+exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_int_type; }
+    | REALCONST                         { m3dprint("REALCONST", $1); $$ = NULL;  }
+    | STRCONST                          { m3dprint("STRCONST", $1); $$ = NULL;  }
+    | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = const_char_type;  }
+    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exp_list)", $1); $$ = NULL; }
+    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = NULL; }
 
     /* part 2 - 11. An l-value is an identifier, optionally followed by a left bracket, 
         an expression, and a right bracket. Note that this restricts array 
         access to a single dimension. */
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
-    | l_val                             { m3dprint("l_val", ""); }
+    | l_val                             { m3dprint("l_val", ""); $$ = $1; }
     | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); }
     | l_val PLUSASSIGN exp              { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); }
     | l_val MINUSASSIGN exp             { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); }
@@ -329,7 +328,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); }
     | l_val DECR %prec UDECR            { /* part 3 - R12 */ m3dprint("l_val DECR", "--"); }
 
     /* part 2 - 12. Unary operators (for any expression) are: -, !, ~ */
-    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); }
+    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_UBANG($2); }
     | TILDE exp %prec UTILDE            { /* part 3 - R2 */ m3dprint("UTILDE", "~"); }
     | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); }
 
@@ -361,18 +360,17 @@ exp_list : exp                          { m3dprint("single exp exp_list", ""); }
     ; 
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */
-l_val : l_member                        { m3dprint("single l_member", ""); }
-    | l_val DOT l_member                { /* part 3 - R15 */ m3dprint("l_val DOT l_member", "."); }
+l_val : l_member                        { m3dprint("single l_member", ""); $$ = NULL; }
+    | l_val DOT l_member                { /* part 3 - R15 */ m3dprint("l_val DOT l_member", "."); $$ = NULL; }
     ;
 
-l_member : IDENT                        { m3dprint("IDENT", $1); }
-    | IDENT dimen                       { /* part 3 - R14 */ m3dprint("IDENT dimen", $1); }
-    ;
-
-dimen : LBRACKET exp RBRACKET           { /* part 3 - R14 */ m3dprint("[ exp ]", ""); }
-    | dimen LBRACKET exp RBRACKET       { /* part 3 - R14 */ m3dprint("dimen [ exp ]", ""); }
+l_member : IDENT                        { m3dprint("IDENT", $1); $$ = NULL; }
+    | IDENT LBRACKET exp RBRACKET       { /* part 3 - R14 */ m3dprint("IDENT [ exp ]", $1); $$ = NULL; }
     ;
 
 %%
+
+
+
 
 

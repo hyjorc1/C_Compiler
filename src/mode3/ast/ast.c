@@ -1,42 +1,10 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "ast.h"
 #include "global.h"
 
-/* -------------------- Type AST -------------------- */
-Type *new_type_ast(char *name, char is_const, char is_struct) {
-    Type *t = (Type *)malloc(sizeof(Type));
-    t->name = name;
-    t->is_const = is_const;
-    t->is_struct = is_struct;
-    return t;
-}
-
-Type *deep_copy_type_ast(Type *t) {
-    Type *copy = (Type *)malloc(sizeof(Type));
-    copy->name = strdup(t->name);
-    copy->is_const = t->is_const;
-    copy->is_struct = t->is_struct;
-    return copy;
-}
-
-void free_type_ast(void *p) {
-    if (!p)
-        return;
-    print(">>>>>>>>free_type_ast 1\n");
-    Type *t = (Type *)p;
-    print(">>>>>>>>free_type_ast 2\n");
-    free(t->name);
-    print(">>>>>>>>free_type_ast 3\n");
-    free(p);
-    print(">>>>>>>>free_type_ast 4\n");
-}
-
 /* -------------------- Variable AST -------------------- */
 
-Variable *new_variable_ast(Type *type, char *name, char is_array, char is_init) {
+Variable *new_variable_ast(char *name, char is_array, char is_init) {
     Variable *v = (Variable *)malloc(sizeof(Variable));
-    v->type = type;
     v->name = name;
     v->is_array = is_array;
     v->is_init = is_init;
@@ -49,12 +17,10 @@ void free_variable_ast(void *p) {
     print(">>>>>>>>free_variable_ast 1\n");
     Variable *v = (Variable *)p;
     print(">>>>>>>>free_variable_ast 2\n");
-    free_type_ast(v->type);
-    print(">>>>>>>>free_variable_ast 3\n");
     free(v->name);
-    print(">>>>>>>>free_variable_ast 4\n");
+    print(">>>>>>>>free_variable_ast 3\n");
     free(p);
-    print(">>>>>>>>free_variable_ast 5\n");
+    print(">>>>>>>>free_variable_ast 4\n");
 }
 
 /* -------------------- Statement AST -------------------- */
@@ -79,10 +45,11 @@ void free_statement_ast(void *p) {
 
 /* -------------------- Struct AST -------------------- */
 
-Struct *new_struct_ast(char *name, List *vars) {
+Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map) {
     Struct *s = (Struct *)malloc(sizeof(Struct));
     s->name = name;
     s->vars = vars;
+    s->local_var_map = local_var_map;
     return s;
 }
 
@@ -95,8 +62,10 @@ void free_struct_ast(void *p) {
     print(">>>>>>>>free_struct_ast 2\n");
     list_destroy(s->vars);
     print(">>>>>>>>free_struct_ast 3\n");
-    free(p);
+    map_free(s->local_var_map);
     print(">>>>>>>>free_struct_ast 4\n");
+    free(p);
+    print(">>>>>>>>free_struct_ast 5\n");
 }
 
 /* -------------------- Function AST -------------------- */
@@ -106,9 +75,13 @@ Function *new_function_ast(Type *return_type, char *name, List *parameters) {
     f->return_type = return_type;
     f->name = name;
     f->parameters = parameters;
-    f->local_structs = list_new(sizeof(Struct), free_struct_ast);
-    f->local_vars = list_new(sizeof(Variable), free_variable_ast);
-    f->statements = list_new(sizeof(Statement), free_statement_ast);
+
+    f->local_var_map = NULL;
+
+    f->local_structs = NULL;
+    f->local_vars = NULL;
+    f->statements = NULL;
+
     f->is_proto = 0;
     return f;
 }
@@ -118,18 +91,23 @@ void free_function_ast(void *p) {
         return;
     Function *f = (Function *)p;
     print(">>>>>>>>free_function_ast 1\n");
-    free(f->name);
-    print(">>>>>>>>free_function_ast 2\n");
-    list_destroy(f->parameters);
-    print(">>>>>>>>free_function_ast 3\n");
     free(f->return_type);
+    print(">>>>>>>>free_function_ast 2\n");
+    free(f->name);
+    print(">>>>>>>>free_function_ast 3\n");
+    list_destroy(f->parameters);
+    
     print(">>>>>>>>free_function_ast 4\n");
-    list_destroy(f->local_structs);
+    map_free(f->local_var_map);
+    
     print(">>>>>>>>free_function_ast 5\n");
-    list_destroy(f->local_vars);
+    list_destroy(f->local_structs);
     print(">>>>>>>>free_function_ast 6\n");
-    list_destroy(f->statements);
+    list_destroy(f->local_vars);
     print(">>>>>>>>free_function_ast 7\n");
-    free(p);
+    list_destroy(f->statements);
     print(">>>>>>>>free_function_ast 8\n");
+
+    free(p);
+    print(">>>>>>>>free_function_ast 9\n");
 }

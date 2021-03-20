@@ -53,7 +53,9 @@ mode1-test:
 	cp $(EXE) $(TEST1) && cd $(TEST1) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
 mode1: $(OBJ1)
-	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode1 <<<<<<<<<<<<<<<<<<<<<<'
+	@echo '========================================================================='
+	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 1'
+	@echo '========================================================================='
 
 $(LEX1).yy.c:
 	flex -o $(LEX1).yy.c $(LEX1).l
@@ -79,7 +81,9 @@ mode2-test:
 	cp $(EXE) $(TEST2) && cd $(TEST2) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
 mode2: $(OBJ2)
-	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode2 <<<<<<<<<<<<<<<<<<<<<<'
+	@echo '========================================================================='
+	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 2'
+	@echo '========================================================================='
 
 $(PASER2).tab.h $(PASER2).tab.c: $(PASER2).y
 	bison -d -o $(PASER2).tab.c $(PASER2).y
@@ -98,7 +102,10 @@ SRC3	:= $(SRC)/mode3
 LEX3	:= $(SRC3)/lexer3
 PASER3	:= $(SRC3)/parser3
 MODE3	:= $(SRC3)/mode3
-OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o $(SRC3)/map.o $(SRC3)/ast.o $(SRC3)/deque.o
+HAND3   := $(SRC3)/handler
+UTIL3   := $(SRC3)/util
+AST3    := $(SRC3)/ast
+OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o $(AST3)/map.o $(AST3)/ast.o $(AST3)/deque.o $(UTIL3)/m3global.o $(UTIL3)/widen.o $(HAND3)/exp.o $(HAND3)/var.o
 TEST3	:= test/Grading2
 
 test3: link mode3-test
@@ -108,7 +115,9 @@ mode3-test:
 	cp $(EXE) $(TEST3) && cd $(TEST3) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
 mode3: $(OBJ3)
-	@echo '>>>>>>>>>>>>>>>>>>>> Built Mode3 <<<<<<<<<<<<<<<<<<<<<<'
+	@echo '========================================================================='
+	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 3'
+	@echo '========================================================================='
 
 $(PASER3).tab.h $(PASER3).tab.c: $(PASER3).y
 	bison -d -o $(PASER3).tab.c $(PASER3).y

@@ -1,11 +1,31 @@
 #ifndef MAP_H
 #define MAP_H
 
+/* -------------------- Type AST -------------------- */
+
+typedef struct {
+    char *name;
+    char is_const;
+    char is_struct;
+    char is_array;
+} Type;
+
+Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);
+
+Type *deep_copy_type_ast(Type *t);
+
+void free_type_ast(void *p);
+
+char *type_to_str(Type *t);
+
+/* -------------- Map <char *key, Type *value> --------------- */
+
 struct Entry {
-    char *key;
-    char *val;
+    char *id;
+    Type *type;
     struct Entry *next;
 };
+typedef struct Entry Entry;
 
 typedef struct {
     struct Entry **data;
@@ -15,14 +35,16 @@ typedef struct {
 
 HashMap* new_map();
 
-int map_hash(char *key);
+int map_hash(char *id);
 
-void map_put(HashMap* map, char *key, char *value);
+void map_put(HashMap* map, char *id, Type *type);
 
-char *map_get(HashMap* map, char *key);
+Type *map_get(HashMap* map, char *id);
 
-void map_remove(HashMap* map, char *key);
+void map_remove(HashMap* map, char *id);
 
 void map_free(HashMap* map);
+
+void map_print(HashMap* map);
 
 #endif

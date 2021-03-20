@@ -74,7 +74,28 @@
 //     }
 // }
 
+void print_var(Variable *v, HashMap *map) {
+    char *type = type_to_str(map_get(map, v->name));
+    printf("\t%s%s%s\n", type, v->name, v->is_init ? " (initialized)" : "");
+    free(type);
+}
+
+void m3_print_global_vars() {
+    if (m3_global_vars == NULL)
+        return;
+    printf("Global variables\n");
+    ListNode* cur = m3_global_vars->first;
+    while (cur != NULL) {
+        ListNode *next = cur->next;
+        print_var((Variable *)cur->data, m3_global_var_map);
+        cur = next;
+    }
+}
+
 void mode3(int argc, char *argv[], int fileIdx) {
+    
+    preprocess_const_types();
+
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
         FILE *f = fopen(argv[i], "r");
@@ -87,43 +108,14 @@ void mode3(int argc, char *argv[], int fileIdx) {
         m3restart(f);
         print("Parse return %d\n", m3parse());
 
-        ListNode *cur = m3_global_vars->first;
-        while (cur != NULL) {
-            ListNode *next = cur->next;
-            Variable *v = (Variable *)cur->data;
-            printf("var: '%s'\n", v->name);
-            printf("arr: '%d'\n", v->is_array);
-            printf("t: '%s'\n", v->type->name);
-            cur = next;
-        }
-
-        // list_destroy(m3_global_vars);
-        // m3_global_vars = NULL;
-
-        cur = m3_global_structs->first;
-        while (cur != NULL) {
-            ListNode *next = cur->next;
-            Struct *s = (Struct *)cur->data;
-            printf("struct: '%s'\n", s->name);
-            printf("vars size: %zu\n", s->vars->size);
-            cur = next;
-        }
-
-        // list_destroy(m3_global_structs);
-        // m3_global_structs = NULL;
-
-        cur = m3_global_funcs->first;
-        while (cur != NULL) {
-            ListNode *next = cur->next;
-            Function *f = (Function *)cur->data;
-            printf("function: '%s'\n", f->name);
-            printf("parameters: %lu\n", (f->parameters) ? f->parameters->size : 0);
-            printf("isProto: %d\n", f->is_proto);
-            cur = next;
-        }
+        m3_print_global_vars();
+        // map_print(m3_global_var_map);
+        map_free(m3_global_var_map);
 
         fclose(f);
     }
+
+    free_const_types();
 }
 
 
