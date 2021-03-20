@@ -37,14 +37,10 @@ Variable *update_type_map(Variable *var) {
         return NULL;
     
     cur_type->is_array = var->is_array;
-    print("update_type_map 2\n");
     if (m3_is_global) {
-        print("update_type_map 3\n");
         if (m3_global_var_map == NULL)
             m3_global_var_map = new_map();
-        print("update_type_map 4\n");
         map_put(m3_global_var_map, var->name, cur_type);
-        print("update_type_map 5\n");
     } else {
         if (m3_local_var_map == NULL)
             m3_local_var_map = new_map();
