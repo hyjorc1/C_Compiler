@@ -16,6 +16,17 @@ Variable *new_variable_ast(char *name, char is_array, char is_init);
 
 void free_variable_ast(void *p);
 
+/* -------------------- Variables AST -------------------- */
+
+typedef struct {
+    List *vars;
+    HashMap *map;
+} Vars;
+
+Vars *new_vars();
+
+void free_vars(Vars *vars);
+
 /* -------------------- Statement AST -------------------- */
 
 typedef struct {

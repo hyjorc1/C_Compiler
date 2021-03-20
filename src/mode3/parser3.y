@@ -5,22 +5,16 @@
 
 char *m3_cur_file_name = NULL;
 
-List *m3_global_vars = NULL;
-HashMap *m3_global_var_map = NULL;
-
+Vars *m3_global_vars = NULL;
 List *m3_global_structs = NULL;
-HashMap *m3_global_struct_map = NULL;
-
 List *m3_global_funcs = NULL;
-HashMap *m3_global_func_map = NULL;
 
 int m3_is_global = 1;
-
 Type *cur_type = NULL;
+Struct *cur_struct = NULL;
 
-HashMap *m3_local_var_map = NULL;
+Vars *m3_local_vars = NULL;
 List *m3_local_structs = NULL;
-List *m3_local_vars = NULL;
 List *m3_local_stmts = NULL;
 
 /* constant types */
@@ -83,7 +77,7 @@ const char *float_str = "float";
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
 %type <v> var init_var para
-%type <l> var_ni_list noinit_var_decl struct_body_decl struct_body_decls para_list
+%type <l> para_list
 /* part 3 - exp returns type */
 %type <t> exp l_val l_member
 %type <st> struct_decl
@@ -93,11 +87,8 @@ const char *float_str = "float";
 
 /* part 2 - 1. A C program is a sequence of zero or more (global) variable declarations, 
     function prototypes, and function definitions, appearing in any order. */
-root : %empty                           {   m3dprint("empty root", "");   }
-    | root var_decl                     { 
-                                            m3dprint("global var_decl", "============== global var_decl  =============");
-                                            // m3_global_vars = (m3_global_vars == NULL) ? $2 : list_merge(m3_global_vars, $2);
-                                        }
+root : %empty                           { m3dprint("empty root", ""); }
+    | root var_decl                     { m3dprint("global var_decl", "============== global var_decl  ============="); }
     | root func_proto                   { 
                                             m3dprint("global func_proto", "============== global func_proto =============");
                                             if (m3_global_funcs == NULL)
@@ -148,48 +139,26 @@ var : IDENT                             { m3dprint("IDENT", $1); $$ = handle_var
     identifier, a left brace, zero or more variable declarations (without 
     initializations), a right brace, and a semicolon. */
 /* part 3 - 2.7 Extra credit: user-defined structs */
-struct_decl : STRUCT IDENT LBRACE struct_body_decls RBRACE SEMI 
-                                        {
-                                            m3dprint("STRUCT { struct_body_decls }", $2);
-                                            // if (m3_is_global) {
-                                            //     m3dprint("global struct decl ", "============== global struct decl =============");
-                                            //     if (m3_global_structs == NULL)
-                                            //         m3_global_structs = list_new(sizeof(Struct), free_struct_ast);
-                                            //     list_add_last(m3_global_structs, new_struct_ast($2, $4));
-                                            // } else {
-                                            //     m3dprint("local struct decl", "============== local struct decl =============");
-                                            //     if (m3_local_structs == NULL)
-                                            //         m3_local_structs = list_new(sizeof(Struct), free_struct_ast);
-                                            //     list_add_last(m3_local_structs, new_struct_ast($2, $4));
-                                            // }
-                                        }
+struct_decl : struct_name_decl LBRACE struct_body_decls RBRACE SEMI { handle_struct_decl(); cur_struct = NULL; }
     ;
 
-struct_body_decls : %empty              { m3dprint("empty struct body decls", ""); /* $$ = NULL; */ }
-    | struct_body_decl                  { m3dprint("sinlge struct body decl", ""); /* $$ = $1; */ }
-    | struct_body_decls struct_body_decl{ m3dprint("multiple struct body decl", ""); /* $$ = list_merge($1, $2); */ }
+struct_name_decl : STRUCT IDENT         { m3dprint("STRUCT { struct decl }", $2); handle_struct_name_decl($2); }
     ;
 
-struct_body_decl : noinit_var_decl      { m3dprint("noinit var decl", ""); /* $$ = $1; */ }
-    | struct_decl                       { m3dprint("nested struct decl", ""); /* $$ = NULL; */ }
+struct_body_decls : %empty              { m3dprint("empty struct body decls", ""); }
+    | struct_body_decl                  { m3dprint("sinlge struct body decl", ""); }
+    | struct_body_decls struct_body_decl{ m3dprint("multiple struct body decl", ""); }
     ;
 
-noinit_var_decl : type var_ni_list SEMI {   
-                                            m3dprint("type var_ni_list SEMI", "");
-                                            // ListNode *cur = $2->first;
-                                            // while (cur != NULL) {
-                                            //     ListNode *next = cur->next;
-                                            //     Variable *v = (Variable *)cur->data;
-                                            //     v->type = deep_copy_type_ast($1);
-                                            //     cur = next;
-                                            // }
-                                            // free_type_ast($1);
-                                            // $$ = $2;
-                                        }
+struct_body_decl : noinit_var_decl      { m3dprint("noinit var decl", ""); }
+    | struct_decl                       { m3dprint("nested struct decl", ""); }
     ;
 
-var_ni_list : var                       { m3dprint("var_ni_list var", ""); /* $$ = list_add_last(list_new(sizeof(Variable), free_variable_ast), $1);  */ }
-    | var_ni_list COMMA var             { m3dprint("var_ni_list COMMA var", ","); /* $$ = list_add_last($1, $3); */ }
+noinit_var_decl : type var_ni_list SEMI { m3dprint("type var_ni_list SEMI", ""); free_type_ast(cur_type); cur_type = NULL; }
+    ;
+
+var_ni_list : var                       { m3dprint("var_ni_list var", ""); update_struct_var($1); }
+    | var_ni_list COMMA var             { m3dprint("var_ni_list COMMA var", ","); update_struct_var($3); }
     ;
 
 /* part 2 - 4. A function prototype is a function declaration followed by a semicolon. */

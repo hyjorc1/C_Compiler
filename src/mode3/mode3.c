@@ -84,10 +84,10 @@ void m3_print_global_vars() {
     if (m3_global_vars == NULL)
         return;
     printf("Global variables\n");
-    ListNode* cur = m3_global_vars->first;
+    ListNode* cur = m3_global_vars->vars->first;
     while (cur != NULL) {
         ListNode *next = cur->next;
-        print_var((Variable *)cur->data, m3_global_var_map);
+        print_var((Variable *)cur->data, m3_global_vars->map);
         cur = next;
     }
 }
@@ -110,7 +110,7 @@ void mode3(int argc, char *argv[], int fileIdx) {
 
         m3_print_global_vars();
         // map_print(m3_global_var_map);
-        map_free(m3_global_var_map);
+        free_vars(m3_global_vars);
 
         fclose(f);
     }

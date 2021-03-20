@@ -14,13 +14,28 @@ Variable *new_variable_ast(char *name, char is_array, char is_init) {
 void free_variable_ast(void *p) {
     if (!p)
         return;
-    print(">>>>>>>>free_variable_ast 1\n");
+    // print(">>>>>>>>free_variable_ast 1\n");
     Variable *v = (Variable *)p;
-    print(">>>>>>>>free_variable_ast 2\n");
+    // print(">>>>>>>>free_variable_ast 2\n");
     free(v->name);
-    print(">>>>>>>>free_variable_ast 3\n");
+    // print(">>>>>>>>free_variable_ast 3\n");
     free(p);
-    print(">>>>>>>>free_variable_ast 4\n");
+    // print(">>>>>>>>free_variable_ast 4\n");
+}
+
+/* -------------------- Variables AST -------------------- */
+
+Vars *new_vars() {
+    Vars *vars = (Vars *)malloc(sizeof(Vars));
+    vars->vars = list_new(sizeof(Variable), free_variable_ast);
+    vars->map = new_map();
+    return vars;
+}
+
+void free_vars(Vars *vars) {
+    list_destroy(vars->vars);
+    map_free(vars->map);
+    free(vars);
 }
 
 /* -------------------- Statement AST -------------------- */

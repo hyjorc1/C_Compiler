@@ -17,22 +17,16 @@ int m3_err_lineno;
 char *m3_cur_file_name;
 
 
-List *m3_global_vars;
-HashMap *m3_global_var_map;
-
+Vars *m3_global_vars;
 List *m3_global_structs;
-HashMap *m3_global_struct_map;
-
 List *m3_global_funcs;
-HashMap *m3_global_func_map;
 
 int m3_is_global;
-
 Type *cur_type;
+Struct *cur_struct;
 
 List *m3_local_structs;
-List *m3_local_vars;
-HashMap *m3_local_var_map;
+Vars *m3_local_vars;
 List *m3_local_stmts;
 
 /* constant types */
@@ -72,6 +66,11 @@ void update_var_list(Variable *var);
 Variable *update_type_map(Variable *var);
 Variable *handle_init_var(Variable *var, Type *r_type);
 Variable *handle_var_ident(char *id, char is_array);
+
+/* struct handlers */
+void handle_struct_name_decl(char *id);
+void update_struct_var(Variable *v);
+void handle_struct_decl();
 
 /* expression handlers */
 Type *handle_ASSIGN(char is_init, Type *t1, char *op, Type *t2);
