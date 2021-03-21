@@ -16,17 +16,6 @@ Variable *new_variable_ast(char *name, char is_array, char is_init);
 
 void free_variable_ast(void *p);
 
-/* -------------------- Variables AST -------------------- */
-
-typedef struct {
-    List *vars;
-    HashMap *map;
-} Vars;
-
-Vars *new_vars();
-
-void free_vars(Vars *vars);
-
 /* -------------------- Statement AST -------------------- */
 
 typedef struct {
@@ -44,9 +33,10 @@ typedef struct {
     char *name;
     List *vars;
     HashMap *local_var_map;
+    int lineno;
 } Struct;
 
-Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map);
+Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map, int lineno);
 
 void free_struct_ast(void *p);
 
@@ -66,7 +56,7 @@ typedef struct {
     char is_proto;
 } Function;
 
-Function *new_function_ast(Type *return_type, char *name, List *parameters);
+Function *new_function_ast(Type *return_type, char *name);
 
 void free_function_ast(void *p);
 

@@ -23,21 +23,6 @@ void free_variable_ast(void *p) {
     // print(">>>>>>>>free_variable_ast 4\n");
 }
 
-/* -------------------- Variables AST -------------------- */
-
-Vars *new_vars() {
-    Vars *vars = (Vars *)malloc(sizeof(Vars));
-    vars->vars = list_new(sizeof(Variable), free_variable_ast);
-    vars->map = new_map();
-    return vars;
-}
-
-void free_vars(Vars *vars) {
-    list_destroy(vars->vars);
-    map_free(vars->map);
-    free(vars);
-}
-
 /* -------------------- Statement AST -------------------- */
 
 Statement *new_statement_ast(int lineno, Type *type) {
@@ -60,11 +45,12 @@ void free_statement_ast(void *p) {
 
 /* -------------------- Struct AST -------------------- */
 
-Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map) {
+Struct *new_struct_ast(char *name, List *vars, HashMap *local_var_map, int lineno) {
     Struct *s = (Struct *)malloc(sizeof(Struct));
     s->name = name;
     s->vars = vars;
     s->local_var_map = local_var_map;
+    s->lineno = lineno;
     return s;
 }
 
@@ -72,24 +58,24 @@ void free_struct_ast(void *p) {
     if (!p)
         return;
     Struct *s = (Struct *)p;
-    print(">>>>>>>>free_struct_ast 1\n");
+    // print(">>>>>>>>free_struct_ast 1\n");
     free(s->name);
-    print(">>>>>>>>free_struct_ast 2\n");
+    // print(">>>>>>>>free_struct_ast 2\n");
     list_destroy(s->vars);
-    print(">>>>>>>>free_struct_ast 3\n");
+    // print(">>>>>>>>free_struct_ast 3\n");
     map_free(s->local_var_map);
-    print(">>>>>>>>free_struct_ast 4\n");
+    // print(">>>>>>>>free_struct_ast 4\n");
     free(p);
-    print(">>>>>>>>free_struct_ast 5\n");
+    // print(">>>>>>>>free_struct_ast 5\n");
 }
 
 /* -------------------- Function AST -------------------- */
 
-Function *new_function_ast(Type *return_type, char *name, List *parameters) {
+Function *new_function_ast(Type *return_type, char *name) {
     Function *f = (Function *)malloc(sizeof(Function));
     f->return_type = return_type;
     f->name = name;
-    f->parameters = parameters;
+    f->parameters = NULL;
 
     f->local_var_map = NULL;
 
@@ -105,24 +91,24 @@ void free_function_ast(void *p) {
     if (!p)
         return;
     Function *f = (Function *)p;
-    print(">>>>>>>>free_function_ast 1\n");
+    // print(">>>>>>>>free_function_ast 1\n");
     free(f->return_type);
-    print(">>>>>>>>free_function_ast 2\n");
+    // print(">>>>>>>>free_function_ast 2\n");
     free(f->name);
-    print(">>>>>>>>free_function_ast 3\n");
+    // print(">>>>>>>>free_function_ast 3\n");
     list_destroy(f->parameters);
     
-    print(">>>>>>>>free_function_ast 4\n");
+    // print(">>>>>>>>free_function_ast 4\n");
     map_free(f->local_var_map);
     
-    print(">>>>>>>>free_function_ast 5\n");
+    // print(">>>>>>>>free_function_ast 5\n");
     list_destroy(f->local_structs);
-    print(">>>>>>>>free_function_ast 6\n");
+    // print(">>>>>>>>free_function_ast 6\n");
     list_destroy(f->local_vars);
-    print(">>>>>>>>free_function_ast 7\n");
+    // print(">>>>>>>>free_function_ast 7\n");
     list_destroy(f->statements);
-    print(">>>>>>>>free_function_ast 8\n");
+    // print(">>>>>>>>free_function_ast 8\n");
 
     free(p);
-    print(">>>>>>>>free_function_ast 9\n");
+    // print(">>>>>>>>free_function_ast 9\n");s
 }

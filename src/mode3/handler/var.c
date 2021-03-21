@@ -1,14 +1,14 @@
 #include "m3global.h"
 
 Type *find_global_type(char *id) {
-    if (m3_global_vars != NULL)
-        return map_get(m3_global_vars->map, id);
+    if (m3_global_map != NULL)
+        return map_get(m3_global_map, id);
     return NULL;
 }
 
 Type *find_local_type(char *id) {
-    if (m3_local_vars != NULL)
-        return map_get(m3_local_vars->map, id);
+    if (m3_local_map != NULL)
+        return map_get(m3_local_map, id);
     return NULL;
 }
 
@@ -18,36 +18,35 @@ void update_var_list(Variable *var) {
         return;
     if (m3_is_global) {
         if (m3_global_vars == NULL)
-            m3_global_vars = new_vars();
-        list_add_last(m3_global_vars->vars, var);
+            m3_global_vars = list_new(sizeof(Variable), free_variable_ast);
+        list_add_last(m3_global_vars, var);
     } else {
         if (m3_local_vars == NULL)
-            m3_local_vars = new_vars();
-        list_add_last(m3_local_vars->vars, var);
+            m3_local_vars = list_new(sizeof(Variable), free_variable_ast);
+        list_add_last(m3_local_vars, var);
     }
 }
 
 Variable *update_type_map(Variable *var) {
     print("update_type_map\n");
-    if (var == NULL)
+    if (var == NULL || cur_type == NULL)
         return NULL;
-    
     cur_type->is_array = var->is_array;
     if (m3_is_global) {
-        if (m3_global_vars == NULL)
-            m3_global_vars = new_vars();
-        map_put(m3_global_vars->map, var->name, cur_type);
+        if (m3_global_map == NULL)
+            m3_global_map = new_map();
+        map_put(m3_global_map, var->name, cur_type);
     } else {
-        if (m3_local_vars == NULL)
-            m3_local_vars = new_vars();
-        map_put(m3_local_vars->map, var->name, cur_type);
+        if (m3_local_map == NULL)
+            m3_local_map = new_map();
+        map_put(m3_local_map, var->name, cur_type);
     }
     return var;
 }
 
 Variable *handle_init_var(Variable *var, Type *r_type) {
     print("handle_init_var\n");
-    if (var == NULL)
+    if (var == NULL || cur_type == NULL)
         return NULL;
     var->is_init = 1;
     if (!handle_ASSIGN(1, cur_type, "+", r_type)) {

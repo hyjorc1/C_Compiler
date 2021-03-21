@@ -16,6 +16,8 @@ int widen_rank(Type *t) {
 }
 
 Type *widen_type(Type *t1, Type *t2) {
+    printf("widen_type\n");
+    printf("widen_type t1: %s, t2: %s\n", t1->name, t2->name);
     if (is_type_N(t1) && is_type_N(t2)) {
         if (t1->is_const && t2->is_const) {
             if (widen_rank(t1) == 0 || widen_rank(t2) == 0)

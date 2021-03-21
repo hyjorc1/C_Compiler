@@ -76,7 +76,7 @@
 
 void print_var(Variable *v, HashMap *map) {
     char *type = type_to_str(map_get(map, v->name));
-    printf("\t%s%s%s\n", type, v->name, v->is_init ? " (initialized)" : "");
+    printf("\t%s %s%s\n", type, v->name, v->is_init ? " (initialized)" : "");
     free(type);
 }
 
@@ -84,12 +84,40 @@ void m3_print_global_vars() {
     if (m3_global_vars == NULL)
         return;
     printf("Global variables\n");
-    ListNode* cur = m3_global_vars->vars->first;
+    ListNode* cur = m3_global_vars->first;
     while (cur != NULL) {
         ListNode *next = cur->next;
-        print_var((Variable *)cur->data, m3_global_vars->map);
+        print_var((Variable *)cur->data, m3_global_map);
         cur = next;
     }
+    printf("\n");
+    list_destroy(m3_global_vars);
+    map_free(m3_global_map);
+}
+
+void m3_print_struct(Struct *s) {
+    if (s == NULL)
+        return;
+    printf("Global struct %s\n", s->name);
+    ListNode* cur = s->vars->first;
+    while (cur != NULL) {
+        ListNode *next = cur->next;
+        print_var((Variable *)cur->data, s->local_var_map);
+        cur = next;
+    }
+    printf("\n");
+}
+
+void m3_print_global_structs() {
+    if (m3_global_structs == NULL)
+        return;
+    ListNode* cur = m3_global_structs->first;
+    while (cur != NULL) {
+        ListNode *next = cur->next;
+        m3_print_struct((Struct *)cur->data);
+        cur = next;
+    }
+    list_destroy(m3_global_structs);
 }
 
 void mode3(int argc, char *argv[], int fileIdx) {
@@ -108,9 +136,10 @@ void mode3(int argc, char *argv[], int fileIdx) {
         m3restart(f);
         print("Parse return %d\n", m3parse());
 
+        m3_print_global_structs();
+        
         m3_print_global_vars();
-        // map_print(m3_global_var_map);
-        free_vars(m3_global_vars);
+
 
         fclose(f);
     }

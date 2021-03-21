@@ -7,31 +7,38 @@
 /* interface to the lexer with prefix 'm3' */
 char *m3text;
 int m3lineno;
+int m3_err_lineno;
 
 /* interface to the lexer with prefix 'm3' */
 int m3lex();
 void m3restart(FILE *input_file);
 
 /* global data structures and variables for mode 3 */
-int m3_err_lineno;
 char *m3_cur_file_name;
+char m3_is_global;
 
-
-Vars *m3_global_vars;
-List *m3_global_structs;
-List *m3_global_funcs;
-
-int m3_is_global;
+/* Variables */ 
 Type *cur_type;
-Struct *cur_struct;
+List *m3_global_vars;
+HashMap *m3_global_map;
 
+List *m3_local_vars;
+HashMap *m3_local_map;
+
+/* Structs */
+Struct *cur_struct;
+List *m3_global_structs;
 List *m3_local_structs;
-Vars *m3_local_vars;
+
+/* Functions */
+Function *cur_fn;
+List *m3_global_funcs;
 List *m3_local_stmts;
 
 /* constant types */
 Type *char_type;
 Type *const_char_type;
+Type *const_string_type;
 Type *int_type;
 Type *const_int_type;
 Type *float_type;
@@ -58,19 +65,23 @@ char is_type_I(Type *t);
 int widen_rank(Type *t);
 Type *widen_type(Type *t1, Type *t2);
 
-/* variable handlers */
-Type *find_global_type(char *id);
-Type *find_local_type(char *id);
-
+/* variable handler */
 void update_var_list(Variable *var);
 Variable *update_type_map(Variable *var);
 Variable *handle_init_var(Variable *var, Type *r_type);
 Variable *handle_var_ident(char *id, char is_array);
 
-/* struct handlers */
+/* struct handler */
 void handle_struct_name_decl(char *id);
-void update_struct_var(Variable *v);
-void handle_struct_decl();
+void update_struct_vars(Variable *v);
+void update_structs();
+Variable *handle_noinit_var_ident(char *id, char is_array);
+Type *handle_struct_type_var(char *id);
+
+/* function handler */
+void handle_func_proto();
+void handle_func_name(char *id);
+void handle_para(char *id, char is_array);
 
 /* expression handlers */
 Type *handle_ASSIGN(char is_init, Type *t1, char *op, Type *t2);

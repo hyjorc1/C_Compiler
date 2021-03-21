@@ -18,6 +18,8 @@ void free_type_ast(void *p);
 
 char *type_to_str(Type *t);
 
+int match_type_ast(Type *t1, Type *t2);
+
 /* -------------- Map <char *key, Type *value> --------------- */
 
 struct Entry {

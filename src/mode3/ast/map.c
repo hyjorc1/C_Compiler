@@ -47,8 +47,14 @@ char *type_to_str(Type *t) {
     if (t->is_const) strcat(str, "const ");
     if (t->is_struct) strcat(str, "struct ");
     strcat(str, t->name);
-    strcat(str, t->is_array ? "[] " : " ");
+    strcat(str, t->is_array ? "[]" : "");
     return str;
+}
+
+int match_type_ast(Type *t1, Type *t2) {
+    if (strcmp(t1->name, t2->name) || t1->is_const != t2->is_const || t1->is_array != t2->is_array || t1->is_struct != t2->is_struct)
+        return 0;
+    return 1;
 }
 
 
@@ -94,6 +100,7 @@ void map_put(HashMap* map, char *id, Type *type) {
     Entry *prev = find_prev(map, id);
     if (prev->next == NULL) {
         prev->next = new_entry(id, type);
+        map->size++;
     } else {
         prev->next->type = type;
     }
@@ -116,6 +123,7 @@ void map_remove(HashMap* map, char *id) {
         Entry *cur = prev->next;
         prev->next = cur->next;
         free_entry(cur);
+        map->size--;
     }
 }
 
