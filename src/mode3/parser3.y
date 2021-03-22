@@ -300,25 +300,25 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); $$ = handle_uminus($2); }
 
     /* part 2 - 13. Binary operators are: ==, !=, >, >=, <, <=, +, -, *, /, %, |, &, ||, && */
-    | exp MOD exp                       { /* part 3 - R8 */ m3dprint("MOD", "%"); }
-    | exp PIPE exp                      { /* part 3 - R8 */ m3dprint("PIPE", "|"); }
-    | exp AMP exp                       { /* part 3 - R8 */ m3dprint("AMP", "&"); }
-    | exp PLUS exp                      { /* part 3 - R9 */ m3dprint("PLUS", "+"); }
-    | exp MINUS exp                     { /* part 3 - R9 */ m3dprint("MINUS", "-"); }
-    | exp STAR exp                      { /* part 3 - R9 */ m3dprint("STAR", "*"); }
-    | exp SLASH exp                     { /* part 3 - R9 */ m3dprint("SLASH", "/"); }
-    | exp EQUALS exp                    { /* part 3 - R10 */ m3dprint("EQUALS", "=="); }
-    | exp NEQUAL exp                    { /* part 3 - R10 */ m3dprint("NEQUAL", "!="); }
-    | exp GT exp                        { /* part 3 - R10 */ m3dprint("GT", ">"); }
-    | exp GE exp                        { /* part 3 - R10 */ m3dprint("GE", ">="); }
-    | exp LT exp                        { /* part 3 - R10 */ m3dprint("LT", "<"); }
-    | exp LE exp                        { /* part 3 - R10 */ m3dprint("LE", "<="); }
-    | exp DPIPE exp                     { /* part 3 - R10 */ m3dprint("DPIPE", "||"); }
-    | exp DAMP exp                      { /* part 3 - R10 */ m3dprint("DAMP", "&&"); }
+    | exp MOD exp                       { /* part 3 - R8 */ m3dprint("MOD", "%"); $$ = handle_r8_exp($1, "%", $3); }
+    | exp PIPE exp                      { /* part 3 - R8 */ m3dprint("PIPE", "|"); $$ = handle_r8_exp($1, "|", $3); }
+    | exp AMP exp                       { /* part 3 - R8 */ m3dprint("AMP", "&"); $$ = handle_r8_exp($1, "&", $3); }
+    | exp PLUS exp                      { /* part 3 - R9 */ m3dprint("PLUS", "+"); $$ = handle_r9_exp($1, "+", $3); }
+    | exp MINUS exp                     { /* part 3 - R9 */ m3dprint("MINUS", "-"); $$ = handle_r9_exp($1, "-", $3); }
+    | exp STAR exp                      { /* part 3 - R9 */ m3dprint("STAR", "*"); $$ = handle_r9_exp($1, "*", $3); }
+    | exp SLASH exp                     { /* part 3 - R9 */ m3dprint("SLASH", "/"); $$ = handle_r9_exp($1, "/", $3); }
+    | exp EQUALS exp                    { /* part 3 - R10 */ m3dprint("EQUALS", "=="); $$ = handle_r10_exp($1, "==", $3); }
+    | exp NEQUAL exp                    { /* part 3 - R10 */ m3dprint("NEQUAL", "!="); $$ = handle_r10_exp($1, "!=", $3); }
+    | exp GT exp                        { /* part 3 - R10 */ m3dprint("GT", ">"); $$ = handle_r10_exp($1, ">", $3); }
+    | exp GE exp                        { /* part 3 - R10 */ m3dprint("GE", ">="); $$ = handle_r10_exp($1, ">=", $3); }
+    | exp LT exp                        { /* part 3 - R10 */ m3dprint("LT", "<"); $$ = handle_r10_exp($1, "<", $3); }
+    | exp LE exp                        { /* part 3 - R10 */ m3dprint("LE", "<="); $$ = handle_r10_exp($1, "<=", $3); }
+    | exp DPIPE exp                     { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_exp($1, "||", $3); }
+    | exp DAMP exp                      { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
     | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
-    | LPAR type RPAR exp                { /* part 3 - R5, R6, R7 */ m3dprint("LPAR type RPAR exp", ""); }
+    | LPAR type RPAR exp                { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); }
     ;
 

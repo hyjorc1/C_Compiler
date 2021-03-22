@@ -23,17 +23,31 @@ void preprocess() {
 }
 
 void postprocess() {
-    if (cur_type)
+    if (cur_type) {
         print("cur_type is not NULL\n");
-    if (m3_local_vars)
+        free(cur_type);
+        cur_type = NULL;
+    }
+    if (m3_local_vars) {
         print("m3_local_vars is not NULL\n");
-    if (m3_local_map)
+        list_destroy(m3_local_vars);
+        m3_local_vars = NULL;
+    }
+    if (m3_local_map) {
         print("m3_local_map is not NULL\n");
-    if (cur_fn)
+        map_free(m3_local_map);
+        m3_local_map = NULL;
+    }
+    if (cur_fn) {
         print("cur_fn is not NULL\n");
-    if (m3_local_stmts)
+        free_function_ast(cur_fn);
+        cur_fn = NULL;
+    }
+    if (m3_local_stmts) {
         print("m3_local_stmts is not NULL\n");
-
+        list_destroy(m3_local_stmts);
+        m3_local_stmts = NULL;
+    }
     free_type_ast(error_type);
 }
 

@@ -94,6 +94,10 @@ Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3);
 Type *handle_utilde(Type *t);
 Type *handle_uminus(Type *t);
 Type *handle_ubang(Type *t);
+Type *handle_cast_exp(Type *t2);
+Type *handle_r8_exp(Type *t1, char *op, Type *t2);
+Type *handle_r9_exp(Type *t1, char *op, Type *t2);
+Type *handle_r10_exp(Type *t1, char *op, Type *t2);
 
 Type *handle_assign_exp(char is_init, Type *t1, char *op, Type *t2);
 Type *handle_UBANG(Type *t);

@@ -67,7 +67,6 @@ int f2() {
 
     1 ? "hi" : "hi";
 
-
     /* test for R2 */
     ~1;
     ~'a';
@@ -84,6 +83,32 @@ int f2() {
     !1;
     !1.1;
     !"hi"; // error
+
+    /* test for R5,6,7 */
+    (char) 1;
+    (char) "hi"; // error
+    (int) 1;
+    (int) "hi"; // error
+    (float) 1;
+    (float) "hi"; // error
+
+    /* test for R8 */
+    'a' & 1; // int
+    "hi" & 1; // error
+
+    /* test for R9 */
+    1 + 3; // int
+    1.2 / 10; // float
+    'a' - 1.2; // float
+    'a' * 1; // int
+    "hi" + 3; // error
+
+    /* test for R10 */
+    1 == 3; // char
+    1.2 == 10; // char
+    'a' == 1.2; // char
+    'a' == 1; // char
+    "hi" == 3; // error
 
     return 'c';
 }

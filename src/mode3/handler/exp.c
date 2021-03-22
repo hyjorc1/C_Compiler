@@ -72,6 +72,98 @@ Type *handle_ubang(Type *t) {
     return res;
 }
 
+/* R5, 6, 7: (N) N -> N */
+Type *handle_cast_exp(Type *t2) {
+    Type *res = NULL;
+    Type *t1 = cur_type;
+    cur_type = NULL;
+    if (t1 == NULL || t2 == NULL || !is_type_N(t1) || !is_type_N(t2)) {
+        char *t1_str = t1 == NULL ? strdup(error_str) : type_to_str(t1);
+        char *t2_str = t2 == NULL ? strdup(error_str) : type_to_str(t2);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: (%s) %s\n", t1_str, t2_str);
+        free(t1_str);
+        free(t2_str);
+    } else {
+        if (!strcmp(t1->name, char_str))
+            res = new_type_ast(strdup(char_str), 0, 0, 0);
+        else if (!strcmp(t1->name, int_str))
+            res = new_type_ast(strdup(int_str), 0, 0, 0);
+        else if (!strcmp(t1->name, float_str))
+            res = new_type_ast(strdup(float_str), 0, 0, 0);
+        if (t2->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    return res;
+}
+
+/* R8: I op I -> I */
+Type *handle_r8_exp(Type *t1, char *op, Type *t2) {
+    Type *res = NULL;
+    if (t1 == NULL || t2 == NULL
+        || !is_type_I(t1) || !is_type_I(t2)
+        || (!widen_match_type(t1, t2) && !widen_match_type(t2, t1))) {
+        char *t1_str = t1 == NULL ? strdup(error_str) : type_to_str(t1);
+        char *t2_str = t2 == NULL ? strdup(error_str) : type_to_str(t2);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: %s %s %s\n", t1_str, op, t2_str);
+        free(t1_str);
+        free(t2_str);
+    } else {
+        res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
+        if (t1->is_const && t2->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    return res;
+}
+
+/* R9: N op N -> N */
+Type *handle_r9_exp(Type *t1, char *op, Type *t2) {
+    Type *res = NULL;
+    if (t1 == NULL || t2 == NULL
+        || !is_type_N(t1) || !is_type_N(t2)
+        || (!widen_match_type(t1, t2) && !widen_match_type(t2, t1))) {
+        char *t1_str = t1 == NULL ? strdup(error_str) : type_to_str(t1);
+        char *t2_str = t2 == NULL ? strdup(error_str) : type_to_str(t2);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: %s %s %s\n", t1_str, op, t2_str);
+        free(t1_str);
+        free(t2_str);
+    } else {
+        res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
+        if (t1->is_const && t2->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    return res;
+}
+
+/* R10: N op N -> char */
+Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
+    Type *res = NULL;
+    if (t1 == NULL || t2 == NULL
+        || !is_type_N(t1) || !is_type_N(t2)
+        || (!widen_match_type(t1, t2) && !widen_match_type(t2, t1))) {
+        char *t1_str = t1 == NULL ? strdup(error_str) : type_to_str(t1);
+        char *t2_str = t2 == NULL ? strdup(error_str) : type_to_str(t2);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: %s %s %s\n", t1_str, op, t2_str);
+        free(t1_str);
+        free(t2_str);
+    } else {
+        res = new_type_ast(strdup(char_str), 0, 0, 0);
+        if (t1->is_const && t2->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    return res;
+}
 
 /* R13: N op N -> N */
 Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
