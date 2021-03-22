@@ -52,7 +52,7 @@ char *type_to_str(Type *t) {
 }
 
 int match_type_ast(Type *t1, Type *t2) {
-    if (strcmp(t1->name, t2->name) || t1->is_const != t2->is_const || t1->is_array != t2->is_array || t1->is_struct != t2->is_struct)
+    if (strcmp(t1->name, t2->name) || t1->is_array != t2->is_array || t1->is_struct != t2->is_struct)
         return 0;
     return 1;
 }
@@ -128,6 +128,8 @@ void map_remove(HashMap* map, char *id) {
 }
 
 void map_free(HashMap* map) {
+    if (map == NULL)
+        return;
     for (int i = 0; i < SIZE; i++) {
         Entry *cur = map->data[i];
         while (cur != NULL) {
@@ -140,6 +142,8 @@ void map_free(HashMap* map) {
 }
 
 void map_clear(HashMap* map) {
+    if (map == NULL)
+        return;
     for (int i = 0; i < SIZE; i++) {
         Entry *cur = map->data[i];
         while (cur != NULL) {
@@ -152,6 +156,8 @@ void map_clear(HashMap* map) {
 }
 
 void map_print(HashMap* map) {
+    if (map == NULL)
+        return;
     for (int i = 0; i < map->capacity; i++) {
         Entry *cur = map->data[i]->next;
         while (cur != NULL) {

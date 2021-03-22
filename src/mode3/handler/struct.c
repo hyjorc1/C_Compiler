@@ -30,7 +30,7 @@ void handle_struct_name_decl(char *id) {
         Struct *s = find_global_struct(id);
         if (s) {
             m3err();
-            printf("\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
+            fprintf(stderr, "\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
             return;
         }
     } else {
@@ -38,7 +38,7 @@ void handle_struct_name_decl(char *id) {
         Struct *s = find_local_struct(id);
         if (s) {
             m3err();
-            printf("\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
+            fprintf(stderr, "\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
             return;
         }
     }
@@ -57,13 +57,15 @@ void update_structs() {
     if (cur_struct == NULL)
         return;
     if (m3_is_global) {
+        print("update m3_global_structs\n");
         if (m3_global_structs == NULL)
             m3_global_structs = list_new(sizeof(Struct), free_struct_ast);
         list_add_last(m3_global_structs, cur_struct);
     } else {
-        if (m3_global_structs == NULL)
-            m3_global_structs = list_new(sizeof(Struct), free_struct_ast);
-        list_add_last(m3_global_structs, cur_struct);
+        print("update m3_local_structs\n");
+        if (m3_local_structs == NULL)
+            m3_local_structs = list_new(sizeof(Struct), free_struct_ast);
+        list_add_last(m3_local_structs, cur_struct);
     }
     cur_struct = NULL;
 }
@@ -73,7 +75,7 @@ Variable *handle_noinit_var_ident(char *id, char is_array) {
         return NULL;
     if (map_get(cur_struct->local_var_map, id)) {
         m3err();
-        printf("\tLocal variable '%s' is already defined\n", id);
+        fprintf(stderr, "\tLocal variable '%s' is already defined\n", id);
         return NULL;
     }
     return new_variable_ast(id, is_array, 0);
@@ -82,7 +84,7 @@ Variable *handle_noinit_var_ident(char *id, char is_array) {
 Type *handle_struct_type_var(char *id) {
     if (!find_local_struct(id) && !find_global_struct(id)) {
         m3err();
-        printf("\tNo definition for 'struct %s'\n", id);
+        fprintf(stderr, "\tNo definition for 'struct %s'\n", id);
         return NULL;
     }
     return new_type_ast(id, 0, 1, 0);

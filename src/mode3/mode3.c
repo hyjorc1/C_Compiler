@@ -6,74 +6,6 @@
 
 #include "m3global.h"
 
-// void print_m3_global_vars() {
-//     if (m3_global_vars == NULL)
-//         return;
-//     printf("Global variables\n\t");
-//     struct node *cur = m3_global_vars->first;
-//     while (cur != NULL) {
-//         struct node *next = cur->next;
-//         printf("%s", cur->data);
-//         if (next != NULL)
-//             printf(", ");
-//         cur = next;
-//     }
-//     printf("\n\n");
-// }
-
-// void print_m3_list_member(char *label, struct list *l) {
-//     if (l == NULL || l->size == 0) {
-//         return;
-//     }
-//     struct node *cur = l->first;
-//     printf("\t%s", label);
-//     while (cur != NULL) {
-//         struct node *next = cur->next;
-//         printf("%s", cur->data);
-//         if (next != NULL)
-//             printf(", ");
-//         cur = next;
-//     }
-//     printf("\n");
-// }
-
-// void print_m3_global_structs() {
-//     if (m3_global_structs == NULL)
-//         return;
-//     struct struct_node *cur = m3_global_structs->first;
-//     while (cur != NULL) {
-//         struct struct_node *next = cur->next;
-//         printf("Global struct %s\n", cur->name);
-//         if (cur->members == NULL || cur->members->size == 0) {
-//             printf("\n");
-//         } else {
-//             print_m3_list_member("", cur->members);
-//         }
-//         cur = next;
-//         printf("\n");
-//     }
-// }
-
-// void print_m3_funcs() {
-//     if (m3_global_funcs == NULL)
-//         return;
-//     struct func_node *cur = m3_global_funcs->first;
-//     while (cur != NULL) {
-//         struct func_node *next = cur->next;
-//         if (cur->is_proto) {
-//             printf("Prototype %s\n", cur->name);
-//             print_m3_list_member("Parameters: ", cur->paras);   
-//         } else {
-//             printf("Function %s\n", cur->name);
-//             print_m3_list_member("Parameters: ", cur->paras);
-//             print_m3_list_member("Local structs: ", cur->local_structs);
-//             print_m3_list_member("Local variables: ", cur->local_vars);
-//         }
-//         cur = next;
-//         printf("\n");
-//     }
-// }
-
 void print_var(Variable *v, HashMap *map) {
     char *type = type_to_str(map_get(map, v->name));
     printf("\t%s %s%s\n", type, v->name, v->is_init ? " (initialized)" : "");
@@ -120,9 +52,102 @@ void m3_print_global_structs() {
     list_destroy(m3_global_structs);
 }
 
+void m3_print_parameters(Function *f) {
+    printf("\tParameters\n");
+    if (f->parameters) {
+        ListNode* cur = f->parameters->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            printf("\t");
+            print_var((Variable *)cur->data, f->local_var_map);
+            cur = next;
+        }
+    }
+    printf("\n");
+}
+
+void m3_print_local_struct(Struct *s) {
+    if (s == NULL)
+        return;
+    printf("\tLocal struct %s\n", s->name);
+    ListNode* cur = s->vars->first;
+    while (cur != NULL) {
+        ListNode *next = cur->next;
+        printf("\t");
+        print_var((Variable *)cur->data, s->local_var_map);
+        cur = next;
+    }
+    printf("\n");
+}
+
+void m3_print_local_structs(Function *f) {
+    if (f->local_structs && f->local_structs->size > 0) {
+        ListNode* cur = f->local_structs->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            m3_print_local_struct((Struct *)cur->data);
+            cur = next;
+        }
+    }
+}
+
+void m3_print_local_vars(Function *f) {
+    printf("\tLocal variables\n");
+    if (f->local_vars) {
+        ListNode* cur = f->local_vars->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            printf("\t");
+            print_var((Variable *)cur->data, f->local_var_map);
+            cur = next;
+        }
+    }
+    printf("\n");
+}
+
+void m3_print_statements(Function *f) {
+    printf("\tStatements\n");
+    if (f->statements) {
+        ListNode* cur = f->statements->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            Statement *s = (Statement *)cur->data;
+            char *type = type_to_str(s->type);
+            printf("\t\tExpression on line %d has type %s\n", s->lineno, type);
+            free(type);
+            cur = next;
+        }
+    }
+    printf("\n");
+}
+
+void m3_print_func(Function *f) {
+    if (f == NULL || f->is_proto)
+        return;
+    char *type = type_to_str(f->return_type);
+    printf("Function %s, returns %s\n", f->name, type);
+    free(type);
+    m3_print_parameters(f);
+    m3_print_local_structs(f);
+    m3_print_local_vars(f);
+    m3_print_statements(f);
+}
+
+void m3_print_global_funcs() {
+    if (m3_global_funcs == NULL)
+        return;
+    ListNode* cur = m3_global_funcs->first;
+    while (cur != NULL) {
+        ListNode *next = cur->next;
+        m3_print_func((Function *)cur->data);
+        cur = next;
+    }
+    list_destroy(m3_global_funcs);
+}
+
 void mode3(int argc, char *argv[], int fileIdx) {
     
-    preprocess_const_types();
+    preprocess();
 
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
@@ -137,14 +162,13 @@ void mode3(int argc, char *argv[], int fileIdx) {
         print("Parse return %d\n", m3parse());
 
         m3_print_global_structs();
-        
         m3_print_global_vars();
-
+        m3_print_global_funcs();
 
         fclose(f);
     }
 
-    free_const_types();
+    postprocess();
 }
 
 

@@ -23,7 +23,10 @@ List *m3_local_structs = NULL;
 /* Functions */
 Function *cur_fn = NULL;
 List *m3_global_funcs = NULL;
+
+/* Statements */
 List *m3_local_stmts = NULL;
+List *m3_local_types = NULL;
 
 /* constant types */
 Type *char_type = NULL;
@@ -37,6 +40,7 @@ Type *const_float_type = NULL;
 const char *char_str = "char";
 const char *int_str = "int";
 const char *float_str = "float";
+const char *void_str = "void";
 
 %}
 
@@ -88,7 +92,7 @@ const char *float_str = "float";
 %type <v> var init_var noinit_var para
 %type <l> para_list
 /* part 3 - exp returns type */
-%type <t> exp l_val l_member
+%type <t> exp l_val l_member cond_exp
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -170,8 +174,8 @@ func_proto : func_decl SEMI             { m3dprint("func_proto SEMI", ""); handl
 /* part 2 - 5. A function declaration is a type name (the return type of the function), 
     followed by an identifier (the name of the function), a left parenthesis, 
     an optional comma-separated list of formal parameters, and a right parenthesis. */
-func_decl : func_name_decl LPAR para_list RPAR  { m3dprint("func(para list)", ""); }
-    | func_name_decl LPAR RPAR                  { m3dprint("func()", ""); }
+func_decl : func_name_decl LPAR para_list RPAR  { m3dprint("func(para list)", ""); handle_func_decl(); }
+    | func_name_decl LPAR RPAR                  { m3dprint("func()", ""); handle_func_decl(); }
     ;
 
 func_name_decl : type IDENT             { m3dprint("func name decl", $2); handle_func_name($2);  }
@@ -191,18 +195,7 @@ para : type IDENT                       { m3dprint("type IDENT", $2); handle_par
     a sequence of zero or more variable declarations, a sequence of zero or more 
     statements, and a right brace. Note that this definition requires all variable 
     declarations to appear before statements. */
-func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   {
-                                                                    m3dprint("func_decl RBRACE func_body LBRACE", ""); 
-                                                                    // $1->local_structs = m3_local_structs;
-                                                                    // $1->local_vars = m3_local_vars;
-                                                                    // $1->statements = m3_local_stmts;
-                                                                    // $1->is_proto = 0;
-                                                                    // $$ = $1;
-                                                                    // m3_scope = 1;
-                                                                    // m3_local_structs = NULL;
-                                                                    // m3_local_vars = NULL;
-                                                                    // m3_local_stmts = NULL;
-                                                                }
+func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   { m3dprint("func(){func_body}", ""); handle_func_def(); }
     ;
 
 func_local_decls : %empty               { m3dprint("empty func_local_decls", ""); }
@@ -210,7 +203,7 @@ func_local_decls : %empty               { m3dprint("empty func_local_decls", "")
     | local_decl                        { m3dprint("single local_decl", ""); }
     ;
 
-local_decl : var_decl                   { m3dprint("local var decl", ""); /* m3_local_vars = (m3_local_vars == NULL) ? $1 : list_merge(m3_local_vars, $1);  */ }
+local_decl : var_decl                   { m3dprint("local var decl", ""); }
     | struct_decl                       { m3dprint("local_decl struct decl", ""); }
     ;
 
@@ -225,12 +218,7 @@ stmt_list : %empty                      { m3dprint("empty stmt list", ""); }
 
 /* part 2 - 9. statement */
 stmt : SEMI                             { m3dprint("SEMI", ""); }
-    | exp SEMI                          {   
-                                            m3dprint("exp SEMI", ""); 
-                                            // if (m3_local_stmts == NULL)
-                                            //     m3_local_stmts = list_new(sizeof(Statement), free_statement_ast);
-                                            // list_add_last(m3_local_stmts, new_statement_ast(m3lineno, $1)); 
-                                        }
+    | exp SEMI                          { m3dprint("exp SEMI", ""); handle_exp_stmt($1); }
     | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); }
     | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); }
     | return_stmt                       { m3dprint("return_stmt", ""); }
@@ -240,17 +228,21 @@ stmt : SEMI                             { m3dprint("SEMI", ""); }
     | do_stmt                           { m3dprint("do_stmt", ""); }
     ;
 
-return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); }
-    | RETURN exp SEMI                   { m3dprint("RETURN exp SEMI", ""); }
+return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(void_type); }
+    | RETURN exp SEMI                   { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
     ;
 
-if_stmt : IF LPAR cond_exp RPAR block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""); }
-    | IF LPAR cond_exp RPAR block_stmt ELSE block_stmt          { m3dprint("IF block_stmt ELSE block_stmt", ""); }
-    | IF LPAR cond_exp RPAR block_stmt ELSE stmt                { m3dprint("IF block_stmt ELSE stmt", ""); }
+if_stmt : if_cond block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""); }
+    | if_cond block_stmt ELSE block_stmt          { m3dprint("IF block_stmt ELSE block_stmt", ""); }
+    | if_cond block_stmt ELSE stmt                { m3dprint("IF block_stmt ELSE stmt", ""); }
     
-    | IF LPAR cond_exp RPAR stmt %prec WITHOUT_ELSE             { m3dprint("IF stmt", ""); }
-    | IF LPAR cond_exp RPAR stmt ELSE block_stmt                { m3dprint("IF stmt ELSE block_stmt", ""); }
-    | IF LPAR cond_exp RPAR stmt ELSE stmt                      { m3dprint("IF stmt ELSE stmt", ""); }
+    | if_cond stmt %prec WITHOUT_ELSE             { m3dprint("IF stmt", ""); }
+    | if_cond stmt ELSE block_stmt                { m3dprint("IF stmt ELSE block_stmt", ""); }
+    | if_cond stmt ELSE stmt                      { m3dprint("IF stmt ELSE stmt", ""); }
+    ;
+
+/* The expression inside an if condition is numerical. */
+if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); handle_cond_exp("if statement", $3); }
     ;
 
 for_stmt : FOR LPAR bool_exp SEMI cond_bool_exp SEMI bool_exp RPAR block_stmt { m3dprint("FOR block_stmt", ""); }
@@ -262,20 +254,26 @@ bool_exp : %empty                       { m3dprint("false bool_exp", ""); }
     ;
 
 cond_bool_exp : %empty                  { m3dprint("false cond_bool_exp", ""); }
-    | cond_exp                          { m3dprint("true cond_bool_exp", ""); }
+    | cond_exp                          { m3dprint("true cond_bool_exp", ""); handle_cond_exp("for loop", $1); }
     ;
 
-while_stmt : WHILE LPAR cond_exp RPAR block_stmt                { m3dprint("WHILE block_stmt", ""); }
-    | WHILE LPAR cond_exp RPAR stmt                             { m3dprint("WHILE stmt", ""); }
+while_stmt : while_cond block_stmt      { m3dprint("WHILE block_stmt", ""); }
+    | while_cond stmt                   { m3dprint("WHILE stmt", ""); }
     ;
 
-do_stmt : DO block_stmt WHILE LPAR cond_exp RPAR SEMI           { m3dprint("DO block_stmt WIHILE", ""); }
-    | DO stmt WHILE LPAR cond_exp RPAR SEMI                     { m3dprint("DO stmt WIHILE", ""); }
+while_cond : WHILE LPAR cond_exp RPAR   { m3dprint("WHILE stmt", ""); handle_cond_exp("while loop", $3); }
+    ;
+
+do_stmt : DO block_stmt do_cond SEMI    { m3dprint("DO block_stmt WIHILE", ""); }
+    | DO stmt do_cond SEMI              { m3dprint("DO stmt WIHILE", ""); }
+    ;
+
+do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_cond_exp("do-while loop", $3); }
     ;
 
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
-cond_exp : exp                          { m3dprint("cond exp", ""); }
+cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
     ;
 
 /* part 2 - 10. expression */
@@ -283,8 +281,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_i
     | REALCONST                         { m3dprint("REALCONST", $1); $$ = const_float_type; }
     | STRCONST                          { m3dprint("STRCONST", $1); $$ = const_string_type; }
     | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = const_char_type; }
-    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exp_list)", $1); $$ = NULL; }
-    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = NULL; }
+    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call($1); }
+    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call($1); }
 
     /* part 2 - 11. An l-value is an identifier, optionally followed by a left bracket, 
         an expression, and a right bracket. Note that this restricts array 
@@ -329,8 +327,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_i
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); }
     ;
 
-exp_list : exp                          { m3dprint("single exp exp_list", ""); }
-    | exp_list COMMA exp                { m3dprint("multiple exps exp_list", ""); }
+exp_list : exp                          { m3dprint("single exp", ""); handle_exp_list($1); }
+    | exp_list COMMA exp                { m3dprint("multiple exps", ""); handle_exp_list($3); }
     ; 
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */

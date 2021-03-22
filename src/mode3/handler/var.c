@@ -17,10 +17,12 @@ void update_var_list(Variable *var) {
     if (var == NULL)
         return;
     if (m3_is_global) {
+        print("update m3_global_vars\n");
         if (m3_global_vars == NULL)
             m3_global_vars = list_new(sizeof(Variable), free_variable_ast);
         list_add_last(m3_global_vars, var);
     } else {
+        print("update m3_local_vars\n");
         if (m3_local_vars == NULL)
             m3_local_vars = list_new(sizeof(Variable), free_variable_ast);
         list_add_last(m3_local_vars, var);
@@ -33,10 +35,12 @@ Variable *update_type_map(Variable *var) {
         return NULL;
     cur_type->is_array = var->is_array;
     if (m3_is_global) {
+        print("update m3_global_map\n");
         if (m3_global_map == NULL)
             m3_global_map = new_map();
         map_put(m3_global_map, var->name, cur_type);
     } else {
+        print("update m3_local_map\n");
         if (m3_local_map == NULL)
             m3_local_map = new_map();
         map_put(m3_local_map, var->name, cur_type);
@@ -62,7 +66,7 @@ Variable *handle_var_ident(char *id, char is_array) {
             same name as another global variable */
         if (find_global_type(id)) {
             m3err();
-            printf("\tGlobal variable '%s' is already defined\n", id);
+            fprintf(stderr, "\tGlobal variable '%s' is already defined\n", id);
             return NULL;
         }
     } else {
@@ -71,7 +75,7 @@ Variable *handle_var_ident(char *id, char is_array) {
             same function */
         if (find_local_type(id)) {
             m3err();
-            printf("\tLocal variable '%s' is already defined\n", id);
+            fprintf(stderr, "\tLocal variable '%s' is already defined\n", id);
             return NULL;
         }
     }

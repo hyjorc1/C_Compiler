@@ -33,7 +33,10 @@ List *m3_local_structs;
 /* Functions */
 Function *cur_fn;
 List *m3_global_funcs;
+
+/* Statements */
 List *m3_local_stmts;
+List *m3_local_types;
 
 /* constant types */
 Type *char_type;
@@ -43,10 +46,12 @@ Type *int_type;
 Type *const_int_type;
 Type *float_type;
 Type *const_float_type;
+Type *void_type;
 
 const char *char_str;
 const char *int_str;
 const char *float_str;
+const char *void_str;
 
 /* interface to the parser with prefix 'm3' */
 int m3parse();
@@ -54,8 +59,8 @@ void m3error(const char* msg);
 void m3err();
 void m3dprint(const char* s1, const char* s2);
 
-void preprocess_const_types();
-void free_const_types();
+void preprocess();
+void postprocess();
 
 char is_type_N(Type *t);
 char is_type_I(Type *t);
@@ -79,14 +84,22 @@ Variable *handle_noinit_var_ident(char *id, char is_array);
 Type *handle_struct_type_var(char *id);
 
 /* function handler */
-void handle_func_proto();
+Function *find_proto_func(char *id);
+Function *find_func(char *id);
 void handle_func_name(char *id);
 void handle_para(char *id, char is_array);
+void handle_func_decl();
+void handle_func_def();
+
+/* statement handler */
+void handle_exp_stmt(Type *t);
+void handle_return_stmt(Type *t);
 
 /* expression handlers */
 Type *handle_ASSIGN(char is_init, Type *t1, char *op, Type *t2);
-
 Type *handle_UBANG(Type *t);
-
+void handle_cond_exp(char *msg, Type *t);
+Type *handle_func_call(char *id);
+void handle_exp_list(Type *t);
 
 #endif
