@@ -57,6 +57,34 @@ int f2() {
 
     f1(1, 2);
 
+    /* test for R1 */
+    i1 ? 1 : 2; // error
+    1 ? i1 : 2; // error
+    1 ? 1 : i1; // error
+    "hi" ? 1 : 2; // error
+    1 ? "hi" : 2; // error
+    1 ? 1 : "hi"; // error
+
+    1 ? "hi" : "hi";
+
+
+    /* test for R2 */
+    ~1;
+    ~'a';
+    ~"hi"; // error
+
+    /* test for R3 */
+    -'a';
+    -1;
+    -1.1;
+    -"hi"; // error
+
+    /* test for R4 */
+    !'a';
+    !1;
+    !1.1;
+    !"hi"; // error
+
     return 'c';
 }
 

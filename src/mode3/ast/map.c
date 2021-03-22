@@ -34,6 +34,7 @@ void free_type_ast(void *p) {
     // print(">>>>>>>>free_type_ast 4\n");
 }
 
+/* caller needs to free the return string */
 char *type_to_str(Type *t) {
     if (t == NULL)
         return NULL;

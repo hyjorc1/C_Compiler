@@ -39,19 +39,13 @@ List *m3_local_stmts;
 List *m3_local_types;
 
 /* constant types */
-Type *char_type;
-Type *const_char_type;
-Type *const_string_type;
-Type *int_type;
-Type *const_int_type;
-Type *float_type;
-Type *const_float_type;
-Type *void_type;
+Type *error_type;
 
 const char *char_str;
 const char *int_str;
 const char *float_str;
 const char *void_str;
+const char *error_str;
 
 /* interface to the parser with prefix 'm3' */
 int m3parse();
@@ -96,10 +90,15 @@ void handle_exp_stmt(Type *t);
 void handle_return_stmt(Type *t);
 
 /* expression handlers */
-Type *handle_ASSIGN(char is_init, Type *t1, char *op, Type *t2);
+Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3);
+Type *handle_utilde(Type *t);
+Type *handle_uminus(Type *t);
+Type *handle_ubang(Type *t);
+
+Type *handle_assign_exp(char is_init, Type *t1, char *op, Type *t2);
 Type *handle_UBANG(Type *t);
 void handle_cond_exp(char *msg, Type *t);
-Type *handle_func_call(char *id);
+Type *handle_func_call_exp(char *id);
 void handle_exp_list(Type *t);
 
 #endif

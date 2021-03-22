@@ -1,43 +1,107 @@
 #include "m3global.h"
 
+/* R1: N ? T : T -> T */
+Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3) {
+    Type *res = NULL;
+    if (t1 == NULL || t2 == NULL || t3 == NULL 
+        || !is_type_N(t1) 
+        || (!widen_match_type(t2, t3) && !widen_match_type(t3, t2))) {
+        char *t1_str = t1 == NULL ? strdup(error_str) : type_to_str(t1);
+        char *t2_str = t2 == NULL ? strdup(error_str) : type_to_str(t2);
+        char *t3_str = t3 == NULL ? strdup(error_str) : type_to_str(t3);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: %s ? %s : %s\n", t1_str, t2_str, t3_str);
+        free(t1_str);
+        free(t2_str);
+        free(t3_str);
+    } else {
+        res = widen_match_type(t2, t3) ? deep_copy_type_ast(t3) : deep_copy_type_ast(t2);
+        if (t2->is_const && t3->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    free_type_ast(t3);
+    return res;
+}
+
+/* R2: ~ I -> I */
+Type *handle_utilde(Type *t) {
+    Type *res = NULL;
+    if (t == NULL || !is_type_I(t)) {
+        char *t_str = t == NULL ? strdup(error_str) : type_to_str(t);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: ~ %s\n", t_str);
+        free(t_str);
+    } else {
+        res = deep_copy_type_ast(t);
+    }
+    free_type_ast(t);
+    return res;
+}
+
+/* R3: ~ N -> N */
+Type *handle_uminus(Type *t) {
+    Type *res = NULL;
+    if (t == NULL || !is_type_N(t)) {
+        char *t_str = t == NULL ? strdup(error_str) : type_to_str(t);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: - %s\n", t_str);
+        free(t_str);
+    } else {
+        res = deep_copy_type_ast(t);
+    }
+    free_type_ast(t);
+    return res;
+}
+
+/* R4: ! N -> char */
+Type *handle_ubang(Type *t) {
+    Type *res = NULL;
+    if (t == NULL || !is_type_N(t)) {
+        char *t_str = t == NULL ? strdup(error_str) : type_to_str(t);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: ! %s\n", t_str);
+        free(t_str);
+    } else {
+        res = new_type_ast(strdup(char_str), 0, 0, 0);
+        if (t->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t);
+    return res;
+}
+
+
 /* R13: N op N -> N */
-Type *handle_ASSIGN(char is_init, Type *lt, char *op, Type *rt) {
-    print("handle_ASSIGN\n");
+Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
+    print("handle_assign_exp\n");
     Type *res = NULL;
     if (!is_init) {
-        if (lt->is_const) { // l_val is const then error
+        if (lt != NULL && lt->is_const) { // l_val is const then error
             m3err();
             fprintf(stderr, "\tCannot assign to item of type %s%s\n", "const ", lt->name);
-            return NULL;
         }
     }
     if (lt != NULL && rt != NULL) {
         if (widen_match_type(rt, lt)) {
-            res = lt; 
+            res = deep_copy_type_ast(lt);
+            if (rt->is_const && lt->is_const)
+                res->is_const = 1;
         } else {
             m3err();
             fprintf(stderr, "\ttype mismatch\n");
-            return NULL;
         }
     } else {
-        char *lt_str = lt == NULL ? strdup("error") : type_to_str(lt);
-        char *rt_str = rt == NULL ? strdup("error") : type_to_str(rt);
+        char *lt_str = lt == NULL ? strdup(error_str) : type_to_str(lt);
+        char *rt_str = rt == NULL ? strdup(error_str) : type_to_str(rt);
         m3err();
         fprintf(stderr, "\tOperation not supported: %s %s %s\n", lt_str, op, rt_str);
-        return NULL;
+        free(lt_str);
+        free(rt_str);
     }
-    return res;
-}
-
-Type *handle_UBANG(Type *t) {
-    Type *res = NULL;
-    // if (t != NULL && is_type_N(t)) {
-    //     res = new_type_ast(strdup("char"), t->is_const, 0, 0);
-    //     free_type_ast(t);
-    // } else {
-    //     m3err();
-    //     // fprintf(stderr, "Operation not supported: %s %s\n", "!", t == NULL ? "error" t->name);
-    // }
+    free_type_ast(lt);
+    free_type_ast(rt);
     return res;
 }
 
@@ -51,6 +115,7 @@ void handle_cond_exp(char *msg, Type *t) {
         fprintf(stderr, "\tCondition of %s has invalid type: %s\n", msg, type_str);
         free(type_str);
     }
+    free(t);
 }
 
 void print_err_candidates(Function *f) {
@@ -113,7 +178,7 @@ char math_types(List *types1, Function *f) {
     return 1;
 }
 
-Type *handle_func_call(char *id) {
+Type *handle_func_call_exp(char *id) {
     Type *res = NULL;
     Function *f = find_proto_func(id);
     if (!f) {
@@ -129,7 +194,7 @@ Type *handle_func_call(char *id) {
         print_err_func_call(id);
         print_err_candidates(f);
     } else {
-        res = f->return_type;
+        res = deep_copy_type_ast(f->return_type);
     }
     free(m3_local_types);
     m3_local_types = NULL;

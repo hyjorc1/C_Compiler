@@ -35,9 +35,12 @@ Statement *new_statement_ast(int lineno, Type *type) {
 void free_statement_ast(void *p) {
     if (!p)
         return;
+    Statement *s = (Statement *)p;
     // print(">>>>>>>>free_statement_ast 1\n");
-    free(p);
+    free_type_ast(s->type);
     // print(">>>>>>>>free_statement_ast 2\n");
+    free(p);
+    // print(">>>>>>>>free_statement_ast 3\n");
 }
 
 /* -------------------- Struct AST -------------------- */
@@ -56,7 +59,7 @@ void free_struct_ast(void *p) {
         return;
     Struct *s = (Struct *)p;
     // print(">>>>>>>>free_struct_ast 1\n");
-    free(s->name);
+    free(s->name);    
     // print(">>>>>>>>free_struct_ast 2\n");
     list_destroy(s->vars);
     // print(">>>>>>>>free_struct_ast 3\n");

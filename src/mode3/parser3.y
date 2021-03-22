@@ -29,18 +29,13 @@ List *m3_local_stmts = NULL;
 List *m3_local_types = NULL;
 
 /* constant types */
-Type *char_type = NULL;
-Type *const_char_type = NULL;
-Type *const_string_type = NULL;
-Type *int_type = NULL;
-Type *const_int_type = NULL;
-Type *float_type = NULL;
-Type *const_float_type = NULL;
+Type *error_type = NULL;
 
 const char *char_str = "char";
 const char *int_str = "int";
 const char *float_str = "float";
 const char *void_str = "void";
+const char *error_str = "error";
 
 %}
 
@@ -228,7 +223,7 @@ stmt : SEMI                             { m3dprint("SEMI", ""); }
     | do_stmt                           { m3dprint("do_stmt", ""); }
     ;
 
-return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(void_type); }
+return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
     | RETURN exp SEMI                   { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
     ;
 
@@ -277,12 +272,12 @@ cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
     ;
 
 /* part 2 - 10. expression */
-exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_int_type; }
-    | REALCONST                         { m3dprint("REALCONST", $1); $$ = const_float_type; }
-    | STRCONST                          { m3dprint("STRCONST", $1); $$ = const_string_type; }
-    | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = const_char_type; }
-    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call($1); }
-    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call($1); }
+exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_type_ast(strdup(int_str), 1, 0, 0); }
+    | REALCONST                         { m3dprint("REALCONST", $1); $$ = new_type_ast(strdup(float_str), 1, 0, 0); }
+    | STRCONST                          { m3dprint("STRCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 1); }
+    | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 0); }
+    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call_exp($1); }
+    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call_exp($1); }
 
     /* part 2 - 11. An l-value is an identifier, optionally followed by a left bracket, 
         an expression, and a right bracket. Note that this restricts array 
@@ -300,9 +295,9 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_i
     | l_val DECR %prec UDECR            { /* part 3 - R12 */ m3dprint("l_val DECR", "--"); }
 
     /* part 2 - 12. Unary operators (for any expression) are: -, !, ~ */
-    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_UBANG($2); }
-    | TILDE exp %prec UTILDE            { /* part 3 - R2 */ m3dprint("UTILDE", "~"); }
-    | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); }
+    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_ubang($2); }
+    | TILDE exp %prec UTILDE            { /* part 3 - R2 */ m3dprint("UTILDE", "~"); $$ = handle_utilde($2); }
+    | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); $$ = handle_uminus($2); }
 
     /* part 2 - 13. Binary operators are: ==, !=, >, >=, <, <=, +, -, *, /, %, |, &, ||, && */
     | exp MOD exp                       { /* part 3 - R8 */ m3dprint("MOD", "%"); }
@@ -322,7 +317,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = const_i
     | exp DAMP exp                      { /* part 3 - R10 */ m3dprint("DAMP", "&&"); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
-    | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); }
+    | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
     | LPAR type RPAR exp                { /* part 3 - R5, R6, R7 */ m3dprint("LPAR type RPAR exp", ""); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); }
     ;
