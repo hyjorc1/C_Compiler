@@ -48,12 +48,12 @@ Variable *update_type_map(Variable *var) {
     return var;
 }
 
-Variable *handle_init_var(Variable *var, Type *r_type) {
+Variable *handle_init_var(Variable *var, Type *rt) {
     print("handle_init_var\n");
     if (var == NULL || cur_type == NULL)
         return NULL;
     var->is_init = 1;
-    if (!handle_ASSIGN(1, cur_type, "+", r_type)) {
+    if (!handle_ASSIGN(1, cur_type, "+", rt)) {
         return NULL;
     }
     return var;

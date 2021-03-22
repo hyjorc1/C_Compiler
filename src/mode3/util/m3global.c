@@ -52,7 +52,7 @@ void postprocess() {
 }
 
 char is_type_N(Type *t) { // N ∈ {char, int, float}
-    if (t == NULL || t->is_array)
+    if (t == NULL || t->is_array || t->is_struct)
         return 0;
     char *type = t->name;
     if (!strcmp(type, char_str) || !strcmp(type, int_str) || !strcmp(type, float_str))
@@ -61,7 +61,7 @@ char is_type_N(Type *t) { // N ∈ {char, int, float}
 }
 
 char is_type_I(Type *t) { //  I ∈ {char, int}
-    if (t == NULL || t->is_array)
+    if (t == NULL || t->is_array || t->is_struct)
         return 0;
     char *type = t->name;
     if (!strcmp(type, char_str) || !strcmp(type, float_str))
@@ -69,3 +69,44 @@ char is_type_I(Type *t) { //  I ∈ {char, int}
     return 0;
 }
 
+int widen_rank(Type *t) {
+    if (!strcmp(t->name, float_str))
+        return 0;
+    if (!strcmp(t->name, int_str))
+        return 1;
+    if (!strcmp(t->name, char_str))
+        return 2;
+    return -1;
+}
+
+// TODO remove all const types
+Type *widen_type(Type *t1, Type *t2) {
+    printf("widen_type\n");
+    printf("widen_type t1: %s, t2: %s\n", t1->name, t2->name);
+    if (is_type_N(t1) && is_type_N(t2)) {
+        if (t1->is_const && t2->is_const) {
+            if (widen_rank(t1) == 0 || widen_rank(t2) == 0)
+                return const_float_type;
+            if (widen_rank(t1) == 1 || widen_rank(t2) == 1)
+                return const_int_type;
+            if (widen_rank(t1) == 2 || widen_rank(t2) == 2)
+                return const_char_type;
+        } else {
+            if (widen_rank(t1) == 0 || widen_rank(t2) == 0)
+                return float_type;
+            if (widen_rank(t1) == 1 || widen_rank(t2) == 1)
+                return int_type;
+            if (widen_rank(t1) == 2 || widen_rank(t2) == 2)
+                return char_type;
+        }
+    }
+    return NULL;
+}
+
+char widen_match_type(Type *from, Type *to) {
+    if (exact_match_type(from, to))
+        return 1;
+    if (is_type_N(from) && is_type_N(to) && widen_rank(from) > widen_rank(to))
+        return 1;
+    return 0;
+}

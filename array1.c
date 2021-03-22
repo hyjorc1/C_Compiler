@@ -45,13 +45,19 @@ void f1(int a, int b) {
     do {} while("hi");
     for (;"hit";) {}
 
-
-
     return 1;
 }
 
 int f2() {
-    return 1;
+
+    f();
+    f1(1, 2, 3);
+    f1("str1", "str2");
+
+
+    f1(1, 2);
+
+    return 'c';
 }
 
 

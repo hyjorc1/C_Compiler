@@ -35,7 +35,7 @@ Type *get_func_local_var_type(Function *f, Variable *v) {
 
 int match_func_sig(Function *f1, Function *f2) {
     // check return type
-    if (!match_type_ast(f1->return_type, f2->return_type))
+    if (!exact_match_type(f1->return_type, f2->return_type))
         return 0;
     // check parameter types
     if (f1->parameters->size != f2->parameters->size)
@@ -45,7 +45,7 @@ int match_func_sig(Function *f1, Function *f2) {
     while (n1 != NULL) {
         Type *t1 = get_func_local_var_type(f1, (Variable *)n1->data);
         Type *t2 = get_func_local_var_type(f2, (Variable *)n2->data);
-        if (!match_type_ast(t1, t2))
+        if (!exact_match_type(t1, t2))
             return 0;
         n1 = n1->next;
         n2 = n2->next;
@@ -90,7 +90,7 @@ void handle_func_name(char *id) {
     if (cur_type == NULL)
         return;
 
-    cur_fn = new_function_ast(cur_type, id);
+    cur_fn = new_function_ast(cur_type, id, m3lineno);
     cur_type = NULL;
     m3_is_global = 0;
 }

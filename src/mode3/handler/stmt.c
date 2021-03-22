@@ -11,7 +11,7 @@ void handle_exp_stmt(Type *t) {
 void handle_return_stmt(Type *t) {
     if (cur_fn == NULL || t == NULL)
         return;
-    if (!match_type_ast(cur_fn->return_type, t)) {
+    if (!widen_match_type(t, cur_fn->return_type)) {
         char *type = type_to_str(t);
         char *return_type = type_to_str(cur_fn->return_type);
         m3err();

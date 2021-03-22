@@ -65,10 +65,10 @@ void postprocess();
 char is_type_N(Type *t);
 char is_type_I(Type *t);
 
-
 /* 2.4 Extra credit: widening  */
 int widen_rank(Type *t);
 Type *widen_type(Type *t1, Type *t2);
+char widen_match_type(Type *from, Type *to);
 
 /* variable handler */
 void update_var_list(Variable *var);
@@ -85,7 +85,7 @@ Type *handle_struct_type_var(char *id);
 
 /* function handler */
 Function *find_proto_func(char *id);
-Function *find_func(char *id);
+void handle_func_proto();
 void handle_func_name(char *id);
 void handle_para(char *id, char is_array);
 void handle_func_decl();

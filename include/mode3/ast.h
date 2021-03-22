@@ -54,9 +54,10 @@ typedef struct {
     List *statements;
 
     char is_proto;
+    int lineno;
 } Function;
 
-Function *new_function_ast(Type *return_type, char *name);
+Function *new_function_ast(Type *return_type, char *name, int lineno);
 
 void free_function_ast(void *p);
 

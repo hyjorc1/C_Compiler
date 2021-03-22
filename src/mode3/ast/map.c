@@ -51,12 +51,13 @@ char *type_to_str(Type *t) {
     return str;
 }
 
-int match_type_ast(Type *t1, Type *t2) {
-    if (strcmp(t1->name, t2->name) || t1->is_array != t2->is_array || t1->is_struct != t2->is_struct)
+char exact_match_type(Type *from, Type *to) {
+    if (strcmp(from->name, to->name)
+        || from->is_array != to->is_array
+        || from->is_struct != to->is_struct)
         return 0;
     return 1;
 }
-
 
 /* -------------- Map <char *key, Type *value> --------------- */
 

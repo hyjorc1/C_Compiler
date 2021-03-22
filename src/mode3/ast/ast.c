@@ -68,7 +68,7 @@ void free_struct_ast(void *p) {
 
 /* -------------------- Function AST -------------------- */
 
-Function *new_function_ast(Type *return_type, char *name) {
+Function *new_function_ast(Type *return_type, char *name, int lineno) {
     Function *f = (Function *)malloc(sizeof(Function));
     f->return_type = return_type;
     f->name = name;
@@ -81,6 +81,7 @@ Function *new_function_ast(Type *return_type, char *name) {
     f->statements = NULL;
 
     f->is_proto = 0;
+    f->lineno = lineno;
     return f;
 }
 
