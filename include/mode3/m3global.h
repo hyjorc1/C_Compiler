@@ -38,6 +38,9 @@ List *m3_global_funcs;
 List *m3_local_stmts;
 List *m3_local_types;
 
+/* Struct members */
+List *m3_cur_local_structs;
+
 /* constant types */
 Type *error_type;
 

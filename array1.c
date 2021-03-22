@@ -113,4 +113,9 @@ int f2() {
     return 'c';
 }
 
+void f3() {
+    struct S2 s2;
+    s2.s1.a;
+}
+
 

@@ -165,6 +165,30 @@ Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
     return res;
 }
 
+/* R11: op N -> N */
+Type *handle_r11_exp(Type *t, char *op) {
+    Type *res = NULL;
+    if (t != NULL && t->is_const) {
+
+    } else if (t == NULL || !is_type_N(t)) {
+        char *t_str = t == NULL ? strdup(error_str) : type_to_str(t);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: ! %s\n", t_str);
+        free(t_str);
+    } else {
+        res = new_type_ast(strdup(char_str), 0, 0, 0);
+        if (t->is_const)
+            res->is_const = 1;
+    }
+    free_type_ast(t);
+    return res;
+}
+
+/* R12: N op -> N */
+Type *handle_r12_exp(Type *t, char *op) {
+
+}
+
 /* R13: N op N -> N */
 Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
     print("handle_assign_exp\n");
