@@ -19,7 +19,7 @@ void m3dprint(const char* s1, const char* s2) {
 }
 
 void preprocess() {
-    error_type = new_type_ast(strdup(error_str), 0, 0, 0);
+
 }
 
 void postprocess() {
@@ -48,7 +48,6 @@ void postprocess() {
         list_destroy(m3_local_stmts);
         m3_local_stmts = NULL;
     }
-    free_type_ast(error_type);
 }
 
 char is_type_N(Type *t) { // N ∈ {char, int, float}

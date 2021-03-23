@@ -15,7 +15,7 @@ void handle_return_stmt(Type *t) {
         char *type = type_to_str(t);
         char *return_type = type_to_str(cur_fn->return_type);
         m3err();
-        fprintf(stderr, "\tReturn %s in a function of type %s\n", type, return_type);
+        fprintf(stderr, "\tFunction must return a value of type %s\n", return_type);
         free(type);
         free(return_type);
     }

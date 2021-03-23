@@ -66,7 +66,7 @@ void handle_func_proto() {
     print("handle_func_proto\n");
     if (cur_fn == NULL)
         return;
-
+    cur_fn->lineno = m3lineno;
     cur_fn->is_proto = 1;
     cur_fn->local_var_map = m3_local_map;
     m3_local_map = NULL;
@@ -101,7 +101,7 @@ void handle_para(char *id, char is_array) {
         return;
     if (m3_local_map && map_get(m3_local_map, id)) {
         m3err();
-        fprintf(stderr, "\tparameter name %s is already defined\n", id);
+        fprintf(stderr, "\tParameter name %s is already defined\n", id);
         return;
     }
     cur_type->is_array = is_array;
@@ -118,6 +118,7 @@ void handle_func_def() {
     if (cur_fn == NULL)
         return;
 
+    cur_fn->lineno = m3lineno;
     cur_fn->local_var_map = m3_local_map;
     m3_local_map = NULL;
     cur_fn->local_structs = m3_local_structs;

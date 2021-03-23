@@ -36,7 +36,7 @@ List *m3_global_funcs;
 
 /* Statements */
 List *m3_local_stmts;
-List *m3_local_types;
+List *m3_arg_types;
 
 /* Struct members */
 HashMap *m3_cur_local_map;

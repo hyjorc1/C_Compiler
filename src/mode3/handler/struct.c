@@ -30,7 +30,7 @@ void handle_struct_name_decl(char *id) {
         Struct *s = find_global_struct(id);
         if (s) {
             m3err();
-            fprintf(stderr, "\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
+            fprintf(stderr, "\tstruct %s already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
             return;
         }
     } else {
@@ -38,7 +38,7 @@ void handle_struct_name_decl(char *id) {
         Struct *s = find_local_struct(id);
         if (s) {
             m3err();
-            fprintf(stderr, "\tstruct %s is already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
+            fprintf(stderr, "\tstruct %s already defined near %s line %d\n", id, m3_cur_file_name, s->lineno);
             return;
         }
     }
@@ -56,6 +56,7 @@ void update_struct_vars(Variable *v) {
 void update_structs() {
     if (cur_struct == NULL)
         return;
+    cur_struct->lineno = m3lineno;
     if (m3_is_global) {
         print("update m3_global_structs\n");
         if (m3_global_structs == NULL)

@@ -26,10 +26,10 @@ List *m3_global_funcs = NULL;
 
 /* Statements */
 List *m3_local_stmts = NULL;
-List *m3_local_types = NULL;
+List *m3_arg_types = NULL;
 
 /* constant types */
-Type *error_type = NULL;
+
 
 const char *char_str = "char";
 const char *int_str = "int";

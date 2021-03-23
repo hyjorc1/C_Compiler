@@ -1,10 +1,10 @@
 all: link
-	./$(EXE) -3 array1.c
+# ./$(EXE) -3 struct1.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
 
-test: link mode1-test mode2-test
+test: link mode1-test mode2-test mode3-test
 
 #=================================================================#
 ############################## compiler ###########################
@@ -114,7 +114,7 @@ HAND3   := $(patsubst %.c,%.o,$(wildcard $(SRC3)/handler/*.c))
 UTIL3   := $(patsubst %.c,%.o,$(wildcard $(SRC3)/util/*.c))
 AST3    := $(patsubst %.c,%.o,$(wildcard $(SRC3)/ast/*.c))
 OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o $(AST3) $(UTIL3) $(HAND3)
-TEST3	:= test/Grading2
+TEST3	:= test/Tests3
 
 test3: link mode3-test
 
