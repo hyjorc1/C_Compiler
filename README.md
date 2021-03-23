@@ -8,6 +8,8 @@ This project is a C compiler implemented in C(clang 12.0.0), FLex(2.6.4), and GN
 
 3. `make test` tests mode (1 - 3). For testing mode X only then `make testX`.
 
+NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.15.7).
+
 ## New Features
 
 1. **Executable Compiler**
