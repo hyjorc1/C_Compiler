@@ -31,7 +31,7 @@ NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.
    that the file has correct C syntax. If the input file is not syntactically correct, then display
    an appropriate error message. The implemented rules are [here](./doc/mode2.md).
 
-5. **[Mode 3](./doc/post-3.pdf)**: When executed with a mode of 3, your compiler should read the specified input file and check that the file has correct C syntax, and perform type checking on all expressions.
+5. **[Mode 3](./doc/post-3.pdf)**: When executed with a mode of 3, the compiler should read the specified input file and check that the file has correct C syntax, and perform type checking on all expressions.
 
 ## Note
 
