@@ -30,6 +30,8 @@ void f1(int a, int b) {
         const struct S1 s2;
     };
 
+    struct S3 {};
+
     struct S4 {
         const struct S3 s3;
         struct S4 s2;
@@ -114,8 +116,72 @@ int f2() {
 }
 
 void f3() {
-    struct S2 s2;
-    s2.s1.a;
+    // struct S2 s2;
+    // s2.s1.a;
+    const int b;
+    int a;
+    char c;
+    float d;
+    int arr[10];
+
+    b; 
+    b[10]; // error
+
+    arr; // int[]
+    arr['a']; // int
+    arr[1]; // int
+    arr["hi"]; // error
+
+    /* test for r11, 12 */
+    ++arr; // error
+    ++b; // error
+    b--; // error
+    arr--; // error
+    a++; // int
+    c++; // char
+    d++; // float
 }
 
+void f4() {
+    const float a = 1, b = 1.2, c = 'a';
+    float d;
+    float a1 = "hi", b1 = "hi", c1 = "hi";
+    a = 10; // error
+    d = 1;
+    d = 1.2;
+    d = 'a';
+}
+
+float f5(int a) {
+    a += 'x';
+    return a;
+}
+
+void f6() {
+    f5('a');
+    (1>2)?3:4;
+}
+
+
+struct pair {
+  int x, y;
+};
+
+struct triple {
+  struct pair p;
+  int z;
+};
+
+void test()
+{
+  struct triple T;
+  T;
+  T.p;
+  T.z;
+  T.p.x;
+  T.p.y;
+  T.nope;     // Error
+  T.p.nope;   // Error
+  T.p.x.nope; // Error
+}
 

@@ -39,7 +39,7 @@ List *m3_local_stmts;
 List *m3_local_types;
 
 /* Struct members */
-List *m3_cur_local_structs;
+HashMap *m3_cur_local_map;
 
 /* constant types */
 Type *error_type;
@@ -68,12 +68,16 @@ Type *widen_type(Type *t1, Type *t2);
 char widen_match_type(Type *from, Type *to);
 
 /* variable handler */
+Type *find_global_type(char *id);
+Type *find_local_type(char *id);
 void update_var_list(Variable *var);
 Variable *update_type_map(Variable *var);
 Variable *handle_init_var(Variable *var, Type *r_type);
 Variable *handle_var_ident(char *id, char is_array);
 
 /* struct handler */
+Struct *find_global_struct(char *id);
+Struct *find_local_struct(char *id);
 void handle_struct_name_decl(char *id);
 void update_struct_vars(Variable *v);
 void update_structs();
@@ -82,6 +86,7 @@ Type *handle_struct_type_var(char *id);
 
 /* function handler */
 Function *find_proto_func(char *id);
+Function *find_func(char *id);
 void handle_func_proto();
 void handle_func_name(char *id);
 void handle_para(char *id, char is_array);
@@ -101,11 +106,18 @@ Type *handle_cast_exp(Type *t2);
 Type *handle_r8_exp(Type *t1, char *op, Type *t2);
 Type *handle_r9_exp(Type *t1, char *op, Type *t2);
 Type *handle_r10_exp(Type *t1, char *op, Type *t2);
-
+Type *handle_r11_exp(char *op, Type *t2);
+Type *handle_r12_exp(Type *t1, char *op);
 Type *handle_assign_exp(char is_init, Type *t1, char *op, Type *t2);
-Type *handle_UBANG(Type *t);
+Type *handle_l_array_access(char *id, Type *op);
+Type *handle_l_member(Type *mt, char *m);
+Type *handle_l_array_member(Type *st, char *m, Type *op);
+
 void handle_cond_exp(char *msg, Type *t);
 Type *handle_func_call_exp(char *id);
 void handle_exp_list(Type *t);
+
+Type *handle_l_ident(char *id);
+
 
 #endif

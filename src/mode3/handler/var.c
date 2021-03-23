@@ -53,7 +53,7 @@ Variable *handle_init_var(Variable *var, Type *rt) {
     if (var == NULL || cur_type == NULL)
         return NULL;
     var->is_init = 1;
-    if (!handle_assign_exp(1, deep_copy_type_ast(cur_type), "+", rt)) {
+    if (!handle_assign_exp(1, deep_copy_type_ast(cur_type), "=", rt)) {
         return NULL;
     }
     return var;

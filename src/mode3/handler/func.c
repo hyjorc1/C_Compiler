@@ -128,7 +128,7 @@ void handle_func_def() {
     m3_local_stmts = NULL;
 
     Function *f = find_func(cur_fn->name);
-    if (f && match_func_sig(f, cur_fn)) {
+    if (f) {
         m3err();
         fprintf(stderr, "\tFunction definition %s is already declared\n", cur_fn->name);
         free_function_ast(cur_fn);

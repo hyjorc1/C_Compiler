@@ -53,7 +53,8 @@ char *type_to_str(Type *t) {
 }
 
 char exact_match_type(Type *from, Type *to) {
-    if (strcmp(from->name, to->name)
+    if (from == NULL || to == NULL
+        || strcmp(from->name, to->name)
         || from->is_array != to->is_array
         || from->is_struct != to->is_struct)
         return 0;
