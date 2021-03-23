@@ -1,0 +1,33 @@
+\section*{PART 3}
+
+Mode 3 read the specified input file and check that the file has correct C syntax and type checking. If the program is not syntactically correct, then display an appropriate error message. This mode is implemented with flex and Bison. Hash maps are used as symbol tables for type tracking. And doubly linked lists are utilized to store the syntax tree information.
+
+\subsection*{1.1 \large\textbf{src/mode3}}
+\begin{enumerate}
+    \item \textbf{lexer3.l} is scanner to tokenize the input content.
+
+    \item \textbf{parser3.y} is the parser to construct the relations between the tokens based on the syntax tree.
+    
+    \item \textbf{mode3.c} contains the main program for mode 3 to process the input files and output results.
+
+    \item \textbf{ast/ast.c} contains the implementation of ast structs for storing ast information parsed from C program.
+
+    \item \textbf{ast/deque.c} contains the implementation of doubly linked list for asts, such as variable, function, struct, etc.
+    \item \textbf{ast/map.c} contains the implementation of hash map for type tracking.
+    \item \textbf{handler/exp.c} contains program for handling the expressions parsed from the parser.
+    \item \textbf{handler/func.c} contains program for handling the functions parsed from the parser.
+    \item \textbf{handler/stmt.c} contains program for handling the statements parsed from the parser.
+    \item \textbf{handler/struct.c} contains program for handling the structs parsed from the parser.
+    \item \textbf{handler/var.c} contains program for handling the variables parsed from the parser.
+\end{enumerate}
+
+\subsection*{1.2 \large\textbf{include/mode3}}
+\begin{enumerate}
+    \item \textbf{ast.h} head file for the implemented ast structs.
+    
+    \item \textbf{deque.h} head file for the implemented doubly linked list.
+    
+    \item \textbf{m3global.h} contains local variables and methods designated for mode 3.
+    
+    \item \textbf{map.h} head file for the implemented hash map.
+\end{enumerate} 
