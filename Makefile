@@ -1,5 +1,6 @@
-all: link latex
-# ./$(EXE) -3 array1.c
+all: link 
+	./$(EXE) -3 -o output.txt test2.c
+# latex
 
 .PHONY: clean
 clean: compiler-clean latex-clean

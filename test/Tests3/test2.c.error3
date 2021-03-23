@@ -1,0 +1,97 @@
+Error near test.c line 2
+	Undeclared identifier: err
+Error in test.c line 8:
+	member variable a already declared as:
+	  int a  (near line 7 in file test.c)
+Error near test.c line 11
+	struct S1 already defined near test.c line 9
+Error near test.c line 18
+	No definition for 'struct S3'
+Error near test.c line 33
+	struct S3 already defined near test.c line 31
+Error near test.c line 37
+	No definition for 'struct S4'
+Error near test.c line 45
+	Condition of if statement has invalid type: const char[]
+Error near test.c line 46
+	Condition of while loop has invalid type: const char[]
+Error near test.c line 47
+	Condition of do while loop has invalid type: const char[]
+Error near test.c line 48
+	Condition of for loop has invalid type: const char[]
+Error near test.c line 50
+	Return with a value (type was const int) in a void function
+Error near test.c line 53
+	Function f1 already declared:
+	    void f1(int, int) declared in test.c near line 23
+Error near test.c line 55
+	Function void f1(int, int) already defined
+Error near test.c line 61
+	No match for function call f()
+	No functions with this name
+Error near test.c line 62
+	No match for function call f1(const int, const int, const int)
+	Candidates are:
+	    void f1() declared in test.c near line 57
+	    void f1(int, int) declared in test.c near line 55
+Error near test.c line 63
+	No match for function call f1(const char[], const char[])
+	Candidates are:
+	    void f1() declared in test.c near line 57
+	    void f1(int, int) declared in test.c near line 55
+Error near test.c line 69
+	Undeclared identifier: i1
+Error near test.c line 70
+	Undeclared identifier: i1
+Error near test.c line 71
+	Undeclared identifier: i1
+Error near test.c line 72
+	Operation not supported: const char[] ? const int : const int
+Error near test.c line 73
+	Operation not supported: const int ? const char[] : const int
+Error near test.c line 74
+	Operation not supported: const int ? const int : const char[]
+Error near test.c line 81
+	Unary operator ~ cannot be applied to expression of type const char[]
+Error near test.c line 87
+	Unary operator - cannot be applied to expression of type const char[]
+Error near test.c line 93
+	Unary operator ! cannot be applied to expression of type const char[]
+Error near test.c line 97
+	Cannot cast expression of type const char[]
+Error near test.c line 99
+	Cannot cast expression of type const char[]
+Error near test.c line 101
+	Cannot cast expression of type const char[]
+Error near test.c line 105
+	Operation not supported: const char[] & const int
+Error near test.c line 112
+	Operation not supported: const char[] + const int
+Error near test.c line 119
+	Operation not supported: const char[] == const int
+Error near test.c line 134
+	Identifier b is not an array
+Error near test.c line 139
+	Index to array arr is not an integer
+Error near test.c line 142
+	Cannot increment lvalue of type int[]
+Error near test.c line 143
+	Cannot increment lvalue of type const int
+Error near test.c line 144
+	Cannot decrement lvalue of type const int
+Error near test.c line 145
+	Cannot decrement lvalue of type int[]
+Error near test.c line 154
+	Operation not supported: float = const char[]
+Error near test.c line 154
+	Operation not supported: float = const char[]
+Error near test.c line 154
+	Operation not supported: float = const char[]
+Error near test.c line 155
+	Cannot assign to item of type const float
+Error near test.c line 178
+	No definition for 'struct A'
+Error near test.c line 182
+	No definition for 'struct A'
+Error near test.c line 186
+	No definition for 'struct A'

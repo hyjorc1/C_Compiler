@@ -50,6 +50,12 @@ void f1(int a, int b) {
     return 1;
 }
 
+void f1() {}
+
+void f1(int a, int b) {}
+
+void f1();
+
 int f2() {
 
     f();
@@ -162,26 +168,24 @@ void f6() {
     (1>2)?3:4;
 }
 
-
-struct pair {
-  int x, y;
-};
-
-struct triple {
-  struct pair p;
-  int z;
-};
-
-void test()
-{
-  struct triple T;
-  T;
-  T.p;
-  T.z;
-  T.p.x;
-  T.p.y;
-  T.nope;     // Error
-  T.p.nope;   // Error
-  T.p.x.nope; // Error
+void foo1() {
+    struct A { };
 }
+
+struct B { };
+
+void foo2() {
+    struct A a; // error at a
+    struct B b;
+}
+
+void foo3(struct A aa, struct B bb) { // error at aa
+    
+}
+
+struct A aaa; // error at aaa
+struct B bbb;
+
+
+
 

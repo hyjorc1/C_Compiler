@@ -52,9 +52,8 @@ Variable *handle_init_var(Variable *var, Type *rt) {
     print("handle_init_var\n");
     if (var == NULL || cur_type == NULL)
         return NULL;
-    var->is_init = 1;
-    if (!handle_assign_exp(1, deep_copy_type_ast(cur_type), "=", rt)) {
-        return NULL;
+    if (rt != NULL && handle_assign_exp(1, deep_copy_type_ast(cur_type), "=", rt)) {
+        var->is_init = 1;
     }
     return var;
 }

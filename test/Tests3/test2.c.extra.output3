@@ -1,0 +1,160 @@
+Global struct S1
+    int a
+    int b
+
+Global struct S2
+    int a
+    int b
+    const struct S1 s1
+    const struct S1 s2
+    const struct S1 s3
+    const struct S1[] s4
+
+Global struct B
+
+Global variables
+    int c
+    int[] A
+    int a
+    const int[] B
+    struct B bbb
+
+Function f1, returns void
+    Parameters
+	int a
+	int b
+
+    Local struct S3
+        const struct S1 s1
+        const struct S1 s2
+
+    Local struct S4
+        const struct S3 s3
+
+    Local variables
+	const struct S1 s1
+	const struct S1 s2
+	int[] c
+
+    Statements
+        Expression on line 40 has type const int
+        Expression on line 41 has type const char[]
+        Expression on line 42 has type const char
+        Expression on line 43 has type const float
+
+Function f1, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+
+Function f2, returns int
+    Parameters
+
+    Local variables
+
+    Statements
+        Expression on line 66 has type void
+        Expression on line 76 has type const char[]
+        Expression on line 79 has type const int
+        Expression on line 80 has type const char
+        Expression on line 84 has type const char
+        Expression on line 85 has type const int
+        Expression on line 86 has type const float
+        Expression on line 90 has type const char
+        Expression on line 91 has type const char
+        Expression on line 92 has type const char
+        Expression on line 96 has type const char
+        Expression on line 98 has type const int
+        Expression on line 100 has type const float
+        Expression on line 104 has type const int
+        Expression on line 108 has type const int
+        Expression on line 109 has type const float
+        Expression on line 110 has type const float
+        Expression on line 111 has type const int
+        Expression on line 115 has type const char
+        Expression on line 116 has type const char
+        Expression on line 117 has type const char
+        Expression on line 118 has type const char
+
+Function f3, returns void
+    Parameters
+
+    Local variables
+	const int b
+	int a
+	char c
+	float d
+	int[] arr
+
+    Statements
+        Expression on line 133 has type const int
+        Expression on line 136 has type int[]
+        Expression on line 137 has type int
+        Expression on line 138 has type int
+        Expression on line 146 has type int
+        Expression on line 147 has type char
+        Expression on line 148 has type float
+
+Function f4, returns void
+    Parameters
+
+    Local variables
+	const float a (initialized)
+	const float b (initialized)
+	const float c (initialized)
+	float d
+	float a1
+	float b1
+	float c1
+
+    Statements
+        Expression on line 156 has type float
+        Expression on line 157 has type float
+        Expression on line 158 has type float
+
+Function f5, returns float
+    Parameters
+	int a
+
+    Local variables
+
+    Statements
+        Expression on line 162 has type int
+
+Function f6, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+        Expression on line 167 has type float
+        Expression on line 168 has type const int
+
+Function foo1, returns void
+    Parameters
+
+    Local struct A
+
+    Local variables
+
+    Statements
+
+Function foo2, returns void
+    Parameters
+
+    Local variables
+	struct B b
+
+    Statements
+
+Function foo3, returns void
+    Parameters
+	error aa
+	struct B bb
+
+    Local variables
+
+    Statements
+

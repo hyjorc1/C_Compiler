@@ -2,6 +2,7 @@
 
 
 Function *find_proto_func(char *id) {
+    print("find_proto_func\n");
     if (m3_global_funcs == NULL)
         return NULL;
     ListNode *cur = m3_global_funcs->first;
@@ -33,12 +34,19 @@ Type *get_func_local_var_type(Function *f, Variable *v) {
     return map_get(f->local_var_map, v->name);
 }
 
+int match_para_size(Function *f1, Function *f2) {
+    int n1 = f1->parameters == NULL ? 0 : f1->parameters->size;
+    int n2 = f2->parameters == NULL ? 0 : f2->parameters->size;
+    return n1 == n2 ? 1 : 0;
+}
+
 int match_func_sig(Function *f1, Function *f2) {
+    print("match_func_sig\n");
     // check return type
     if (!exact_match_type(f1->return_type, f2->return_type))
         return 0;
     // check parameter types
-    if (f1->parameters->size != f2->parameters->size)
+    if (!match_para_size(f1, f2))
         return 0;
     ListNode *n1 = f1->parameters->first;
     ListNode *n2 = f2->parameters->first;
@@ -72,6 +80,7 @@ void handle_func_proto() {
     m3_local_map = NULL;
 
     Function *f = find_proto_func(cur_fn->name);
+    print("handle_func_proto 1\n");
     if (f && match_func_sig(f, cur_fn)) {
         m3err();
         fprintf(stderr, "\tProto func %s is already declared\n", cur_fn->name);
@@ -97,8 +106,10 @@ void handle_func_name(char *id) {
 
 void handle_para(char *id, char is_array) {
     print("handle_para\n");
-    if (cur_type == NULL || cur_fn == NULL)
+    if (cur_fn == NULL)
         return;
+    if (cur_type == NULL)
+        cur_type = new_type_ast("error", 0, 0, 0);
     if (m3_local_map && map_get(m3_local_map, id)) {
         m3err();
         fprintf(stderr, "\tParameter name %s is already defined\n", id);
@@ -129,7 +140,7 @@ void handle_func_def() {
     m3_local_stmts = NULL;
 
     Function *f = find_func(cur_fn->name);
-    if (f) {
+    if (f && match_func_sig(cur_fn, f)) {
         m3err();
         fprintf(stderr, "\tFunction definition %s is already declared\n", cur_fn->name);
         free_function_ast(cur_fn);

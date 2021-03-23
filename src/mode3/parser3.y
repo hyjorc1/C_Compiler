@@ -263,7 +263,7 @@ do_stmt : DO block_stmt do_cond SEMI    { m3dprint("DO block_stmt WIHILE", ""); 
     | DO stmt do_cond SEMI              { m3dprint("DO stmt WIHILE", ""); }
     ;
 
-do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_cond_exp("do-while loop", $3); }
+do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_cond_exp("do while loop", $3); }
     ;
 
 /* part 3 - 2.3 The expression given for the condition 
