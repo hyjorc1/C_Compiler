@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "global.h"
 
 int debug = 0; /* set 1 to trigger debug mode */

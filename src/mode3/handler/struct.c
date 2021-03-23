@@ -76,7 +76,7 @@ Variable *handle_noinit_var_ident(char *id, char is_array) {
         return NULL;
     if (map_get(cur_struct->local_var_map, id)) {
         m3err();
-        fprintf(stderr, "\tLocal variable '%s' is already defined\n", id);
+        fprintf(stderr, "\tIdentifier '%s' is already defined\n", id);
         return NULL;
     }
     return new_variable_ast(id, is_array, 0);

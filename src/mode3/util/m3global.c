@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
 #include "m3global.h"
 
 void m3error(const char* msg) {
@@ -47,6 +43,11 @@ void postprocess() {
         print("m3_local_stmts is not NULL\n");
         list_destroy(m3_local_stmts);
         m3_local_stmts = NULL;
+    }
+    if (m3_arg_types) {
+        print("m3_arg_types is not NULL\n");
+        list_destroy(m3_arg_types);
+        m3_arg_types = NULL;
     }
 }
 

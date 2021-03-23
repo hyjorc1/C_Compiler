@@ -38,12 +38,6 @@ List *m3_global_funcs;
 List *m3_local_stmts;
 List *m3_arg_types;
 
-/* Struct members */
-HashMap *m3_cur_local_map;
-
-/* constant types */
-Type *error_type;
-
 const char *char_str;
 const char *int_str;
 const char *float_str;

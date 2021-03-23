@@ -1,5 +1,5 @@
 all: link
-# ./$(EXE) -3 struct1.c
+	./$(EXE) -3 array1.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean

@@ -66,7 +66,7 @@ Variable *handle_var_ident(char *id, char is_array) {
             same name as another global variable */
         if (find_global_type(id)) {
             m3err();
-            fprintf(stderr, "\tGlobal variable '%s' is already defined\n", id);
+            fprintf(stderr, "\tIdentifier '%s' already defined\n", id);
             return NULL;
         }
     } else {
@@ -75,7 +75,7 @@ Variable *handle_var_ident(char *id, char is_array) {
             same function */
         if (find_local_type(id)) {
             m3err();
-            fprintf(stderr, "\tLocal variable '%s' is already defined\n", id);
+            fprintf(stderr, "\tIdentifier '%s' already defined\n", id);
             return NULL;
         }
     }
