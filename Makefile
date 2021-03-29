@@ -7,6 +7,17 @@ clean: compiler-clean latex-clean
 test: link mode1-test mode2-test mode3-test
 
 #=================================================================#
+################################ latex ############################
+#=================================================================#
+latex:
+	pdflatex developer.tex
+	@echo '>>>>>>>>>>>>>>>>>>>> Built Latex <<<<<<<<<<<<<<<<<<<<<<'
+
+latex-clean:
+	rm -rf *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz developer.pdf
+	@echo '=================== Cleaned Latex ====================='
+
+#=================================================================#
 ############################## compiler ###########################
 #=================================================================#
 CC 			:= gcc
@@ -18,8 +29,7 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
-UTIL		:= $(SRC)/util
-OBJ 		= $(MAIN).o $(UTIL).o $(OBJ1) $(OBJ2)  $(OBJ3)
+OBJ 		= $(MAIN).o $(OBJ1) $(OBJ2)  $(OBJ3)
 
 link: mycc $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(OBJ)
@@ -29,10 +39,10 @@ link: mycc $(OBJ)
 	@echo ''
 	@echo ''
 
-mycc: $(MAIN).o $(UTIL).o mode1 mode2 mode3
+mycc: $(MAIN).o mode1 mode2 mode3
 
 compiler-clean: mode1-clean mode2-clean mode3-clean
-	rm -rf $(MAIN).o $(UTIL).o $(EXE)
+	rm -rf $(MAIN).o $(EXE)
 	@echo '================= Cleaned Compiler ===================='
 
 #=================================================================#
@@ -139,6 +149,7 @@ mode3-clean:
 	rm -rf $(LEX3).yy.c $(PASER3).tab.* $(OBJ3)
 	@echo '=================== Cleaned Mode3 ====================='
 
+
 #=================================================================#
 #----------------------- GNU auto variables ----------------------#
 #=================================================================#
@@ -146,13 +157,3 @@ mode3-clean:
 	@echo '>>>>>>>>>>>>>>>>>> auto .c to .o <<<<<<<<<<<<<<<<<<<<<<'
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-#=================================================================#
-################################ latex ############################
-#=================================================================#
-latex:
-	pdflatex developer.tex
-	@echo '>>>>>>>>>>>>>>>>>>>> Built Latex <<<<<<<<<<<<<<<<<<<<<<'
-
-latex-clean:
-	rm -rf *.blg *.bbl *.aux *.log *.dvi *.vtc *.out *~ *.fls *.fdb_latexmk *.gz developer.pdf
-	@echo '=================== Cleaned Latex ====================='
