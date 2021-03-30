@@ -8,6 +8,7 @@ Type *new_type_ast(char *name, char is_const, char is_struct, char is_array) {
     t->is_const = is_const;
     t->is_struct = is_struct;
     t->is_array = is_array;
+    t->lineno = -1;
     return t;
 }
 
@@ -63,11 +64,12 @@ char exact_match_type(Type *from, Type *to) {
 
 /* -------------------- Variable AST -------------------- */
 
-Variable *new_variable_ast(char *name, char is_array, char is_init) {
+Variable *new_variable_ast(char *name, char is_array, char is_init, int lineno) {
     Variable *v = (Variable *)malloc(sizeof(Variable));
     v->name = name;
     v->is_array = is_array;
     v->is_init = is_init;
+    v->lineno = lineno;
     return v;
 }
 

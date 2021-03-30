@@ -49,6 +49,7 @@ void update_struct_vars(Variable *v) {
     if (cur_struct == NULL || v == NULL || cur_type == NULL)
         return;
     cur_type->is_array = v->is_array;
+    cur_type->lineno = v->lineno;
     list_add_last(cur_struct->vars, v);
     map_put(cur_struct->local_var_map, v->name, cur_type);
 }
@@ -79,7 +80,7 @@ Variable *handle_noinit_var_ident(char *id, char is_array) {
         fprintf(stderr, "\tIdentifier '%s' is already defined\n", id);
         return NULL;
     }
-    return new_variable_ast(id, is_array, 0);
+    return new_variable_ast(id, is_array, 0, m3lineno);
 }
 
 Type *handle_struct_type_var(char *id) {

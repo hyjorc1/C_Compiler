@@ -1,6 +1,5 @@
 #ifndef MAP_H
 #define MAP_H
-
 /* -------------------- Type AST -------------------- */
 
 typedef struct {
@@ -8,6 +7,7 @@ typedef struct {
     char is_const;
     char is_struct;
     char is_array;
+    int lineno;
 } Type;
 
 Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);

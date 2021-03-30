@@ -34,6 +34,7 @@ Variable *update_type_map(Variable *var) {
     if (var == NULL || cur_type == NULL)
         return NULL;
     cur_type->is_array = var->is_array;
+    cur_type->lineno = var->lineno;
     if (m3_is_global) {
         print("update m3_global_map\n");
         if (m3_global_map == NULL)
@@ -78,5 +79,5 @@ Variable *handle_var_ident(char *id, char is_array) {
             return NULL;
         }
     }
-    return new_variable_ast(id, is_array, 0);
+    return new_variable_ast(id, is_array, 0, m3lineno);
 }

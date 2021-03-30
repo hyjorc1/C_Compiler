@@ -10,9 +10,10 @@ typedef struct {
     char *name;
     char is_array;
     char is_init;
+    int lineno;
 } Variable;
 
-Variable *new_variable_ast(char *name, char is_array, char is_init);
+Variable *new_variable_ast(char *name, char is_array, char is_init, int lineno);
 
 void free_variable_ast(void *p);
 

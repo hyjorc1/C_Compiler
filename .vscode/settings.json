@@ -18,6 +18,9 @@
         "atomic": "c",
         "exception": "c",
         "istream": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "string": "cpp",
+        "string_view": "cpp",
+        "type_traits": "cpp"
     }
 }

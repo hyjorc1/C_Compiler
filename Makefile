@@ -1,4 +1,6 @@
-all: link latex
+all: link 
+	./$(EXE) -3 mode3_test.c
+# latex
 # ./$(EXE) -3 -o output.txt test2.c
 
 .PHONY: clean
