@@ -1,17 +1,27 @@
 
-float other_function(float x);
 
-int myproto(int a, int b);
-
-float other_function(float y);
-
-int myproto(int c, int d)
+void func1()
 {
-  c;
-  d;
+  return;
 }
 
-int other_function(float z) /* error */
+char func2(char c)
 {
+  return c;
+}
+
+int func3(int i)
+{
+  return i;
+}
+
+float func4(float f)
+{
+  return f;
+}
+
+void bad()
+{
+  return 3;
 }
 

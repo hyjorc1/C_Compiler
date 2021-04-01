@@ -11,14 +11,20 @@ void handle_exp_stmt(Type *t) {
 void handle_return_stmt(Type *t) {
     if (cur_fn == NULL || t == NULL)
         return;
-    if (!widen_match_type(t, cur_fn->return_type)) {
-        char *type = type_to_str(t);
-        char *return_type = type_to_str(cur_fn->return_type);
+    char *type = type_to_str(t);
+    char *return_type = type_to_str(cur_fn->return_type);
+    if (strcmp(void_str, t->name) == 0 && strcmp(void_str, cur_fn->return_type->name) != 0) {
         m3err();
         fprintf(stderr, "\tFunction must return a value of type %s\n", return_type);
-        free(type);
-        free(return_type);
+    } else if (strcmp(void_str, t->name) != 0 && strcmp(void_str, cur_fn->return_type->name) == 0) {
+        m3err();
+        fprintf(stderr, "\tReturn with a value (type was %s) in a %s function\n", type, return_type);
+    } else if (!widen_match_type(t, cur_fn->return_type)) {
+        m3err();
+        fprintf(stderr, "\tReturn type was %s, function expects %s\n", type, return_type);
     }
+    free(type);
+    free(return_type);
 }
 
 
