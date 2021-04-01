@@ -1,6 +1,0 @@
-Error near consts.c line 32
-	Cannot assign to item of type const int
-Error near consts.c line 33
-	Cannot increment lvalue of type const int
-Error near consts.c line 35
-	Cannot assign to item of type const float

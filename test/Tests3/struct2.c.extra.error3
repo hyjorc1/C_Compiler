@@ -1,6 +1,0 @@
-Error near struct2.c line 19
-	Base type struct triple has no member named nope
-Error near struct2.c line 20
-	Base type struct pair has no member named nope
-Error near struct2.c line 21
-	Base type int is not a struct

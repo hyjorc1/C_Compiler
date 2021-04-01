@@ -66,10 +66,10 @@ Variable *handle_var_ident(char *id, char is_array) {
             same name as another global variable */
         Type *t = find_global_type(id);
         if (t) {
-            fprintf(stderr, "Error in %s line %d\n", m3_cur_file_name, m3lineno);
+            m3err();
             fprintf(stderr, "\tglobal variable %s already declared as:\n", id);
             char *t_str = type_to_str(t);
-            fprintf(stderr, "\t\t%s %s (near line %d in file %s)\n", t_str, id, t->lineno, m3_cur_file_name);
+            fprintf(stderr, "\t%s %s (near line %d in file %s)\n", t_str, id, t->lineno, m3_cur_file_name);
             free(t_str);
             return NULL;
         }
@@ -79,10 +79,10 @@ Variable *handle_var_ident(char *id, char is_array) {
             same function */
         Type *t = find_local_type(id);
         if (t) {
-            fprintf(stderr, "Error in %s line %d\n", m3_cur_file_name, m3lineno);
+            m3err();
             fprintf(stderr, "\tlocal variable %s already declared as:\n", id);
             char *t_str = type_to_str(t);
-            fprintf(stderr, "\t\t%s %s (near line %d in file %s)\n", t_str, id, t->lineno, m3_cur_file_name);
+            fprintf(stderr, "\t%s %s (near line %d in file %s)\n", t_str, id, t->lineno, m3_cur_file_name);
             free(t_str);
             return NULL;
         }

@@ -1,3 +1,3 @@
-Error in idents6.c line 24:
+Error near idents6.c line 24
 	local variable bad already declared as:
-	  int bad  (near line 23 in file idents6.c)
+	int bad (near line 23 in file idents6.c)

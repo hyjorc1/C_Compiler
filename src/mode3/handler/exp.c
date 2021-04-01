@@ -335,8 +335,7 @@ void handle_cond_exp(char *msg, Type *t) {
 }
 
 void print_err_candidates(Function *f) {
-    fprintf(stderr, "\tCandidates are:\n");
-    fprintf(stderr, "\t\t");
+    fprintf(stderr, "\tCandidates are:\n\t");
 
     char *return_type_str = type_to_str(f->return_type);
     fprintf(stderr, "%s %s(", return_type_str, f->name);

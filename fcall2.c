@@ -1,10 +1,8 @@
 
-void reals()
-{
-  0.0;
-  .5;
-  1e2;
-  1234.567890;
-  3.14159e0;
-  4.56e-7;
-}
+int a, b, A[20];
+
+float x, y, z;
+
+char truth;
+
+float b;  /* Should generate an error */
