@@ -80,7 +80,7 @@ extern Type *handle_struct_type_var(char *id);
 
 /* function handler */
 extern Function *find_proto_func(char *id);
-extern Function *find_func(char *id);
+extern Function *find_declared_func(char *id);
 extern void handle_func_proto();
 extern void handle_func_name(char *id);
 extern void handle_para(char *id, char is_array);
@@ -112,6 +112,8 @@ extern Type *handle_func_call_exp(char *id, List *arg_types);
 extern List *handle_single_type(Type *t);
 
 extern Type *handle_l_ident(char *id);
+
+extern void print_err_func_sig(Function *f);
 
 
 #endif

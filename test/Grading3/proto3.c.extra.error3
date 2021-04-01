@@ -1,3 +1,5 @@
 Error near proto3.c line 4
-	Function print already declared:
-	    void print(int) declared in proto3.c near line 2
+Function print originally declared with different type:
+void print(int) declared in proto3.c near line 2
+replaced with:
+void print(float) declared in proto3.c near line 4

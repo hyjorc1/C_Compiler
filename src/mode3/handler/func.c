@@ -16,7 +16,7 @@ Function *find_proto_func(char *id) {
     return NULL;
 }
 
-Function *find_func(char *id) {
+Function *find_declared_func(char *id) {
     if (m3_global_funcs == NULL)
         return NULL;
     ListNode *cur = m3_global_funcs->first;
@@ -80,11 +80,17 @@ void handle_func_proto() {
     m3_local_map = NULL;
 
     Function *f = find_proto_func(cur_fn->name);
-    print("handle_func_proto 1\n");
-    if (f && match_func_sig(f, cur_fn)) {
-        m3err();
-        fprintf(stderr, "\tProto func %s is already declared\n", cur_fn->name);
-        free_function_ast(cur_fn);
+    if (f) {
+        if (match_func_sig(f, cur_fn)) {
+            f->lineno = cur_fn->lineno;
+            free_function_ast(cur_fn);
+        } else {
+            m3err();
+            fprintf(stderr, "\tFunction thingy already declared:\n\t");
+            print_err_func_sig(f);
+            fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, f->lineno);
+            free_function_ast(cur_fn);
+        }
     } else {
         if (m3_global_funcs == NULL)
             m3_global_funcs = list_new(sizeof(Function), free_function_ast);
@@ -125,12 +131,22 @@ void handle_para(char *id, char is_array) {
     map_put(m3_local_map, id, cur_type);
 }
 
+void print_err_func(Function *f) {
+    fprintf(stderr, "Error near %s line %d\n", m3_cur_file_name, cur_fn->lineno);
+    fprintf(stderr, "Function %s originally declared with different type:\n", f->name);
+    print_err_func_sig(f);
+    fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, f->lineno);
+    fprintf(stderr, "replaced with:\n");
+    print_err_func_sig(cur_fn);
+    fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, cur_fn->lineno);
+    free_function_ast(cur_fn);
+}
+
 void handle_func_def() {
     print("handle_func_def\n");
     if (cur_fn == NULL)
         return;
 
-    cur_fn->lineno = m3lineno;
     cur_fn->local_var_map = m3_local_map;
     m3_local_map = NULL;
     cur_fn->local_structs = m3_local_structs;
@@ -140,11 +156,24 @@ void handle_func_def() {
     cur_fn->statements = m3_local_stmts;
     m3_local_stmts = NULL;
 
-    Function *f = find_func(cur_fn->name);
-    if (f && match_func_sig(cur_fn, f)) {
-        m3err();
-        fprintf(stderr, "\tFunction definition %s is already declared\n", cur_fn->name);
-        free_function_ast(cur_fn);
+
+    Function *f1 = find_proto_func(cur_fn->name);
+    Function *f2 = find_declared_func(cur_fn->name);
+
+    if (f2) {
+        if (match_func_sig(cur_fn, f2)) {
+            m3err();
+            fprintf(stderr, "\tFunction ");
+            print_err_func_sig(f2);
+            fprintf(stderr, " already defined\n");
+            free_function_ast(cur_fn);
+        } else {
+            print_err_func(f2);
+        }
+    } else if (f1) {
+        if (!match_func_sig(cur_fn, f1)) {
+            print_err_func(f1);
+        }
     } else {
         if (m3_global_funcs == NULL)
             m3_global_funcs = list_new(sizeof(Function), free_function_ast);

@@ -334,9 +334,7 @@ void handle_cond_exp(char *msg, Type *t) {
     free(t);
 }
 
-void print_err_candidates(Function *f) {
-    fprintf(stderr, "\tCandidates are:\n\t");
-
+void print_err_func_sig(Function *f) {
     char *return_type_str = type_to_str(f->return_type);
     fprintf(stderr, "%s %s(", return_type_str, f->name);
     free(return_type_str);
@@ -356,6 +354,11 @@ void print_err_candidates(Function *f) {
         }
     }
     fprintf(stderr, ")");
+}
+
+void print_err_candidates(Function *f) {
+    fprintf(stderr, "\tCandidates are:\n\t");
+    print_err_func_sig(f);
     fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, f->lineno);
 }
 
@@ -408,7 +411,7 @@ Type *handle_func_call_exp(char *id, List *arg_types) {
     Type *res = NULL;
     Function *f = find_proto_func(id); // check proto function
     if (!f)
-        f = find_func(id); // check defined function
+        f = find_declared_func(id); // check defined function
     if (!f && !strcmp(cur_fn->name, id)) // check current function
         f = cur_fn;
 
