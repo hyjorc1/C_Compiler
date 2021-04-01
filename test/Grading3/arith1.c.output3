@@ -1,0 +1,49 @@
+Global variables
+	int a
+	float b
+	char c
+
+Function tests, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+	Expression on line 8 has type int
+	Expression on line 9 has type int
+	Expression on line 10 has type int
+	Expression on line 11 has type int
+	Expression on line 12 has type int
+	Expression on line 14 has type int
+	Expression on line 15 has type int
+	Expression on line 16 has type int
+	Expression on line 17 has type int
+	Expression on line 18 has type int
+	Expression on line 19 has type int
+	Expression on line 20 has type int
+	Expression on line 21 has type int
+	Expression on line 23 has type int
+	Expression on line 24 has type int
+	Expression on line 25 has type int
+	Expression on line 26 has type int
+	Expression on line 27 has type int
+	Expression on line 28 has type int
+	Expression on line 30 has type float
+	Expression on line 31 has type float
+	Expression on line 32 has type float
+	Expression on line 33 has type float
+	Expression on line 34 has type float
+	Expression on line 35 has type float
+	Expression on line 36 has type float
+	Expression on line 37 has type float
+	Expression on line 39 has type char
+	Expression on line 40 has type char
+	Expression on line 41 has type char
+	Expression on line 42 has type char
+	Expression on line 43 has type char
+	Expression on line 44 has type char
+	Expression on line 45 has type char
+	Expression on line 46 has type char
+	Expression on line 48 has type int
+	Expression on line 49 has type int
+

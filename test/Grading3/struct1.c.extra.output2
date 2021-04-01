@@ -1,0 +1,6 @@
+Global struct basic
+    x, y, name[], depth
+
+Global variables
+    filler, B
+

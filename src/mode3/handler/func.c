@@ -112,7 +112,7 @@ void handle_para(char *id, char is_array) {
         cur_type = new_type_ast("error", 0, 0, 0);
     if (m3_local_map && map_get(m3_local_map, id)) {
         m3err();
-        fprintf(stderr, "\tParameter name %s is already defined\n", id);
+        fprintf(stderr, "\tDuplicate parameter name: %s\n", id);
         return;
     }
     cur_type->is_array = is_array;

@@ -1,0 +1,12 @@
+Error near widenA.c line 9
+	Parameter mismatch in function call
+	crust(int, int)
+Error near widenA.c line 10
+	Parameter mismatch in function call
+	crust(char, char)
+Error near widenA.c line 12
+	Parameter mismatch in function call
+	foo(void)
+Error near widenA.c line 14
+	Parameter mismatch in function call
+	crust(void, void)

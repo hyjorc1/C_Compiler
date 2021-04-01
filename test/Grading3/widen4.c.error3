@@ -1,0 +1,10 @@
+Error near widen4.c line 4
+	Operation not supported: int + float
+Error near widen4.c line 4
+	Operation not supported: error + char
+Error near widen4.c line 6
+	Operation not supported: char ? int : float
+Error near widen4.c line 7
+	Operation not supported: int ? float : char
+Error near widen4.c line 8
+	Operation not supported: float ? int : char

@@ -1,0 +1,14 @@
+Error near arith4.c line 9
+	Operation not supported: void + void
+Error near arith4.c line 10
+	Operation not supported: void - void
+Error near arith4.c line 11
+	Operation not supported: void * void
+Error near arith4.c line 12
+	Operation not supported: void / void
+Error near arith4.c line 13
+	Operation not supported: void % void
+Error near arith4.c line 14
+	Operation not supported: void & void
+Error near arith4.c line 15
+	Operation not supported: void | void

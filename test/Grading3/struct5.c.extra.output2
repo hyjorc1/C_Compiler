@@ -1,0 +1,12 @@
+Global struct pair
+    x, y
+
+Global struct window
+    upper_left, size, title[]
+
+Global struct screen
+    W[], num_windows
+
+Function test
+    Local variables:	P, p2, W, w2, S, s2
+

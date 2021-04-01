@@ -1,0 +1,12 @@
+Global variables
+
+Function test, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+        Expression on line 4 has type const int
+        Expression on line 5 has type const float
+        Expression on line 6 has type const float
+

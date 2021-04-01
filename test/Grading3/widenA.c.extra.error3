@@ -1,0 +1,8 @@
+Error near widenA.c line 12
+	No match for function call foo(void)
+	Candidates are:
+	    char foo() declared in widenA.c near line 2
+Error near widenA.c line 14
+	No match for function call crust(void, void)
+	Candidates are:
+	    void crust(int, float) declared in widenA.c near line 5

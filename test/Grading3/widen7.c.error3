@@ -1,0 +1,9 @@
+Error near widen7.c line 7
+	Parameter mismatch in function call
+	foo(char)
+Error near widen7.c line 10
+	Parameter mismatch in function call
+	bar(char)
+Error near widen7.c line 11
+	Parameter mismatch in function call
+	bar(int)

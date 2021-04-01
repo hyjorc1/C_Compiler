@@ -20,6 +20,7 @@ Type *deep_copy_type_ast(Type *t) {
     copy->is_const = t->is_const;
     copy->is_struct = t->is_struct;
     copy->is_array = t->is_array;
+    copy->lineno = t->lineno;
     return copy;
 }
 

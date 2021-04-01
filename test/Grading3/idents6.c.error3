@@ -1,0 +1,3 @@
+Error near idents6.c line 24:
+	Local variable bad already declared.
+	(Original is near idents6.c line 23)

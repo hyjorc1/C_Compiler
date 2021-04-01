@@ -36,8 +36,8 @@ extern List *m3_global_funcs;
 
 /* Statements */
 extern List *m3_local_stmts;
-extern List *m3_arg_types;
 
+/* constant strings for types */
 extern const char *char_str;
 extern const char *int_str;
 extern const char *float_str;
@@ -108,8 +108,8 @@ extern Type *handle_l_member(Type *mt, char *m);
 extern Type *handle_l_array_member(Type *st, char *m, Type *op);
 
 extern void handle_cond_exp(char *msg, Type *t);
-extern Type *handle_func_call_exp(char *id);
-extern void handle_exp_list(Type *t);
+extern Type *handle_func_call_exp(char *id, List *arg_types);
+extern List *handle_single_type(Type *t);
 
 extern Type *handle_l_ident(char *id);
 

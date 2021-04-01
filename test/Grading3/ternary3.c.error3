@@ -1,0 +1,2 @@
+Error near ternary3.c line 7
+	Operation not supported: int[] ? int : int

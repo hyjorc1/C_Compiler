@@ -1,0 +1,21 @@
+Global variables
+	int a
+
+Function myfunc, returns void
+    Parameters
+	int a
+	float b
+	char c
+
+    Local variables
+
+    Statements
+
+Function foo, returns int
+    Parameters
+	int b
+
+    Local variables
+
+    Statements
+

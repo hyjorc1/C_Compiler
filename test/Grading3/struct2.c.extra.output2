@@ -1,0 +1,9 @@
+Global struct basic
+    x, y, name[], depth
+
+Global struct basic
+    nope, this, should, be, an, error
+
+Global variables
+    filler, B
+

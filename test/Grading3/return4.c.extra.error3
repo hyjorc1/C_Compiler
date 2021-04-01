@@ -1,0 +1,2 @@
+Error near return4.c line 28
+	Return type was const char[], function expects float

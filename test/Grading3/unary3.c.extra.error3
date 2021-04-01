@@ -1,0 +1,6 @@
+Error near unary3.c line 4
+	Unary operator - cannot be applied to expression of type void
+Error near unary3.c line 5
+	Unary operator ! cannot be applied to expression of type void
+Error near unary3.c line 6
+	Unary operator ~ cannot be applied to expression of type void

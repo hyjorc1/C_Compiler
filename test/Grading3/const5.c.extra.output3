@@ -1,0 +1,30 @@
+Global variables
+    const float pi
+
+Function radians, returns float
+    Parameters
+	float degrees
+
+    Local variables
+
+    Statements
+
+Function pi_f, returns float
+    Parameters
+
+    Local variables
+
+    Statements
+
+Function tests, returns void
+    Parameters
+
+    Local variables
+	float x
+
+    Statements
+        Expression on line 17 has type float
+        Expression on line 18 has type float
+        Expression on line 19 has type float
+        Expression on line 21 has type const float
+

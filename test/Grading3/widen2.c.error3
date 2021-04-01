@@ -1,0 +1,8 @@
+Error near widen2.c line 6
+	Operation not supported: float = int
+Error near widen2.c line 7
+	Operation not supported: float = char
+Error near widen2.c line 9
+	Operation not supported: float += int
+Error near widen2.c line 10
+	Operation not supported: float -= char

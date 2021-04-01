@@ -1,0 +1,13 @@
+Global struct stack
+    data[], top
+
+Global variables
+    S
+
+Function test
+
+Function push
+    Parameters:	x
+
+Function pop
+

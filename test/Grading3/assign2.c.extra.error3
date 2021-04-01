@@ -1,0 +1,2 @@
+Error near assign2.c line 10
+	Type mismatch in assignment: expected char, got const float

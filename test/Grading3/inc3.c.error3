@@ -1,0 +1,8 @@
+Error near inc3.c line 8
+	Cannot increment lvalue of type int[]
+Error near inc3.c line 9
+	Cannot increment lvalue of type int[]
+Error near inc3.c line 10
+	Cannot decrement lvalue of type int[]
+Error near inc3.c line 11
+	Cannot decrement lvalue of type int[]

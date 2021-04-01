@@ -1,0 +1,15 @@
+Global variables
+
+Function tests, returns void
+    Parameters
+
+    Local variables
+	int a
+	int b
+
+    Statements
+	Expression on line 8 has type char
+	Expression on line 9 has type char
+	Expression on line 10 has type char
+	Expression on line 11 has type char
+

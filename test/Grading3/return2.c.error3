@@ -1,0 +1,2 @@
+Error near return2.c line 25
+	Returning int in a function of type void

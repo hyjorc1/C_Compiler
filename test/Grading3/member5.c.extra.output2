@@ -1,0 +1,30 @@
+Global struct bigint
+    digits[], size
+
+Global struct rational
+    numerator, denominator
+
+Global struct node
+    type, value, left, right, op
+
+Global struct formula
+    instr[], size
+
+Global struct location
+    filename[], line
+
+Global struct stmt
+    where, how
+
+Global struct function
+    name[], exec[], size
+
+Global struct module
+    funcs[], size
+
+Global struct program
+    mods[], size
+
+Function test
+    Local variables:	P
+

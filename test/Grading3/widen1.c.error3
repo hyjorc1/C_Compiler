@@ -1,0 +1,2 @@
+Error near widen1.c line 4
+	Operation not supported: int = char

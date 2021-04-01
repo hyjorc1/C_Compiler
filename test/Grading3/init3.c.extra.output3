@@ -1,0 +1,15 @@
+Global variables
+    float f
+
+Function test, returns void
+    Parameters
+	int a
+
+    Local variables
+	int b (initialized)
+	float g (initialized)
+	int c
+	int d (initialized)
+
+    Statements
+

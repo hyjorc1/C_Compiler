@@ -16,7 +16,7 @@ primtype    void|char|short|int|long|float|double
 whitespace  [ \t\r\n]+
 identifier  [a-zA-Z_][a-zA-Z_0-9]*
 int         [0-9]+ 
-real        [0-9]*\.[0-9]+([eE][-+]?[0-9]+)?
+real        [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 str         \"(?:[^\\"]|\\.)*\"
 char        \'([^\\\']|\\[abnrt\\\'])\'
 %%

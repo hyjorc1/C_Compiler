@@ -1,0 +1,6 @@
+Error near cast4.c line 6
+	Cannot cast from type void to type char
+Error near cast4.c line 7
+	Cannot cast from type void to type int
+Error near cast4.c line 8
+	Cannot cast from type void to type float

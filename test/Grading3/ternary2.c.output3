@@ -1,0 +1,14 @@
+Global variables
+
+Function tests, returns void
+    Parameters
+	char t
+
+    Local variables
+	int[] A
+	int[] B
+
+    Statements
+	Expression on line 10 has type int[]
+	Expression on line 11 has type void
+

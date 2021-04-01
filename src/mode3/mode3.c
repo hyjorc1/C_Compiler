@@ -13,14 +13,14 @@ void print_var(Variable *v, HashMap *map) {
 }
 
 void m3_print_global_vars() {
-    if (m3_global_vars == NULL)
-        return;
     printf("Global variables\n");
-    ListNode* cur = m3_global_vars->first;
-    while (cur != NULL) {
-        ListNode *next = cur->next;
-        print_var((Variable *)cur->data, m3_global_map);
-        cur = next;
+    if (m3_global_vars != NULL) {
+        ListNode* cur = m3_global_vars->first;
+        while (cur != NULL) {
+            ListNode *next = cur->next;
+            print_var((Variable *)cur->data, m3_global_map);
+            cur = next;
+        }
     }
     printf("\n");
     list_destroy(m3_global_vars);

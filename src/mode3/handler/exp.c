@@ -71,8 +71,7 @@ Type *handle_ubang(Type *t) {
         free(t_str);
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
-        if (t->is_const)
-            res->is_const = 1;
+        res->is_const = (t->is_const) ? 1 : 0;
     }
     free_type_ast(t);
     return res;
@@ -89,7 +88,7 @@ Type *handle_cast_exp(Type *t2) {
         char *t1_str = type_to_str(t1);
         char *t2_str = type_to_str(t2);
         m3err();
-        fprintf(stderr, "\tOperation not supported: (%s) %s\n", t1_str, t2_str);
+        fprintf(stderr, "\tCannot cast expression of type %s\n", t2_str);
         free(t1_str);
         free(t2_str);
     } else {
@@ -99,8 +98,7 @@ Type *handle_cast_exp(Type *t2) {
             res = new_type_ast(strdup(int_str), 0, 0, 0);
         else if (!strcmp(t1->name, float_str))
             res = new_type_ast(strdup(float_str), 0, 0, 0);
-        if (t2->is_const)
-            res->is_const = 1;
+        res->is_const = (t2->is_const) ? 1 : 0;
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -122,8 +120,7 @@ Type *handle_r8_exp(Type *t1, char *op, Type *t2) {
         free(t2_str);
     } else {
         res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
-        if (t1->is_const && t2->is_const)
-            res->is_const = 1;
+        res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -145,8 +142,7 @@ Type *handle_r9_exp(Type *t1, char *op, Type *t2) {
         free(t2_str);
     } else {
         res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
-        if (t1->is_const && t2->is_const)
-            res->is_const = 1;
+        res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -168,8 +164,7 @@ Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
         free(t2_str);
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
-        if (t1->is_const && t2->is_const)
-            res->is_const = 1;
+        res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -181,15 +176,11 @@ Type *handle_r11_exp(char *op, Type *t2) {
     Type *res = NULL;
     if (t2 == NULL) {
         // omit
-    } else if (t2->is_const) {
+    } else if (t2->is_const || !is_type_N(t2)) {
         char *t_str = type_to_str(t2);
+        char *s1 = strcmp(op, "++") == 0 ? "increment" : "decrement";
         m3err();
-        fprintf(stderr, "\tCannot increment lvalue of type %s\n", t_str);
-        free(t_str);
-    } else if (!is_type_N(t2)) {
-        char *t_str = type_to_str(t2);
-        m3err();
-        fprintf(stderr, "\tOperation not supported: %s %s\n", op, t_str);
+        fprintf(stderr, "\tCannot %s lvalue of type %s\n", s1, t_str);
         free(t_str);
     } else {
         res = deep_copy_type_ast(t2);
@@ -203,15 +194,11 @@ Type *handle_r12_exp(Type *t1, char *op) {
     Type *res = NULL;
     if (t1 == NULL) {
         // omit
-    } else if (t1->is_const) {
+    } else if (t1->is_const || !is_type_N(t1)) {
         char *t_str = type_to_str(t1);
+        char *s1 = strcmp(op, "++") == 0 ? "increment" : "decrement";
         m3err();
-        fprintf(stderr, "\tCannot increment lvalue of type %s\n", t_str);
-        free(t_str);
-    } else if (!is_type_N(t1)) {
-        char *t_str = type_to_str(t1);
-        m3err();
-        fprintf(stderr, "\tOperation not supported: %s %s\n", t_str, op);
+        fprintf(stderr, "\tCannot %s lvalue of type %s\n", s1, t_str);
         free(t_str);
     } else {
         res = deep_copy_type_ast(t1);
@@ -231,15 +218,18 @@ Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
         m3err();
         fprintf(stderr, "\tCannot assign to item of type %s\n", t_str);
         free(t_str);
-    } else if (widen_match_type(rt, lt)) {
+    } else if (is_type_N(lt) && is_type_N(rt) && widen_match_type(rt, lt)) {
         res = deep_copy_type_ast(lt);
-        if (rt->is_const && lt->is_const)
-            res->is_const = 1;
+        res->is_const = (rt->is_const && lt->is_const) ? 1 : 0;
     } else {
         char *lt_str = type_to_str(lt);
         char *rt_str = type_to_str(rt);
         m3err();
-        fprintf(stderr, "\tOperation not supported: %s %s %s\n", lt_str, op, rt_str);
+        if (!is_type_N(lt) || !is_type_N(rt)) {
+            fprintf(stderr, "\tOperation not supported: %s %s %s\n", lt_str, op, rt_str);
+        } else {
+            fprintf(stderr, "\tType mismatch in assignment: expected %s, got %s\n", lt_str, rt_str);
+        }
         free(lt_str);
         free(rt_str);
     }
@@ -272,7 +262,7 @@ Type *handle_l_array_access(char *id, Type *op) {
         // omit
     } else if (!t->is_array) {
         m3err();
-        fprintf(stderr, "\tIdentifier %s is not an array type\n", id);
+        fprintf(stderr, "\tIdentifier %s is not an array\n", id);
     } else if (!is_type_I(op)) {
         m3err();
         fprintf(stderr, "\tIndex to array %s is not an integer\n", id);
@@ -319,7 +309,7 @@ Type *handle_l_array_member(Type *st, char *m, Type *op) {
         // omit
     } else if (!mt->is_array) {
         m3err();
-        fprintf(stderr, "\tStruct member %s is not an array type\n", m);
+        fprintf(stderr, "\tStruct member %s is not an array\n", m);
     } else if (!is_type_I(op)) {
         m3err();
         fprintf(stderr, "\tIndex to array member %s is not an integer\n", m);
@@ -370,10 +360,11 @@ void print_err_candidates(Function *f) {
     fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, f->lineno);
 }
 
-void print_err_func_call(char *fn_name) {
+void print_err_func_call(char *fn_name, List *arg_types) {
+    print("print_err_func_call\n");
     fprintf(stderr, "\tNo match for function call %s(", fn_name);
-    if (m3_arg_types != NULL) {
-        ListNode *cur = m3_arg_types->first;
+    if (arg_types != NULL) {
+        ListNode *cur = arg_types->first;
         while (cur != NULL) {
             ListNode *next = cur->next;
             Type *t = (Type *)cur->data;
@@ -413,7 +404,7 @@ int match_parameter_size(List *parameters, List *types) {
 }
 
 
-Type *handle_func_call_exp(char *id) {
+Type *handle_func_call_exp(char *id, List *arg_types) {
     print("handle_func_call_exp\n");
     Type *res = NULL;
     Function *f = find_proto_func(id); // check proto function
@@ -424,31 +415,28 @@ Type *handle_func_call_exp(char *id) {
 
     if (!f) {
         m3err();
-        print_err_func_call(id);
+        print_err_func_call(id, arg_types);
         fprintf(stderr, "\tNo functions with this name\n");
-    } else if (!match_parameter_size(f->parameters, m3_arg_types)) {
+    } else if (!match_parameter_size(f->parameters, arg_types)) {
         m3err();
-        print_err_func_call(id);
+        print_err_func_call(id, arg_types);
         print_err_candidates(f);
-    } else if (!math_types(m3_arg_types, f)) {
+    } else if (!math_types(arg_types, f)) {
         m3err();
-        print_err_func_call(id);
+        print_err_func_call(id, arg_types);
         print_err_candidates(f);
     } else {
         res = deep_copy_type_ast(f->return_type);
     }
-    free(m3_arg_types);
-    m3_arg_types = NULL;
+    free(arg_types);
     return res;
 }
 
-void handle_exp_list(Type *t) {
+List *handle_single_type(Type *t) {
     if (t == NULL)
-        return;
-    if (m3_arg_types == NULL)
-        m3_arg_types = list_new(sizeof(Type), free_type_ast);
-    list_add_last(m3_arg_types, t);
+        return NULL;
+    List *l = list_new(sizeof(Type), free_type_ast);
+    return list_add_last(l, t);
 }
-
 
 

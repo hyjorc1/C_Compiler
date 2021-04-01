@@ -1,0 +1,9 @@
+Global struct thing1
+    x, y, z
+
+Global struct thing2
+    x, y
+
+Function test
+    Local variables:	T1, T2
+

@@ -1,0 +1,2 @@
+Error near member2.c line 24
+	Base type struct thing2 has no member named z

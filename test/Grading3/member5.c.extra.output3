@@ -1,0 +1,72 @@
+Global struct bigint
+    char[] digits
+    int size
+
+Global struct rational
+    struct bigint numerator
+    struct bigint denominator
+
+Global struct node
+    char type
+    struct rational value
+    int left
+    int right
+    char op
+
+Global struct formula
+    struct node[] instr
+    int size
+
+Global struct location
+    char[] filename
+    int line
+
+Global struct stmt
+    struct location where
+    struct formula how
+
+Global struct function
+    char[] name
+    struct stmt[] exec
+    int size
+
+Global struct module
+    struct function[] funcs
+    int size
+
+Global struct program
+    struct module[] mods
+    int size
+
+Global variables
+
+Function test, returns void
+    Parameters
+
+    Local variables
+	struct program P
+
+    Statements
+        Expression on line 53 has type struct program
+        Expression on line 54 has type int
+        Expression on line 55 has type struct module[]
+        Expression on line 56 has type struct module
+        Expression on line 57 has type struct function[]
+        Expression on line 58 has type struct function
+        Expression on line 59 has type char[]
+        Expression on line 60 has type struct stmt[]
+        Expression on line 61 has type struct stmt
+        Expression on line 62 has type struct location
+        Expression on line 63 has type char[]
+        Expression on line 64 has type char
+        Expression on line 66 has type struct formula
+        Expression on line 67 has type int
+        Expression on line 68 has type struct node[]
+        Expression on line 69 has type struct node
+        Expression on line 70 has type char
+        Expression on line 71 has type struct rational
+        Expression on line 72 has type struct bigint
+        Expression on line 73 has type int
+        Expression on line 74 has type char[]
+        Expression on line 75 has type char
+

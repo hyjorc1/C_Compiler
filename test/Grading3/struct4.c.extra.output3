@@ -1,0 +1,28 @@
+Global struct pair
+    int x
+    int y
+
+Global struct window
+    struct pair upper_left
+    struct pair size
+    char[] title
+
+Global struct screen
+    struct window[] W
+    int num_windows
+
+Global variables
+
+Function test, returns void
+    Parameters
+
+    Local variables
+	struct pair P
+	struct window W
+	struct screen S
+
+    Statements
+        Expression on line 25 has type struct pair
+        Expression on line 26 has type struct window
+        Expression on line 27 has type struct screen
+

@@ -1,0 +1,17 @@
+Global variables
+	float[] X
+
+Function tests, returns void
+    Parameters
+	int a
+
+    Local variables
+
+    Statements
+	Expression on line 6 has type float[]
+	Expression on line 7 has type float
+	Expression on line 8 has type float
+	Expression on line 9 has type float
+	Expression on line 10 has type float
+	Expression on line 11 has type float
+

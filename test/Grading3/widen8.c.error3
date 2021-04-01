@@ -1,0 +1,18 @@
+Error near widen8.c line 5
+	Operation not supported: char != int
+Error near widen8.c line 6
+	Operation not supported: char > int
+Error near widen8.c line 8
+	Operation not supported: int >= float
+Error near widen8.c line 9
+	Operation not supported: float <= int
+Error near widen8.c line 11
+	Operation not supported: int && float
+Error near widen8.c line 13
+	Operation not supported: char != float
+Error near widen8.c line 15
+	Operation not supported: char && float
+Error near widen8.c line 17
+	Operation not supported: char || int
+Error near widen8.c line 17
+	Operation not supported: error || float

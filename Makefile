@@ -1,5 +1,5 @@
 all: link 
-	./$(EXE) -3 mode3_test.c
+	./$(EXE) -3 fcall2.c
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 
@@ -51,7 +51,7 @@ compiler-clean: mode1-clean mode2-clean mode3-clean
 #------------------------------ test -----------------------------#
 #=================================================================#
 TEST_CMD	:= ./Check.sh mycc -s *.c
-# TEST_CMD	:= ./Check.sh mycc -d struct3.c
+# TEST_CMD	:= ./Check.sh mycc -d idents1.c
 
 #=================================================================#
 #------------------------------ mode 1 ---------------------------#
@@ -126,7 +126,7 @@ HAND3   := $(patsubst %.c,%.o,$(wildcard $(SRC3)/handler/*.c))
 UTIL3   := $(patsubst %.c,%.o,$(wildcard $(SRC3)/util/*.c))
 AST3    := $(patsubst %.c,%.o,$(wildcard $(SRC3)/ast/*.c))
 OBJ3 	:= $(PASER3).tab.o $(LEX3).yy.o $(MODE3).o $(AST3) $(UTIL3) $(HAND3)
-TEST3	:= test/Tests3
+TEST3	:= test/Grading3
 
 test3: link mode3-test
 

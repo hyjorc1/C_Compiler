@@ -1,0 +1,20 @@
+Error near assign3.c line 9
+	Operation not supported: int[] = int[]
+Error near assign3.c line 10
+	Operation not supported: int[] += int[]
+Error near assign3.c line 11
+	Operation not supported: int[] -= int[]
+Error near assign3.c line 12
+	Operation not supported: int[] *= int[]
+Error near assign3.c line 13
+	Operation not supported: int[] /= int[]
+Error near assign3.c line 15
+	Operation not supported: int[] = const int
+Error near assign3.c line 16
+	Operation not supported: int[] += const int
+Error near assign3.c line 17
+	Operation not supported: int[] -= const int
+Error near assign3.c line 18
+	Operation not supported: int[] *= const int
+Error near assign3.c line 19
+	Operation not supported: int[] /= const int

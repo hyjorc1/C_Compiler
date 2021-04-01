@@ -1,0 +1,3 @@
+Error near idents1.c line 8:
+	Global variable b already declared.
+	(Original is near idents1.c line 2)

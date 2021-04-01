@@ -1,0 +1,24 @@
+Global variables
+
+Function foo, returns int
+    Parameters
+
+    Local variables
+
+    Statements
+
+Function bar, returns float
+    Parameters
+
+    Local variables
+
+    Statements
+
+Function test, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+        Expression on line 14 has type float
+

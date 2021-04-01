@@ -44,11 +44,6 @@ void postprocess() {
         list_destroy(m3_local_stmts);
         m3_local_stmts = NULL;
     }
-    if (m3_arg_types) {
-        print("m3_arg_types is not NULL\n");
-        list_destroy(m3_arg_types);
-        m3_arg_types = NULL;
-    }
 }
 
 char is_type_N(Type *t) { // N ∈ {char, int, float}

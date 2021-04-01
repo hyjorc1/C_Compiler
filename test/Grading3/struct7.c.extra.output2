@@ -1,0 +1,6 @@
+Global struct pair
+    x, y
+
+Function test
+    Local variables:	P, M
+

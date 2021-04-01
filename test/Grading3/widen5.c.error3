@@ -1,0 +1,2 @@
+Error near widen5.c line 7
+	Array index should be an integer (was: char)

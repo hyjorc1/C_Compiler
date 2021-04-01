@@ -26,11 +26,8 @@ List *m3_global_funcs = NULL;
 
 /* Statements */
 List *m3_local_stmts = NULL;
-List *m3_arg_types = NULL;
 
-/* constant types */
-
-
+/* constant strings for types */
 const char *char_str = "char";
 const char *int_str = "int";
 const char *float_str = "float";
@@ -85,7 +82,7 @@ const char *error_str = "error";
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
 %type <v> var init_var noinit_var para
-%type <l> para_list
+%type <l> para_list exp_list
 /* part 3 - exp returns type */
 %type <t> exp l_val cond_exp
 %type <fn> func_decl func_proto func_def
@@ -276,8 +273,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | REALCONST                         { m3dprint("REALCONST", $1); $$ = new_type_ast(strdup(float_str), 1, 0, 0); }
     | STRCONST                          { m3dprint("STRCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 1); }
     | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 0); }
-    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call_exp($1); }
-    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call_exp($1); }
+    | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call_exp($1, $3); }
+    | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call_exp($1, NULL); }
 
     /* part 2 - 11. An l-value is an identifier, optionally followed by a left bracket, 
         an expression, and a right bracket. Note that this restricts array 
@@ -322,8 +319,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 
-exp_list : exp                          { m3dprint("single exp", ""); handle_exp_list($1); }
-    | exp_list COMMA exp                { m3dprint("multiple exps", ""); handle_exp_list($3); }
+exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }
+    | exp_list COMMA exp                { m3dprint("multiple exps", ""); $$ = list_add_last($1, $3); }
     ; 
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */

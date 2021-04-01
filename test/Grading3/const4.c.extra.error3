@@ -1,0 +1,2 @@
+Error near const4.c line 6
+	Cannot increment lvalue of type const int

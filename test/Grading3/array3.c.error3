@@ -1,0 +1,2 @@
+Error near array3.c line 10
+	Array index should be an integer (was: float)

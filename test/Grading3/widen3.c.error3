@@ -1,0 +1,6 @@
+Error near widen3.c line 4
+	Operation not supported: int + char
+Error near widen3.c line 5
+	Operation not supported: int - float
+Error near widen3.c line 6
+	Operation not supported: float * char

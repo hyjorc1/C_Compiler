@@ -1,0 +1,2 @@
+Error near return3.c line 27
+	Return type was const float, function expects int

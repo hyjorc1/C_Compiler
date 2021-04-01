@@ -1,0 +1,21 @@
+Global variables
+
+Function foo, returns void
+    Parameters
+
+    Local variables
+
+    Statements
+        Expression on line 5 has type const char
+        Expression on line 6 has type const int
+        Expression on line 7 has type const char
+        Expression on line 8 has type const int
+        Expression on line 9 has type const float
+        Expression on line 10 has type const char
+        Expression on line 11 has type const char
+        Expression on line 12 has type const char
+        Expression on line 14 has type const char
+        Expression on line 15 has type const int
+        Expression on line 16 has type const char
+        Expression on line 18 has type const char
+

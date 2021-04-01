@@ -1,0 +1,2 @@
+Error near cond4.c line 9
+	Condition of if statement has invalid type: void

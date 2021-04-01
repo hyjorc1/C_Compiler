@@ -1,0 +1,3 @@
+Error near proto3.c line 4
+	Function print already declared:
+	    void print(int) declared in proto3.c near line 2

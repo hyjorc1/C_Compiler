@@ -1,0 +1,2 @@
+Error near cond2.c line 8
+	Condition of while loop has invalid type: float[]

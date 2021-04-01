@@ -1,0 +1,21 @@
+Global variables
+	int A
+	float B
+	char C
+
+Function tests, returns void
+    Parameters
+	int a
+	float b
+	char c
+
+    Local variables
+
+    Statements
+	Expression on line 8 has type int
+	Expression on line 9 has type float
+	Expression on line 10 has type char
+	Expression on line 12 has type int
+	Expression on line 13 has type float
+	Expression on line 14 has type char
+

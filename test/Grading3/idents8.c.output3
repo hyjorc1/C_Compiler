@@ -1,0 +1,69 @@
+Global variables
+	float b
+	float a
+	float d
+	int i
+	int j
+
+Function everything, returns void
+    Parameters
+	int a
+
+    Local variables
+	int b
+	char[] c
+	float d
+	int e
+	int[] f
+	int g
+
+    Statements
+	Expression on line 9 has type int
+	Expression on line 10 has type int
+	Expression on line 11 has type char[]
+	Expression on line 12 has type float
+	Expression on line 13 has type int
+	Expression on line 14 has type int[]
+	Expression on line 15 has type int
+
+Function still_good, returns int
+    Parameters
+	int a
+	int b
+	int c
+	int e
+	int f
+	int g
+
+    Local variables
+	float h
+	float i
+	float j
+	char k
+
+    Statements
+	Expression on line 25 has type int
+	Expression on line 26 has type int
+	Expression on line 27 has type int
+	Expression on line 28 has type float
+	Expression on line 29 has type int
+	Expression on line 30 has type int
+	Expression on line 31 has type int
+	Expression on line 32 has type float
+	Expression on line 33 has type float
+	Expression on line 34 has type float
+	Expression on line 35 has type char
+
+Function thing, returns void
+    Parameters
+	int a
+
+    Local variables
+
+    Statements
+	Expression on line 42 has type int
+	Expression on line 43 has type float
+	Expression on line 44 has type float
+	Expression on line 45 has type int
+	Expression on line 46 has type int
+

@@ -1,0 +1,7 @@
+Global struct pair
+    x, y
+
+Function getOrigin
+    Parameters:	something
+    Local variables:	P
+

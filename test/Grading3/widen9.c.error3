@@ -1,0 +1,3 @@
+Error near widen9.c line 10
+	Parameter mismatch in function call
+	nope(char[])
