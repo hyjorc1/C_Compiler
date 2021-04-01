@@ -33,7 +33,7 @@ Type *handle_utilde(Type *t) {
     } else if (!is_type_I(t)) {
         char *t_str = type_to_str(t);
         m3err();
-        fprintf(stderr, "\tOperation not supported: ~ %s\n", t_str);
+        fprintf(stderr, "\tUnary operator ~ cannot be applied to expression of type %s\n", t_str);
         free(t_str);
     } else {
         res = deep_copy_type_ast(t);
@@ -50,7 +50,7 @@ Type *handle_uminus(Type *t) {
     } else if (!is_type_N(t)) {
         char *t_str = type_to_str(t);
         m3err();
-        fprintf(stderr, "\tOperation not supported: - %s\n", t_str);
+        fprintf(stderr, "\tUnary operator - cannot be applied to expression of type %s\n", t_str);
         free(t_str);
     } else {
         res = deep_copy_type_ast(t);
@@ -67,7 +67,7 @@ Type *handle_ubang(Type *t) {
     } else if (!is_type_N(t)) {
         char *t_str = type_to_str(t);
         m3err();
-        fprintf(stderr, "\tOperation not supported: ! %s\n", t_str);
+        fprintf(stderr, "\tUnary operator ! cannot be applied to expression of type %s\n", t_str);
         free(t_str);
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);

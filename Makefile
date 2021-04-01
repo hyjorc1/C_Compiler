@@ -1,5 +1,5 @@
 all: link 
-	./$(EXE) -3 fcall2.c
+# ./$(EXE) -3 fcall2.c
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 
@@ -51,7 +51,7 @@ compiler-clean: mode1-clean mode2-clean mode3-clean
 #------------------------------ test -----------------------------#
 #=================================================================#
 TEST_CMD	:= ./Check.sh mycc -s *.c
-# TEST_CMD	:= ./Check.sh mycc -d proto4.c
+# TEST_CMD	:= ./Check.sh mycc -d struct*.c
 
 #=================================================================#
 #------------------------------ mode 1 ---------------------------#

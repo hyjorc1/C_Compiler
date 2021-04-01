@@ -25,7 +25,4 @@ Function test, returns void
 	struct screen s2
 
     Statements
-        Expression on line 25 has type struct pair
-        Expression on line 26 has type struct window
-        Expression on line 27 has type struct screen
 
