@@ -24,7 +24,7 @@ HashMap* new_map() {
 }
 
 Entry *find_prev(HashMap* map, char *id) {
-    Entry *prev = map->data[map_hash(id) % SIZE];
+    Entry *prev = map->data[map_hash(id)];
     while (prev->next != NULL && strcmp(prev->next->id, id)) {
         prev = prev->next;
     }
@@ -32,10 +32,10 @@ Entry *find_prev(HashMap* map, char *id) {
 }
 
 int map_hash(char *id) {
-    unsigned int hash = 0;
-    unsigned c;
+    size_t hash = 0, c = 0;
     while ((c = *id++))
         hash = hash * 7 ^ c;
+    hash = hash % SIZE;
     return hash;
 }
 

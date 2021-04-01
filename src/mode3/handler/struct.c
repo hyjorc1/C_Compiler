@@ -73,6 +73,7 @@ void update_structs() {
 }
 
 Variable *handle_noinit_var_ident(char *id, char is_array) {
+    print("handle_noinit_var_ident with id:'%s'\n", id);
     if (cur_struct == NULL)
         return NULL;
     if (map_get(cur_struct->local_var_map, id)) {
