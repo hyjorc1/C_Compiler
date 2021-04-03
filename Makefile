@@ -1,5 +1,5 @@
 all: link 
-# ./$(EXE) -3 fcall2.c
+	./$(EXE) -3 exprs.c
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 

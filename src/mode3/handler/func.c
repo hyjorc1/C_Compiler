@@ -82,11 +82,17 @@ void handle_func_proto() {
     Function *f = find_proto_func(cur_fn->name);
     if (f) {
         if (match_func_sig(f, cur_fn)) {
+            list_destroy(f->parameters);
+            map_free(f->local_var_map);
+            f->parameters = cur_fn->parameters;
+            f->local_var_map = cur_fn->local_var_map;
             f->lineno = cur_fn->lineno;
-            free_function_ast(cur_fn);
+            free(cur_fn->return_type);
+            free(cur_fn->name);
+            free(cur_fn);
         } else {
             m3err();
-            fprintf(stderr, "\tFunction thingy already declared:\n\t");
+            fprintf(stderr, "\tFunction %s already declared:\n\t", f->name);
             print_err_func_sig(f);
             fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, f->lineno);
             free_function_ast(cur_fn);
