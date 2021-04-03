@@ -1,0 +1,29 @@
+
+; Java assembly code
+
+.class public exprs.c
+.super java/lang/Object
+
+; Global vars
+
+.method <init> : ()V
+    .code stack 1 locals 1
+        aload_0
+        invokespecial Method java/lang/Object <init> ()V
+        return
+    .end code
+.end method
+
+.method public static main : ([Ljava/lang/String;)V
+    .code stack 2 locals 2
+        invokestatic Method exprs main ()I
+        istore_1
+        getstatic Field java/lang/System out Ljava/io/PrintStream;
+        ldc 'Return code: '
+        invokevirtual Method java/io/PrintStream print (Ljava/lang/String;)V
+        getstatic Field java/lang/System out Ljava/io/PrintStream;
+        iload_1
+        invokevirtual Method java/io/PrintStream println (I)V
+        return
+    .end code
+.end method

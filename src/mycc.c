@@ -1,6 +1,7 @@
 #include "global.h"
 
 int debug = 0; /* set 1 to trigger debug mode */
+int mode = -1;
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -22,11 +23,17 @@ int main(int argc, char *argv[]) {
         if (fileIdx >= argc) {
             fprintf(stderr, "Modes 1 to 5 need input files\n");
         } else if (!strcmp(argv[1], "-1")) {
+            mode = 1;
             mode1(argc, argv, fileIdx);
         } else if (!strcmp(argv[1], "-2")) {
+            mode = 2;
             mode2(argc, argv, fileIdx);
         } else if (!strcmp(argv[1], "-3")) {
+            mode = 3;
             mode3(argc, argv, fileIdx);
+        } else if (!strcmp(argv[1], "-4")) {
+            mode = 4;
+            mode4(argc, argv, fileIdx);
         } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {
             fprintf(stderr, "The other modes are not implemented.\n");
         } else {

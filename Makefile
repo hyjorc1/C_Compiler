@@ -1,12 +1,12 @@
 all: link 
-	./$(EXE) -3 exprs.c
+	./$(EXE) -4 exprs.c 
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
 
-test: link mode1-test mode2-test mode3-test
+test: link mode1-test mode2-test mode3-test mode4-test
 
 #=================================================================#
 ################################ latex ############################
@@ -31,7 +31,7 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
-OBJ 		= $(MAIN).o $(OBJ1) $(OBJ2)  $(OBJ3)
+OBJ 		= $(MAIN).o $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4)
 
 link: mycc $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(OBJ)
@@ -41,9 +41,9 @@ link: mycc $(OBJ)
 	@echo ''
 	@echo ''
 
-mycc: $(MAIN).o mode1 mode2 mode3
+mycc: $(MAIN).o mode1 mode2 mode3 mode4
 
-compiler-clean: mode1-clean mode2-clean mode3-clean
+compiler-clean: mode1-clean mode2-clean mode3-clean mode4-clean
 	rm -rf $(MAIN).o $(EXE)
 	@echo '================= Cleaned Compiler ===================='
 
@@ -151,6 +151,30 @@ mode3-clean:
 	rm -rf $(LEX3).yy.c $(PASER3).tab.* $(OBJ3)
 	@echo '=================== Cleaned Mode3 ====================='
 
+#=================================================================#
+#------------------------------ mode 4 ---------------------------#
+#=================================================================#
+SRC4	:= $(SRC)/mode4
+MODE4	:= $(SRC4)/mode4
+OBJ4 	:= $(MODE4).o
+TEST4	:= test/Grading4
+
+test4: link mode4-test
+
+mode4-test:
+	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 4 Test @@@@@@@@@@@@@@@@@@@@@@@'
+	cp $(EXE) $(TEST4) && cd $(TEST4) && $(TEST_CMD) && rm $(EXE) && cd ../../
+
+mode4: $(OBJ4)
+	@echo '========================================================'
+	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 4'
+	@echo '========================================================'
+	@echo ''
+	@echo ''
+
+mode4-clean:
+	rm -rf $(OBJ4)
+	@echo '=================== Cleaned Mode4 ====================='
 
 #=================================================================#
 #----------------------- GNU auto variables ----------------------#
