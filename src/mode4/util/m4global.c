@@ -63,7 +63,7 @@ void m4handle_char(char *val) {
     if (mode != 4)
         return;
     FILE *f = get_file(global_exp_tmp_file);
-    fprintf(f, "%sbipush %d\n", ident8, (int)val[0]);
+    fprintf(f, "%sbipush %d\n", ident8, val[1]);
     fclose(f);
 }
 

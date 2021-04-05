@@ -24,7 +24,7 @@ void print_file_content(const char *file_name) {
 }
 
 void print_bytecode_global_vars() {
-    printf("; Global vars\n");
+    printf("; Global vars\n\n");
 
     print_file_content(global_var_tmp_file);
     printf("\n");
@@ -41,6 +41,7 @@ void print_bytecode_global_vars() {
 }
 
 void print_bytecode_default_constructor() {
+    printf("; Default constructor\n\n");
     printf(".method <init> : ()V\n");
     printf("    .code stack 1 locals 1\n");
     printf("        aload_0\n");
@@ -52,6 +53,7 @@ void print_bytecode_default_constructor() {
 }
 
 void print_bytecode_java_main() {
+    printf("; Java main function\n\n");
     printf(".method public static main : ([Ljava/lang/String;)V\n");
     printf("    .code stack 2 locals 2\n");
     printf("        invokestatic Method exprs main ()I\n");
