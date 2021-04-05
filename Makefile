@@ -156,7 +156,8 @@ mode3-clean:
 #=================================================================#
 SRC4	:= $(SRC)/mode4
 MODE4	:= $(SRC4)/mode4
-OBJ4 	:= $(MODE4).o
+UTIL4   := $(patsubst %.c,%.o,$(wildcard $(SRC4)/util/*.c))
+OBJ4 	:= $(MODE4).o $(UTIL4)
 TEST4	:= test/Grading4
 
 test4: link mode4-test

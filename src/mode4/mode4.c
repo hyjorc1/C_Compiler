@@ -1,15 +1,46 @@
-#include "m3global.h"
+#include "m4global.h"
 
-void print_head(char *file_name) {
+void print_bytecode_class() {
     printf("\n");
     printf("; Java assembly code\n");
     printf("\n");
-    printf(".class public ");
-    printf("%.*s\n", (int)strlen(file_name) - 2, file_name);
+    printf(".class public %s\n", m4_class_name);
     printf(".super java/lang/Object\n");
     printf("\n");
+}
+
+void print_file_content(const char *file_name) {
+    if (file_exists(file_name)) {
+        FILE *f = fopen(file_name, "r");
+        char c;
+        c = fgetc(f);
+        while (c != EOF) {
+            printf ("%c", c);
+            c = fgetc(f);
+        }
+        fclose(f);
+        remove(file_name);
+    }
+}
+
+void print_bytecode_global_vars() {
     printf("; Global vars\n");
+
+    print_file_content(global_var_tmp_file);
     printf("\n");
+
+    if (file_exists(global_var_clinit_tmp_file)) {
+        printf (".method static <clinit> : ()V\n");
+        printf ("    .code stack 1 locals 0\n");
+        print_file_content(global_var_clinit_tmp_file);
+        printf ("        return\n");
+        printf ("    .end code\n");
+        printf (".end method\n");
+        printf("\n");
+    }
+}
+
+void print_bytecode_default_constructor() {
     printf(".method <init> : ()V\n");
     printf("    .code stack 1 locals 1\n");
     printf("        aload_0\n");
@@ -20,7 +51,7 @@ void print_head(char *file_name) {
     printf("\n");
 }
 
-void print_main() {
+void print_bytecode_java_main() {
     printf(".method public static main : ([Ljava/lang/String;)V\n");
     printf("    .code stack 2 locals 2\n");
     printf("        invokestatic Method exprs main ()I\n");
@@ -48,12 +79,16 @@ void mode4(int argc, char *argv[], int fileIdx) {
             return;
         }
         m3_cur_file_name = argv[i];
+        m4_class_name = substr(m3_cur_file_name, 0, strlen(m3_cur_file_name) - 2);
         m3lineno = 1;
         m3restart(f);
         print("Parse return %d\n", m3parse());
         
-        print_head(m3_cur_file_name);
-        print_main();
+        
+        print_bytecode_class();
+        print_bytecode_global_vars();
+        print_bytecode_default_constructor();
+        print_bytecode_java_main();
 
         fclose(f);
     }

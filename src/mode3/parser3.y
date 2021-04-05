@@ -269,10 +269,10 @@ cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
     ;
 
 /* part 2 - 10. expression */
-exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_type_ast(strdup(int_str), 1, 0, 0); }
-    | REALCONST                         { m3dprint("REALCONST", $1); $$ = new_type_ast(strdup(float_str), 1, 0, 0); }
+exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_type_ast(strdup(int_str), 1, 0, 0); m4handle_int($1); }
+    | REALCONST                         { m3dprint("REALCONST", $1); $$ = new_type_ast(strdup(float_str), 1, 0, 0); m4handle_real($1); }
     | STRCONST                          { m3dprint("STRCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 1); }
-    | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 0); }
+    | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 0); m4handle_char($1); }
     | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call_exp($1, $3); }
     | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call_exp($1, NULL); }
 
@@ -324,10 +324,10 @@ exp_list : exp                          { m3dprint("single exp", ""); $$ = handl
     ; 
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */
-l_val : IDENT                               { m3dprint("l_val id", ""); $$ = handle_l_ident($1); }
-    | IDENT LBRACKET exp RBRACKET           { m3dprint("l_val id[exp]", ""); $$ = handle_l_array_access($1, $3); }
-    | l_val DOT IDENT                       { /* part 3 - R15 */ m3dprint("l_val.member", "."); $$ = handle_l_member($1, $3); }
-    | l_val DOT IDENT LBRACKET exp RBRACKET { /* part 3 - R15 */ m3dprint("l_val.member[exp]", "."); $$ = handle_l_array_member($1, $3, $5); }
+l_val : IDENT                               { m3dprint("l_val id", $1); $$ = handle_l_ident($1); }
+    | IDENT LBRACKET exp RBRACKET           { m3dprint("l_val id[exp]", $1); $$ = handle_l_array_access($1, $3); }
+    | l_val DOT IDENT                       { /* part 3 - R15 */ m3dprint("l_val.member", $3); $$ = handle_l_member($1, $3); }
+    | l_val DOT IDENT LBRACKET exp RBRACKET { /* part 3 - R15 */ m3dprint("l_val.member[exp]", $3); $$ = handle_l_array_member($1, $3, $5); }
     ;
 
 %%

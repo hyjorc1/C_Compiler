@@ -40,6 +40,7 @@ Variable *update_type_map(Variable *var) {
         if (m3_global_map == NULL)
             m3_global_map = new_map();
         map_put(m3_global_map, var->name, cur_type);
+        m4handle_global_var(var->name);
     } else {
         print("update m3_local_map\n");
         if (m3_local_map == NULL)
@@ -55,6 +56,11 @@ Variable *handle_init_var(Variable *var, Type *rt) {
         return NULL;
     if (rt != NULL && handle_assign_exp(1, deep_copy_type_ast(cur_type), "=", rt)) {
         var->is_init = 1;
+        if (m3_is_global) {
+            m4handle_global_var_init(var->name);
+        } else {
+
+        }
     }
     return var;
 }

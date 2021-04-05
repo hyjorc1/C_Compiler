@@ -2,6 +2,7 @@
 
 int debug = 0; /* set 1 to trigger debug mode */
 int mode = -1;
+char *output_file = NULL;
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -13,7 +14,8 @@ int main(int argc, char *argv[]) {
 
     /* set output file */
     if (argc >= 4 && !strcmp(argv[2], "-o")) {
-        freopen(argv[3], "w", stdout);
+        output_file = argv[3];
+        freopen(output_file, "w", stdout);
         fileIdx = 4;
     }
 
@@ -73,8 +75,30 @@ void printversion() {
 }
 
 char *concat(char *s1, char *s2) {
-    char * s3 = (char *) malloc(1 + strlen(s1)+ strlen(s2) );
+    char * s3 = (char *)malloc(1 + strlen(s1) + strlen(s2));
     strcpy(s3, s1);
     strcat(s3, s2);
     return s3;
+}
+
+// Below function extracts characters present in src
+// between m and n (excluding n)
+char* substr(const char *src, int m, int n) {
+    int len = n - m;
+    char *dest = (char*)malloc(sizeof(char) * (len + 1));
+    for (int i = m; i < n && (*(src + i) != '\0'); i++) {
+        *dest = *(src + i);
+        dest++;
+    }
+    *dest = '\0';
+    return dest - len;
+}
+
+int file_exists(const char *file_name) {
+    struct stat buffer;
+    return stat(file_name, &buffer) == 0;
+}
+
+FILE *get_file(const char* file_name) {
+    return file_exists(file_name) ? fopen(file_name, "a") : fopen(file_name, "w");
 }
