@@ -44,6 +44,7 @@ void m4handle_global_var_init(char *id) {
         return;
     print("m4handle_global_var_init\n");
     FILE *dest = get_file(global_var_clinit_tmp_file);
+    fprintf(dest, "%s; Initializing %s\n", ident8, id);
     // copy exp instructions
     copy_files(dest, global_exp_tmp_file);
     // update static field instruction

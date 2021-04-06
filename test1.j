@@ -13,10 +13,13 @@
 
 .method static <clinit> : ()V
     .code stack 1 locals 0
+        ; Initializing y1
         iconst_0
         putstatic Field test1 y1 I
+        ; Initializing y2
         bipush 97
         putstatic Field test1 y2 C
+        ; Initializing y3
         ldc +1.1f
         putstatic Field test1 y3 F
         return
