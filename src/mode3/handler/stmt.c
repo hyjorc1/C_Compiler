@@ -23,6 +23,8 @@ void handle_return_stmt(Type *t) {
         m3err();
         fprintf(stderr, "\tReturn type was %s, function expects %s\n", type, return_type);
     }
+
+    m4handle_return_stmt(t);
     free(type);
     free(return_type);
 }

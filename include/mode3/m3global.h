@@ -118,10 +118,13 @@ extern void print_err_func_sig(Function *f);
 /* ---------------- mode 4 functions --------------------- */
 extern void m4handle_global_var(char *id);
 extern void m4handle_global_var_init(char *id);
+extern void m4handle_func_def();
+extern void m4handle_return_stmt(Type *t);
 
 /* ---------------- mode 4 exp functions --------------------- */
 extern void m4handle_int(char *val);
 extern void m4handle_real(char *val);
 extern void m4handle_char(char *val);
+
 
 #endif

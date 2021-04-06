@@ -48,15 +48,17 @@ int match_func_sig(Function *f1, Function *f2) {
     // check parameter types
     if (!match_para_size(f1, f2))
         return 0;
-    ListNode *n1 = f1->parameters->first;
-    ListNode *n2 = f2->parameters->first;
-    while (n1 != NULL) {
-        Type *t1 = get_func_local_var_type(f1, (Variable *)n1->data);
-        Type *t2 = get_func_local_var_type(f2, (Variable *)n2->data);
-        if (!exact_match_type(t1, t2))
-            return 0;
-        n1 = n1->next;
-        n2 = n2->next;
+    if (f1->parameters && f2->parameters) {
+        ListNode *n1 = f1->parameters->first;
+        ListNode *n2 = f2->parameters->first;
+        while (n1 != NULL) {
+            Type *t1 = get_func_local_var_type(f1, (Variable *)n1->data);
+            Type *t2 = get_func_local_var_type(f2, (Variable *)n2->data);
+            if (!exact_match_type(t1, t2))
+                return 0;
+            n1 = n1->next;
+            n2 = n2->next;
+        }
     }
     return 1;
 }
@@ -184,7 +186,9 @@ void handle_func_def() {
         if (m3_global_funcs == NULL)
             m3_global_funcs = list_new(sizeof(Function), free_function_ast);
         list_add_last(m3_global_funcs, cur_fn);
+        m4handle_func_def();
     }
+
     m3_is_global = 1;
     cur_fn = NULL;
 }

@@ -1,12 +1,12 @@
 all: link 
-	./$(EXE) -4 exprs.c 
+	./$(EXE) -4 -o test1.j test1.c
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 
 .PHONY: clean
 clean: compiler-clean latex-clean
 
-test: link mode1-test mode2-test mode3-test mode4-test
+test: link mode1-test mode2-test mode3-test
 
 #=================================================================#
 ################################ latex ############################

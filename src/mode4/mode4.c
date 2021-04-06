@@ -25,10 +25,10 @@ void print_file_content(const char *file_name) {
 
 void print_bytecode_global_vars() {
     printf("; Global vars\n\n");
-
-    print_file_content(global_var_tmp_file);
-    printf("\n");
-
+    if (file_exists(global_var_tmp_file)) {
+        print_file_content(global_var_tmp_file);
+        printf("\n");
+    }
     if (file_exists(global_var_clinit_tmp_file)) {
         printf (".method static <clinit> : ()V\n");
         printf ("    .code stack 1 locals 0\n");
@@ -52,11 +52,18 @@ void print_bytecode_default_constructor() {
     printf("\n");
 }
 
+void print_bytecode_methods() {
+    printf("; Methods\n\n");
+    if (file_exists(global_method_tmp_file)) {
+        print_file_content(global_method_tmp_file);
+    }
+}
+
 void print_bytecode_java_main() {
     printf("; Java main function\n\n");
     printf(".method public static main : ([Ljava/lang/String;)V\n");
     printf("    .code stack 2 locals 2\n");
-    printf("        invokestatic Method exprs main ()I\n");
+    printf("        invokestatic Method %s main ()I\n", m4_class_name);
     printf("        istore_1\n");
     printf("        getstatic Field java/lang/System out Ljava/io/PrintStream;\n");
     printf("        ldc 'Return code: '\n");
@@ -71,7 +78,7 @@ void print_bytecode_java_main() {
 
 void mode4(int argc, char *argv[], int fileIdx) {
     
-    preprocess();
+    m4preprocess();
 
     for (int i = fileIdx; i < argc; i++) {
         print("\nstart file %s\n", argv[i]);
@@ -90,12 +97,13 @@ void mode4(int argc, char *argv[], int fileIdx) {
         print_bytecode_class();
         print_bytecode_global_vars();
         print_bytecode_default_constructor();
+        print_bytecode_methods();
         print_bytecode_java_main();
 
         fclose(f);
     }
 
-    postprocess();
+    m4postprocess();
 }
 
 
