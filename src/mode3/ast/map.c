@@ -43,8 +43,12 @@ void map_put(HashMap* map, char *id, Type *type) {
     Entry *prev = find_prev(map, id);
     if (prev->next == NULL) {
         prev->next = new_entry(id, type);
+        // mode 4
+        prev->next->type->addr = map->size;
+        prev->next->type->id = strdup(id);
         map->size++;
     } else {
+        free_type_ast(prev->next->type);
         prev->next->type = type;
     }
 }

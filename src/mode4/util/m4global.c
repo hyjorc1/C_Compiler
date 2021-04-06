@@ -28,7 +28,6 @@ void copy_files(FILE *dest, const char *src_file) {
         char *line = NULL;
         size_t len = 0;
         while(getline(&line, &len, src) != -1) {
-            print("exp file line: '%s'", line);
             fprintf(dest, "%s", line);
             free(last_exp_inst);
             last_exp_inst = strdup(line);
@@ -47,11 +46,6 @@ void m4handle_global_var_init(char *id) {
     fprintf(dest, "%s; Initializing %s\n", ident8, id);
     // copy exp instructions
     copy_files(dest, global_exp_tmp_file);
-    // update static field instruction
-    char *type_str = to_ensembly_type_str(cur_type);
-    fprintf(dest, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, id, type_str);
-    free(type_str);
-
     fclose(dest);
 }
 
@@ -132,6 +126,22 @@ void m4handle_char(char *val) {
     fclose(f);
 }
 
+void m4handle_assgin_exp(Type *t) {
+    if (mode != 4)
+        return;
+    print("m4handle_assgin_exp\n");
+    FILE *f = get_file(global_exp_tmp_file);
+    if (t->is_global) {
+        char *type_str = to_ensembly_type_str(cur_type);
+        fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
+        free(type_str);
+    } else {
+        fprintf(f, "%s%sstore_%d\n", ident8, to_ensembly_T_str(t), t->addr);
+    }
+    fclose(f);
+}
+
+// caller is responsible for the free
 char *to_ensembly_type_str(Type *t) {
     print("to_ensembly_type_str\n");
     char *s1 = t->is_array ? "[" : "";

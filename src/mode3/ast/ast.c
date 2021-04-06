@@ -9,6 +9,10 @@ Type *new_type_ast(char *name, char is_const, char is_struct, char is_array) {
     t->is_struct = is_struct;
     t->is_array = is_array;
     t->lineno = -1;
+    // mode 4
+    t->addr = -1;
+    t->id = NULL;
+    t->is_global = -1;
     return t;
 }
 
@@ -21,6 +25,10 @@ Type *deep_copy_type_ast(Type *t) {
     copy->is_struct = t->is_struct;
     copy->is_array = t->is_array;
     copy->lineno = t->lineno;
+    // mode 4
+    copy->addr = t->addr;
+    copy->id = t->id ? strdup(t->id) : NULL;
+    copy->is_global = t->is_global;
     return copy;
 }
 
@@ -34,6 +42,7 @@ void free_type_ast(void *p) {
     // print(">>>>>>>>free_type_ast 3\n");
     free(p);
     // print(">>>>>>>>free_type_ast 4\n");
+    free(t->id);
 }
 
 /* caller needs to free the return string */

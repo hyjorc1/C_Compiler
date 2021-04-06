@@ -136,6 +136,7 @@ void handle_para(char *id, char is_array) {
     list_add_last(m3_local_vars, new_variable_ast(id, is_array, 0, m3lineno));
     if (m3_local_map == NULL)
         m3_local_map = new_map();
+    cur_type->is_global = 0;
     map_put(m3_local_map, id, cur_type);
 }
 

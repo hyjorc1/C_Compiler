@@ -125,6 +125,7 @@ extern void m4handle_return_stmt(Type *t);
 extern void m4handle_int(char *val);
 extern void m4handle_real(char *val);
 extern void m4handle_char(char *val);
+extern void m4handle_assgin_exp(Type *t);
 
 
 #endif

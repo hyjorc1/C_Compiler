@@ -39,12 +39,14 @@ Variable *update_type_map(Variable *var) {
         print("update m3_global_map\n");
         if (m3_global_map == NULL)
             m3_global_map = new_map();
+        cur_type->is_global = 1;
         map_put(m3_global_map, var->name, cur_type);
         m4handle_global_var(var->name);
     } else {
         print("update m3_local_map\n");
         if (m3_local_map == NULL)
             m3_local_map = new_map();
+        cur_type->is_global = 0;
         map_put(m3_local_map, var->name, cur_type);
     }
     return var;
@@ -54,12 +56,14 @@ Variable *handle_init_var(Variable *var, Type *rt) {
     print("handle_init_var\n");
     if (var == NULL || cur_type == NULL)
         return NULL;
-    if (rt != NULL && handle_assign_exp(1, deep_copy_type_ast(cur_type), "=", rt)) {
+    update_type_map(var);
+    Type *lt = m3_is_global ? map_get(m3_global_map, var->name) : 
+    map_get(m3_local_map, var->name);
+    lt = deep_copy_type_ast(lt);
+    if (rt != NULL && handle_assign_exp(1, lt, "=", rt)) {
         var->is_init = 1;
         if (m3_is_global) {
             m4handle_global_var_init(var->name);
-        } else {
-
         }
     }
     return var;

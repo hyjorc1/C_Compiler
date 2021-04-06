@@ -1,5 +1,5 @@
 all: link 
-	./$(EXE) -4 -o test1.j test1.c
+	./$(EXE) -4 test1.c
 # latex
 # ./$(EXE) -3 -o output.txt test2.c
 

@@ -8,6 +8,10 @@ typedef struct {
     char is_struct;
     char is_array;
     int lineno;
+    // mode 4
+    int addr;
+    char *id;
+    int is_global;
 } Type;
 
 Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);

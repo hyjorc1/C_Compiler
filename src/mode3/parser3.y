@@ -121,7 +121,7 @@ init_var_list : init_var                { m3dprint("single init var init var lis
 
 /* part 2 - 2.2 and part 3 - 2.5 Extra credit: variable initialization */
 init_var : var                          { m3dprint("init_var var", ""); $$ = update_type_map($1); }
-    | var ASSIGN exp                    { m3dprint("var = exp", "="); $$ = update_type_map(handle_init_var($1, $3)); }
+    | var ASSIGN exp                    { m3dprint("var = exp", "="); $$ = handle_init_var($1, $3); }
     ;
 
 var : IDENT                             { m3dprint("IDENT", $1); $$ = handle_var_ident($1, 0); }

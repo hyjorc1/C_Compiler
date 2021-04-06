@@ -51,6 +51,7 @@ void update_struct_vars(Variable *v) {
     cur_type->is_array = v->is_array;
     cur_type->lineno = v->lineno;
     list_add_last(cur_struct->vars, v);
+    cur_type->is_global = 0;
     map_put(cur_struct->local_var_map, v->name, cur_type);
 }
 
