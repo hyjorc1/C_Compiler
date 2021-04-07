@@ -430,6 +430,7 @@ Type *handle_func_call_exp(char *id, List *arg_types) {
         print_err_candidates(f);
     } else {
         res = deep_copy_type_ast(f->return_type);
+        m4handle_func_call_exp(f);
     }
     free(arg_types);
     return res;

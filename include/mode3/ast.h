@@ -56,6 +56,10 @@ typedef struct {
 
     char is_proto;
     int lineno;
+
+    // mode 4
+    int depth;
+    int max;
 } Function;
 
 Function *new_function_ast(Type *return_type, char *name, int lineno);

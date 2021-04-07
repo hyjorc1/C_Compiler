@@ -10,6 +10,16 @@ const char *ident8 = "        ";
 
 char *last_exp_inst = NULL; // track last exp instruction in methods
 
+void m4increment(Function *f) {
+    f->depth++;
+    if (f->depth > f->max)
+        f->max = f->depth;
+}
+
+void m4decrement(Function *f) {
+    f->depth--;
+}
+
 void m4handle_global_var(char *id) {
     if (mode != 4)
         return;
@@ -138,6 +148,33 @@ void m4handle_assgin_exp(Type *t) {
     } else {
         fprintf(f, "%s%sstore_%d\n", ident8, to_ensembly_T_str(t), t->addr);
     }
+    fclose(f);
+}
+
+void m4handle_func_call_exp(Function *fn) {
+    if (mode != 4)
+        return;
+    print("m4handle_func_call_exp\n");
+    FILE *f = get_file(global_exp_tmp_file);
+    fprintf(f, "%sinvokestatic Method %s : (", ident8, fn->name);
+    print("m4handle_func_call_exp 1\n");
+    // add parameter types
+    if (fn->parameters) {
+        ListNode *cur = fn->parameters->first;
+        print("m4handle_func_call_exp 2\n");
+        while (cur != NULL) {
+            Variable *v = (Variable *)cur->data;
+            Type *t = map_get(fn->local_var_map, v->name);
+            char *type_str = to_ensembly_type_str(t);
+            fprintf(f, "%s", type_str);
+            free(type_str);
+            cur = cur->next;
+        }
+    }
+    print("m4handle_func_call_exp 3\n");
+    char *return_type_str = to_ensembly_type_str(fn->return_type);
+    fprintf(f, ")%s\n", return_type_str);
+    free(return_type_str);
     fclose(f);
 }
 

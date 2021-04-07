@@ -157,6 +157,10 @@ Function *new_function_ast(Type *return_type, char *name, int lineno) {
 
     f->is_proto = 0;
     f->lineno = lineno;
+
+    // mode 4
+    f->depth = 0;
+    f->max = 0;
     return f;
 }
 
