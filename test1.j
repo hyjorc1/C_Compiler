@@ -12,7 +12,7 @@
 .method static <clinit> : ()V
     .code stack 1 locals 0
         ; Initializing x
-        iconst_1
+        ldc 1
         putstatic Field test1 x I
         return
     .end code
@@ -30,20 +30,28 @@
 
 ; Methods
 
-.method public static main1 : (ICF)I
-    .code stack 1 locals 3
-        iload_0
-        putstatic Field test1 x I
-        getstatic Field test1 x I
-        istore_0
-        iconst_0
+.method public static main1 : (ICC)I
+    .code stack 1 locals 5
+        ldc 10
+        istore 3 ; store to d
+        ldc 1
+        istore 4 ; store to e
+        ;; test1 16 expression
+        iload 3 ; load from d
+        istore 0 ; store to a
+        ;; test1 17 expression
+        iload 0 ; load from a
         ireturn
     .end code
 .end method
 
 .method public static main : ()I
-    .code stack 1 locals 0
-        getstatic Field test1 x I
+    .code stack 3 locals 0
+        ;; test1 21 expression
+        ldc 10
+        bipush 97
+        bipush 98
+        invokestatic Method test1 main1 (ICC)I
         ireturn
     .end code
 .end method

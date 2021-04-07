@@ -1,10 +1,11 @@
 #include "m4global.h"
 
 const char *m4_class_name = NULL;
-const char *global_var_tmp_file = "mode4_gvar_tmp";
-const char *global_var_clinit_tmp_file = "mode4_gvc_tmp";
-const char *global_method_tmp_file = "mode4_gm_tmp";
-const char *global_exp_tmp_file = "mode4_ge_tmp";
+const char *m4_gvar_tmp_file = "mode4_gvar_tmp_tmp";
+const char *m4_gvar_clinit_tmp_file = "mode4_gvar_clinit_tmp";
+const char *m4_method_tmp_file = "mode4_method_tmp_tmp";
+const char *m4_exp_tmp_file = "mode4_exp_tmp";
+const char *m4_stmt_tmp_file = "mode4_stmt_tmp";
 const char *ident4 = "    ";
 const char *ident8 = "        ";
 
@@ -28,7 +29,7 @@ void m4handle_global_var(char *id) {
     if (mode != 4)
         return;
     print("m4_update_global_vars\n");
-    FILE *f = get_file(global_var_tmp_file);
+    FILE *f = get_file(m4_gvar_tmp_file);
     char *type_str = to_ensembly_type_str(cur_type);
     fprintf(f, ".field static %s %s\n", id, type_str);
     free(type_str);
@@ -56,10 +57,10 @@ void m4handle_global_var_init(char *id) {
     if (mode != 4)
         return;
     print("m4handle_global_var_init\n");
-    FILE *dest = get_file(global_var_clinit_tmp_file);
+    FILE *dest = get_file(m4_gvar_clinit_tmp_file);
     fprintf(dest, "%s; Initializing %s\n", ident8, id);
     // copy exp instructions
-    copy_files(dest, global_exp_tmp_file);
+    copy_files(dest, m4_exp_tmp_file);
     fclose(dest);
 }
 
@@ -67,7 +68,7 @@ void m4handle_func_def() {
     if (mode != 4)
         return;
     print("m4handle_func_def\n");
-    FILE *dest = get_file(global_method_tmp_file);
+    FILE *dest = get_file(m4_method_tmp_file);
     // first line
     fprintf(dest, ".method public static %s : (", cur_fn->name);
     // add parameter types
@@ -92,7 +93,7 @@ void m4handle_func_def() {
     fprintf(dest, "    .code stack %d locals %d\n", cur_fn->max, var_num);
 
     // copy exp instructions
-    copy_files(dest, global_exp_tmp_file);
+    copy_files(dest, m4_exp_tmp_file);
 
     // end
     if (last_exp_inst == NULL
@@ -112,7 +113,7 @@ void m4handle_return_stmt(Type *t) {
     if (mode != 4)
         return;
     print("m4handle_return_stmt\n");
-    FILE *f = get_file(global_exp_tmp_file);
+    FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%s%sreturn\n", ident8, to_ensembly_T_str(t));
     fclose(f);
     m4decrement(cur_fn);
@@ -122,15 +123,15 @@ void m4handle_int(char *val) {
     print("m4handle_int\n");
     if (mode != 4)
         return;
-    FILE *f = get_file(global_exp_tmp_file);
-    fprintf(f, "%siconst_%s\n", ident8, val);
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sldc %s\n", ident8, val);
     fclose(f);
     m4increment(cur_fn);
 }
 void m4handle_real(char *val) {
     if (mode != 4)
         return;
-    FILE *f = get_file(global_exp_tmp_file);
+    FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sldc +%sf\n", ident8, val);
     fclose(f);
     m4increment(cur_fn);
@@ -138,7 +139,7 @@ void m4handle_real(char *val) {
 void m4handle_char(char *val) {
     if (mode != 4)
         return;
-    FILE *f = get_file(global_exp_tmp_file);
+    FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sbipush %d\n", ident8, val[1]);
     fclose(f);
     m4increment(cur_fn);
@@ -148,13 +149,13 @@ void m4handle_assgin_exp(Type *t) {
     if (mode != 4)
         return;
     print("m4handle_assgin_exp\n");
-    FILE *f = get_file(global_exp_tmp_file);
+    FILE *f = get_file(m4_exp_tmp_file);
     if (t->is_global) {
         char *type_str = to_ensembly_type_str(t);
         fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);
     } else {
-        fprintf(f, "%s%sstore_%d\n", ident8, to_ensembly_T_str(t), t->addr);
+        fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str(t), t->addr, t->id);
     }
     m4decrement(cur_fn);
     fclose(f);
@@ -164,14 +165,15 @@ void m4handle_func_call_exp(Function *fn) {
     if (mode != 4)
         return;
     print("m4handle_func_call_exp\n");
-    FILE *f = get_file(global_exp_tmp_file);
-    fprintf(f, "%sinvokestatic Method %s : (", ident8, fn->name);
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sinvokestatic Method %s %s (", ident8, m4_class_name, fn->name);
     print("m4handle_func_call_exp 1\n");
     // add parameter types
     if (fn->parameters) {
         ListNode *cur = fn->parameters->first;
         print("m4handle_func_call_exp 2\n");
         while (cur != NULL) {
+            m4decrement(cur_fn);
             Variable *v = (Variable *)cur->data;
             Type *t = map_get(fn->local_var_map, v->name);
             char *type_str = to_ensembly_type_str(t);
@@ -188,17 +190,26 @@ void m4handle_func_call_exp(Function *fn) {
     m4increment(cur_fn);
 }
 
+void m4handle_root_exp_before() {
+    if (mode != 4)
+        return;
+    print("m4handle_root_exp_before\n");
+    FILE *dest = get_file(m4_exp_tmp_file);
+    fprintf(dest, "%s;; %s %d expression\n", ident8, m4_class_name, m3lineno);
+    fclose(dest);
+}
+
 Type *m4handle_lval(Type *t) {
     if (mode != 4)
         return t;
     print("m4handle_lval\n");
-    FILE *f = get_file(global_exp_tmp_file);
+    FILE *f = get_file(m4_exp_tmp_file);
     if (t->is_global) {
         char *type_str = to_ensembly_type_str(t);
         fprintf(f, "%sgetstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);
     } else {
-        fprintf(f, "%s%sload_%d\n", ident8, to_ensembly_T_str(t), t->addr);
+        fprintf(f, "%s%sload %d ; load from %s\n", ident8, to_ensembly_T_str(t), t->addr, t->id);
     }
     m4increment(cur_fn);
     fclose(f);
@@ -238,29 +249,38 @@ char *to_ensembly_T_str(Type *t) {
     }
 }
 
+void clear_tmp_files() {
+    if (file_exists(m4_gvar_tmp_file)) {
+        remove(m4_gvar_tmp_file);
+    }
+    if (file_exists(m4_gvar_clinit_tmp_file)) {
+        remove(m4_gvar_clinit_tmp_file);
+    }
+    if (file_exists(m4_exp_tmp_file)) {
+        remove(m4_exp_tmp_file);
+    }
+    if (file_exists(m4_stmt_tmp_file)) {
+        remove(m4_stmt_tmp_file);
+    }
+    if (file_exists(m4_method_tmp_file)) {
+        remove(m4_method_tmp_file);
+    }
+}
+
 void m4preprocess() {
     preprocess();
-    if (file_exists(global_var_tmp_file)) {
-        remove(global_var_tmp_file);
-    }
-    if (file_exists(global_var_clinit_tmp_file)) {
-        remove(global_var_clinit_tmp_file);
-    }
-    if (file_exists(global_exp_tmp_file)) {
-        remove(global_exp_tmp_file);
-    }
-    if (file_exists(global_method_tmp_file)) {
-        remove(global_method_tmp_file);
-    }
+    clear_tmp_files();
 
     free(last_exp_inst);
     last_exp_inst = NULL;
 
+    // add function int getchar()
     m3_global_funcs = list_new(sizeof(Function), free_function_ast);
     Function *getchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("getchar"), -1);
     getchar_fn->is_proto = 0;
     list_add_last(m3_global_funcs, getchar_fn);
 
+    // add function int putchar(int c)
     Function *putchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("putchar"), -1);
     Variable *v = new_variable_ast(strdup("c"), 0, 0, -1);
     Type *t = new_type_ast(strdup(int_str), 0, 0, 0);
@@ -274,18 +294,7 @@ void m4preprocess() {
 
 void m4postprocess() {
     postprocess();
-    if (file_exists(global_var_tmp_file)) {
-        remove(global_var_tmp_file);
-    }
-    if (file_exists(global_var_clinit_tmp_file)) {
-        remove(global_var_clinit_tmp_file);
-    }
-    if (file_exists(global_exp_tmp_file)) {
-        remove(global_exp_tmp_file);
-    }
-    if (file_exists(global_method_tmp_file)) {
-        remove(global_method_tmp_file);
-    }
+    clear_tmp_files();
 
     free(last_exp_inst);
     last_exp_inst = NULL;

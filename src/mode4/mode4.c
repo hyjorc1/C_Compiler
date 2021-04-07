@@ -25,14 +25,14 @@ void print_file_content(const char *file_name) {
 
 void print_bytecode_global_vars() {
     printf("; Global vars\n\n");
-    if (file_exists(global_var_tmp_file)) {
-        print_file_content(global_var_tmp_file);
+    if (file_exists(m4_gvar_tmp_file)) {
+        print_file_content(m4_gvar_tmp_file);
         printf("\n");
     }
-    if (file_exists(global_var_clinit_tmp_file)) {
+    if (file_exists(m4_gvar_clinit_tmp_file)) {
         printf (".method static <clinit> : ()V\n");
         printf ("    .code stack 1 locals 0\n");
-        print_file_content(global_var_clinit_tmp_file);
+        print_file_content(m4_gvar_clinit_tmp_file);
         printf ("        return\n");
         printf ("    .end code\n");
         printf (".end method\n");
@@ -54,8 +54,8 @@ void print_bytecode_default_constructor() {
 
 void print_bytecode_methods() {
     printf("; Methods\n\n");
-    if (file_exists(global_method_tmp_file)) {
-        print_file_content(global_method_tmp_file);
+    if (file_exists(m4_method_tmp_file)) {
+        print_file_content(m4_method_tmp_file);
     }
 }
 

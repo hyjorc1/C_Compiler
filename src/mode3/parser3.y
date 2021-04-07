@@ -84,7 +84,7 @@ const char *error_str = "error";
 %type <v> var init_var noinit_var para
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp
+%type <t> exp l_val cond_exp root_exp
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -210,7 +210,7 @@ stmt_list : %empty                      { m3dprint("empty stmt list", ""); }
 
 /* part 2 - 9. statement */
 stmt : SEMI                             { m3dprint("SEMI", ""); }
-    | exp SEMI                          { m3dprint("exp SEMI", ""); handle_exp_stmt($1); }
+    | root_exp SEMI                     { m3dprint("exp SEMI", ""); handle_exp_stmt($1); }
     | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); }
     | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); }
     | return_stmt                       { m3dprint("return_stmt", ""); }
@@ -221,7 +221,7 @@ stmt : SEMI                             { m3dprint("SEMI", ""); }
     ;
 
 return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
-    | RETURN exp SEMI                   { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
+    | RETURN root_exp SEMI              { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
     ;
 
 if_stmt : if_cond block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""); }
@@ -266,6 +266,12 @@ do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_c
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
 cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
+    ;
+
+root_exp : emp exp                      { m3dprint("root exp", ""); $$ = $2; }
+    ;
+
+emp : %empty                            { m3dprint("root exp", ""); m4handle_root_exp_before(); }
     ;
 
 /* part 2 - 10. expression */

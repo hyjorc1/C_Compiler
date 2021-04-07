@@ -4,7 +4,7 @@ int x = 1, y;
 //     return 0;
 // }
 
-int main1(int a, char b, float c) {
+int main1(int a, char b, char c) {
     // b = 'a';
     // c = (float) 1.0;
     // a = m1();
@@ -12,12 +12,12 @@ int main1(int a, char b, float c) {
     // a = putchar(0);
     // x = a;
     // a = x;
-    int d = 0, e = 1;
+    int d = 10, e = 1;
     a = d;
-    return 0;
+    return a;
 }
 
 int main() {
-    return 0;
+    return main1(10, 'a', 'b');
 }
 

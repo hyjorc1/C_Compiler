@@ -5,10 +5,11 @@
 
 extern const char *m4_class_name;
 
-extern const char *global_var_tmp_file;
-extern const char *global_var_clinit_tmp_file;
-extern const char *global_method_tmp_file;
-extern const char *global_exp_tmp_file;
+extern const char *m4_gvar_tmp_file;
+extern const char *m4_gvar_clinit_tmp_file;
+extern const char *m4_method_tmp_file;
+extern const char *m4_exp_tmp_file;
+extern const char *m4_stmt_tmp_file;
 
 extern const char *ident4;
 extern const char *ident8;

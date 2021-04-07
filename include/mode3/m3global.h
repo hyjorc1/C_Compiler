@@ -122,7 +122,6 @@ extern void m4handle_func_def();
 extern void m4handle_return_stmt(Type *t);
 
 
-
 /* ---------------- mode 4 exp functions --------------------- */
 
 
@@ -132,6 +131,7 @@ extern void m4handle_real(char *val);
 extern void m4handle_char(char *val);
 extern void m4handle_assgin_exp(Type *t);
 extern void m4handle_func_call_exp(Function *fn);
+extern void m4handle_root_exp_before();
 
 extern Type *m4handle_lval(Type *t);
 
