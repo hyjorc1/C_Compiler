@@ -6,22 +6,14 @@
 
 ; Global vars
 
-.field static x [I
-.field static y1 I
-.field static y2 C
-.field static y3 F
+.field static x I
+.field static y I
 
 .method static <clinit> : ()V
     .code stack 1 locals 0
-        ; Initializing y1
-        iconst_0
-        putstatic Field test1 y1 I
-        ; Initializing y2
-        bipush 97
-        putstatic Field test1 y2 C
-        ; Initializing y3
-        ldc +1.1f
-        putstatic Field test1 y3 F
+        ; Initializing x
+        iconst_1
+        putstatic Field test1 x I
         return
     .end code
 .end method
@@ -38,22 +30,21 @@
 
 ; Methods
 
-.method public static main : ()I
-    .code stack 2 locals 0
+.method public static main1 : (ICF)I
+    .code stack 1 locals 3
+        iload_0
+        putstatic Field test1 x I
+        getstatic Field test1 x I
+        istore_0
         iconst_0
         ireturn
     .end code
 .end method
 
-.method public static main2 : ([ICF)V
-    .code stack 2 locals 3
-        return
-    .end code
-.end method
-
-.method public static main3 : ()V
-    .code stack 2 locals 0
-        return
+.method public static main : ()I
+    .code stack 1 locals 0
+        getstatic Field test1 x I
+        ireturn
     .end code
 .end method
 

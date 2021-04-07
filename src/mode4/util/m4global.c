@@ -155,8 +155,8 @@ void m4handle_assgin_exp(Type *t) {
         free(type_str);
     } else {
         fprintf(f, "%s%sstore_%d\n", ident8, to_ensembly_T_str(t), t->addr);
-        m4decrement(cur_fn);
     }
+    m4decrement(cur_fn);
     fclose(f);
 }
 
@@ -199,8 +199,8 @@ Type *m4handle_lval(Type *t) {
         free(type_str);
     } else {
         fprintf(f, "%s%sload_%d\n", ident8, to_ensembly_T_str(t), t->addr);
-        m4decrement(cur_fn);
     }
+    m4increment(cur_fn);
     fclose(f);
     return t;
 }
