@@ -89,7 +89,7 @@ void m4handle_func_def() {
     // second line
     int var_num = (cur_fn->parameters ? cur_fn->parameters->size : 0)
         + (cur_fn->local_vars ? cur_fn->local_vars->size : 0);
-    fprintf(dest, "    .code stack %d locals %d\n", cur_fn->max, var_num); // TODO: need to update stack depth
+    fprintf(dest, "    .code stack %d locals %d\n", cur_fn->max, var_num);
 
     // copy exp instructions
     copy_files(dest, global_exp_tmp_file);
@@ -150,7 +150,7 @@ void m4handle_assgin_exp(Type *t) {
     print("m4handle_assgin_exp\n");
     FILE *f = get_file(global_exp_tmp_file);
     if (t->is_global) {
-        char *type_str = to_ensembly_type_str(cur_type);
+        char *type_str = to_ensembly_type_str(t);
         fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);
     } else {
@@ -186,6 +186,23 @@ void m4handle_func_call_exp(Function *fn) {
     free(return_type_str);
     fclose(f);
     m4increment(cur_fn);
+}
+
+Type *m4handle_lval(Type *t) {
+    if (mode != 4)
+        return t;
+    print("m4handle_lval\n");
+    FILE *f = get_file(global_exp_tmp_file);
+    if (t->is_global) {
+        char *type_str = to_ensembly_type_str(t);
+        fprintf(f, "%sgetstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
+        free(type_str);
+    } else {
+        fprintf(f, "%s%sload_%d\n", ident8, to_ensembly_T_str(t), t->addr);
+        m4decrement(cur_fn);
+    }
+    fclose(f);
+    return t;
 }
 
 // caller is responsible for the free
@@ -235,8 +252,24 @@ void m4preprocess() {
     if (file_exists(global_method_tmp_file)) {
         remove(global_method_tmp_file);
     }
+
     free(last_exp_inst);
     last_exp_inst = NULL;
+
+    m3_global_funcs = list_new(sizeof(Function), free_function_ast);
+    Function *getchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("getchar"), -1);
+    getchar_fn->is_proto = 0;
+    list_add_last(m3_global_funcs, getchar_fn);
+
+    Function *putchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("putchar"), -1);
+    Variable *v = new_variable_ast(strdup("c"), 0, 0, -1);
+    Type *t = new_type_ast(strdup(int_str), 0, 0, 0);
+    putchar_fn->parameters = list_add_last(list_new(sizeof(Variable), free_variable_ast), v);
+    putchar_fn->local_var_map = new_map();
+    map_put(putchar_fn->local_var_map, v->name, t);
+    free_type_ast(t);
+    putchar_fn->is_proto = 0;
+    list_add_last(m3_global_funcs, putchar_fn);
 }
 
 void m4postprocess() {
@@ -253,6 +286,14 @@ void m4postprocess() {
     if (file_exists(global_method_tmp_file)) {
         remove(global_method_tmp_file);
     }
+
     free(last_exp_inst);
     last_exp_inst = NULL;
+
+    list_destroy(m3_global_vars);
+    m3_global_vars = NULL;
+    list_destroy(m3_global_structs);
+    m3_global_structs = NULL;
+    list_destroy(m3_global_funcs);
+    m3_global_funcs = NULL;
 }

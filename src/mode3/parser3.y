@@ -280,7 +280,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
         an expression, and a right bracket. Note that this restricts array 
         access to a single dimension. */
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
-    | l_val                             { m3dprint("l_val", ""); $$ = $1; }
+    | l_val                             { m3dprint("l_val", ""); $$ = m4handle_lval($1); }
     | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); }
     | l_val PLUSASSIGN exp              { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, "+=", $3); }
     | l_val MINUSASSIGN exp             { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); $$ = handle_assign_exp(0, $1, "-=", $3); }

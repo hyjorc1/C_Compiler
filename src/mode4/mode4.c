@@ -77,10 +77,11 @@ void print_bytecode_java_main() {
 }
 
 void mode4(int argc, char *argv[], int fileIdx) {
-    
-    m4preprocess();
 
     for (int i = fileIdx; i < argc; i++) {
+
+        m4preprocess();
+
         print("\nstart file %s\n", argv[i]);
         FILE *f = fopen(argv[i], "r");
         if (!f) {
@@ -93,7 +94,6 @@ void mode4(int argc, char *argv[], int fileIdx) {
         m3restart(f);
         print("Parse return %d\n", m3parse());
         
-        
         print_bytecode_class();
         print_bytecode_global_vars();
         print_bytecode_default_constructor();
@@ -101,9 +101,10 @@ void mode4(int argc, char *argv[], int fileIdx) {
         print_bytecode_java_main();
 
         fclose(f);
+
+        m4postprocess();
     }
 
-    m4postprocess();
 }
 
 
