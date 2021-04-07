@@ -11,13 +11,17 @@ const char *ident8 = "        ";
 char *last_exp_inst = NULL; // track last exp instruction in methods
 
 void m4increment(Function *f) {
-    f->depth++;
-    if (f->depth > f->max)
-        f->max = f->depth;
+    if (f) {
+        f->depth++;
+        if (f->depth > f->max)
+            f->max = f->depth;
+    }
 }
 
 void m4decrement(Function *f) {
-    f->depth--;
+    if (f) {
+        f->depth--;
+    }
 }
 
 void m4handle_global_var(char *id) {
@@ -85,7 +89,7 @@ void m4handle_func_def() {
     // second line
     int var_num = (cur_fn->parameters ? cur_fn->parameters->size : 0)
         + (cur_fn->local_vars ? cur_fn->local_vars->size : 0);
-    fprintf(dest, "    .code stack %d locals %d\n", 2, var_num); // TODO: need to update stack depth
+    fprintf(dest, "    .code stack %d locals %d\n", cur_fn->max, var_num); // TODO: need to update stack depth
 
     // copy exp instructions
     copy_files(dest, global_exp_tmp_file);
@@ -111,6 +115,7 @@ void m4handle_return_stmt(Type *t) {
     FILE *f = get_file(global_exp_tmp_file);
     fprintf(f, "%s%sreturn\n", ident8, to_ensembly_T_str(t));
     fclose(f);
+    m4decrement(cur_fn);
 }
 
 void m4handle_int(char *val) {
@@ -120,6 +125,7 @@ void m4handle_int(char *val) {
     FILE *f = get_file(global_exp_tmp_file);
     fprintf(f, "%siconst_%s\n", ident8, val);
     fclose(f);
+    m4increment(cur_fn);
 }
 void m4handle_real(char *val) {
     if (mode != 4)
@@ -127,6 +133,7 @@ void m4handle_real(char *val) {
     FILE *f = get_file(global_exp_tmp_file);
     fprintf(f, "%sldc +%sf\n", ident8, val);
     fclose(f);
+    m4increment(cur_fn);
 }
 void m4handle_char(char *val) {
     if (mode != 4)
@@ -134,6 +141,7 @@ void m4handle_char(char *val) {
     FILE *f = get_file(global_exp_tmp_file);
     fprintf(f, "%sbipush %d\n", ident8, val[1]);
     fclose(f);
+    m4increment(cur_fn);
 }
 
 void m4handle_assgin_exp(Type *t) {
@@ -147,6 +155,7 @@ void m4handle_assgin_exp(Type *t) {
         free(type_str);
     } else {
         fprintf(f, "%s%sstore_%d\n", ident8, to_ensembly_T_str(t), t->addr);
+        m4decrement(cur_fn);
     }
     fclose(f);
 }
@@ -176,6 +185,7 @@ void m4handle_func_call_exp(Function *fn) {
     fprintf(f, ")%s\n", return_type_str);
     free(return_type_str);
     fclose(f);
+    m4increment(cur_fn);
 }
 
 // caller is responsible for the free

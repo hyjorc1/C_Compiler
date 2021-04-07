@@ -10,6 +10,13 @@ extern const char *global_var_clinit_tmp_file;
 extern const char *global_method_tmp_file;
 extern const char *global_exp_tmp_file;
 
+extern const char *ident4;
+extern const char *ident8;
+
+extern char *last_exp_inst;
+
+extern void m4increment(Function *f);
+extern void m4decrement(Function *f);
 extern char *to_ensembly_type_str(Type *t);
 extern char *to_ensembly_T_str(Type *t) ;
 
