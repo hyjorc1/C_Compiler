@@ -30,16 +30,17 @@
 
 ; Methods
 
-.method public static main1 : (ICC)I
-    .code stack 1 locals 5
-        ldc 10
-        istore 3 ; store to d
-        ldc 1
-        istore 4 ; store to e
-        ;; test1 16 expression
-        iload 3 ; load from d
-        istore 0 ; store to a
+.method public static main1 : (ICF)I
+    .code stack 1 locals 3
         ;; test1 17 expression
+        iload 0 ; load from a
+        ineg
+        istore 0 ; store to a
+        ;; test1 18 expression
+        fload 2 ; load from c
+        fneg
+        fstore 2 ; store to c
+        ;; test1 19 expression
         iload 0 ; load from a
         ireturn
     .end code
@@ -47,11 +48,11 @@
 
 .method public static main : ()I
     .code stack 3 locals 0
-        ;; test1 21 expression
+        ;; test1 23 expression
         ldc 10
         bipush 97
-        bipush 98
-        invokestatic Method test1 main1 (ICC)I
+        ldc +1.0f
+        invokestatic Method test1 main1 (ICF)I
         ireturn
     .end code
 .end method

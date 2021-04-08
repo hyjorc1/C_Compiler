@@ -134,6 +134,9 @@ extern void m4handle_func_call_exp(Function *fn);
 extern void m4handle_root_exp_before();
 
 extern Type *m4handle_lval(Type *t);
+extern void m4handle_ulval(Type *t, char *op);
+extern void m4handle_utilde();
+extern void m4hanlde_uminus(Type *t);
 
 
 #endif

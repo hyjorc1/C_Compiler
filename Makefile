@@ -1,7 +1,7 @@
 all: link
 	./$(EXE) -4 test1.c
 
-assemble: link
+jassemble: link
 	./$(EXE) -4 -o test1.j test1.c
 	./test/Krakatau/assemble.py test1.j
 	java test1

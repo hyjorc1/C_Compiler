@@ -216,6 +216,43 @@ Type *m4handle_lval(Type *t) {
     return t;
 }
 
+void m4handle_ulval(Type *t, char *op) {
+    if (mode != 4)
+        return;
+    m4handle_lval(t);
+    print("m4handle_ulval\n");
+    FILE *f = get_file(m4_exp_tmp_file);
+
+    fprintf(f, "%siconst_1\n", ident8);
+    m4increment(cur_fn);
+
+    char *inst = strcmp(op, "++") == 0 ? "iadd" : "isub";
+    fprintf(f, "%s%s\n", ident8, inst);
+    m4decrement(cur_fn);
+    fclose(f);
+}
+
+void m4handle_utilde() {
+    if (mode != 4)
+        return;
+    print("m4handle_utilde\n");
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%siconst_m1\n", ident8);
+    m4increment(cur_fn);
+    fprintf(f, "%sixor\n", ident8);
+    m4decrement(cur_fn);
+    fclose(f);
+}
+
+void m4hanlde_uminus(Type *t) {
+    if (mode != 4)
+        return;
+    print("m4handle_utilde\n");
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%s%sneg\n", ident8, to_ensembly_T_str(t));
+    fclose(f);
+}
+
 // caller is responsible for the free
 char *to_ensembly_type_str(Type *t) {
     print("to_ensembly_type_str\n");

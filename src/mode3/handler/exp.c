@@ -37,6 +37,7 @@ Type *handle_utilde(Type *t) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t);
+        m4handle_utilde();
     }
     free_type_ast(t);
     return res;
@@ -54,6 +55,7 @@ Type *handle_uminus(Type *t) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t);
+        m4hanlde_uminus(t);
     }
     free_type_ast(t);
     return res;
@@ -184,6 +186,7 @@ Type *handle_r11_exp(char *op, Type *t2) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t2);
+        m4handle_ulval(t2, op);
     }
     free_type_ast(t2);
     return res;
@@ -202,6 +205,7 @@ Type *handle_r12_exp(Type *t1, char *op) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t1);
+        m4handle_ulval(t1, op);
     }
     free_type_ast(t1);
     return res;
