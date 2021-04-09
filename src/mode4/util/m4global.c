@@ -114,7 +114,7 @@ void m4handle_return_stmt(Type *t) {
         return;
     print("m4handle_return_stmt\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s%sreturn\n", ident8, to_ensembly_T_str(t));
+    fprintf(f, "%s%sreturn\n", ident8, to_ensembly_T_str1(t));
     fclose(f);
     m4decrement(cur_fn);
 }
@@ -155,7 +155,7 @@ void m4handle_assgin_exp(Type *t) {
         fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);
     } else {
-        fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str(t), t->addr, t->id);
+        fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str1(t), t->addr, t->id);
     }
     m4decrement(cur_fn);
     fclose(f);
@@ -209,7 +209,7 @@ Type *m4handle_lval(Type *t) {
         fprintf(f, "%sgetstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);
     } else {
-        fprintf(f, "%s%sload %d ; load from %s\n", ident8, to_ensembly_T_str(t), t->addr, t->id);
+        fprintf(f, "%s%sload %d ; load from %s\n", ident8, to_ensembly_T_str1(t), t->addr, t->id);
     }
     m4increment(cur_fn);
     fclose(f);
@@ -249,7 +249,7 @@ void m4hanlde_uminus(Type *t) {
         return;
     print("m4handle_utilde\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s%sneg\n", ident8, to_ensembly_T_str(t));
+    fprintf(f, "%s%sneg\n", ident8, to_ensembly_T_str1(t));
     fclose(f);
 }
 
@@ -258,7 +258,7 @@ void m4handle_cast_exp(Type *t1, Type *t2) {
         return;
     print("m4handle_cast_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s%sto%s\n", ident8, to_ensembly_T_str(t2), to_ensembly_T_str(t1));
+    fprintf(f, "%s%s2%s\n", ident8, to_ensembly_T_str2(t2), to_ensembly_T_str2(t1));
     fclose(f);
 }
 
@@ -279,8 +279,25 @@ char *to_ensembly_type_str(Type *t) {
     return concat(s1, s2);
 }
 
-char *to_ensembly_T_str(Type *t) {
-    print("to_ensembly_T_str\n");
+char *to_ensembly_T_str2(Type *t) {
+    print("to_ensembly_T_str1\n");
+    if (t->is_array) {
+        return "a";
+    } else if (strcmp(t->name, void_str) == 0) {
+        return "";
+    } else if (strcmp(t->name, char_str) == 0) {
+        return "c";
+    } else if (strcmp(t->name, int_str) == 0) {
+        return "i";
+    } else if (strcmp(t->name, float_str) == 0) {
+        return "f";
+    } else {
+        return "-error-";
+    }
+}
+
+char *to_ensembly_T_str1(Type *t) {
+    print("to_ensembly_T_str1\n");
     if (t->is_array) {
         return "a";
     } else if (strcmp(t->name, void_str) == 0) {

@@ -19,7 +19,8 @@ extern char *last_exp_inst;
 extern void m4increment(Function *f);
 extern void m4decrement(Function *f);
 extern char *to_ensembly_type_str(Type *t);
-extern char *to_ensembly_T_str(Type *t) ;
+extern char *to_ensembly_T_str1(Type *t);
+extern char *to_ensembly_T_str2(Type *t);
 
 extern void m4preprocess();
 extern void m4postprocess();
