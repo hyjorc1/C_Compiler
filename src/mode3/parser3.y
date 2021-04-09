@@ -34,6 +34,9 @@ const char *float_str = "float";
 const char *void_str = "void";
 const char *error_str = "error";
 
+/* binary operator */
+char *cur_op = NULL;
+
 %}
 
 %define api.prefix {m3}
@@ -84,7 +87,7 @@ const char *error_str = "error";
 %type <v> var init_var noinit_var para
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp root_exp
+%type <t> exp l_val cond_exp root_exp lval_xx_assign
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -288,10 +291,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
     | l_val                             { m3dprint("l_val", ""); $$ = m4handle_lval($1); }
     | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); }
-    | l_val PLUSASSIGN exp              { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, "+=", $3); }
-    | l_val MINUSASSIGN exp             { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); $$ = handle_assign_exp(0, $1, "-=", $3); }
-    | l_val STARASSIGN exp              { /* part 3 - R13 */ m3dprint("l_val *= exp", "*="); $$ = handle_assign_exp(0, $1, "*=", $3); }
-    | l_val SLASHASSIGN exp             { /* part 3 - R13 */ m3dprint("l_val /= exp", "/="); $$ = handle_assign_exp(0, $1, "/=", $3); }
+    | lval_xx_assign exp              { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, cur_op, $2); }
     | INCR l_val %prec UINCR            { /* part 3 - R11 */ m3dprint("INCR l_val", "++"); $$ = handle_r11_exp("++", $2); }
     | DECR l_val %prec UDECR            { /* part 3 - R11 */ m3dprint("DECR l_val", "--"); $$ = handle_r11_exp("--", $2); }
     | l_val INCR %prec UINCR            { /* part 3 - R12 */ m3dprint("l_val INCR", "++"); $$ = handle_r12_exp($1, "++"); }
@@ -323,6 +323,12 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
     | LPAR type RPAR exp                { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
+    ;
+
+lval_xx_assign : l_val PLUSASSIGN       { $$ = m4handle_lval($1); cur_op = "+="; }
+    | l_val MINUSASSIGN                 { $$ = m4handle_lval($1); cur_op = "-="; }
+    | l_val STARASSIGN                  { $$ = m4handle_lval($1); cur_op = "*="; }
+    | l_val SLASHASSIGN                 { $$ = m4handle_lval($1); cur_op = "/="; }
     ;
 
 exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }

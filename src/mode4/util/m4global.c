@@ -145,17 +145,23 @@ void m4handle_char(char *val) {
     m4increment(cur_fn);
 }
 
-void m4handle_assgin_exp(Type *t) {
+void m4handle_assgin_exp(Type *lt, char *op, Type *res) {
     if (mode != 4)
         return;
     print("m4handle_assgin_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    if (t->is_global) {
-        char *type_str = to_ensembly_type_str(t);
-        fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
+    if (strcmp(op, "=") != 0) {
+        char2int(res);
+        char *type_str = to_ensembly_T_str1(res);
+        char *op_str = to_ensembly_binary_op_str(op);
+        fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
+    }
+    if (lt->is_global) {
+        char *type_str = to_ensembly_type_str(lt);
+        fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, lt->id, type_str);
         free(type_str);
     } else {
-        fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str1(t), t->addr, t->id);
+        fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str1(lt), lt->addr, lt->id);
     }
     m4decrement(cur_fn);
     fclose(f);
@@ -278,8 +284,8 @@ void m4handle_r9_exp(Type *t, char *op) {
     if (mode != 4)
         return;
     print("m4handle_r9_exp\n");
-    char2int(t);
     FILE *f = get_file(m4_exp_tmp_file);
+    char2int(t);
     char *type_str = to_ensembly_T_str1(t);
     char *op_str = to_ensembly_binary_op_str(op);
     fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
@@ -295,13 +301,13 @@ void char2int(Type *t) {
 
 char *to_ensembly_binary_op_str(char *op) {
     print("to_ensembly_binary_op_str\n");
-    if (strcmp(op, "+") == 0) {
+    if (strcmp(op, "+") == 0 || strcmp(op, "+=") == 0) {
         return "add";
-    } else if (strcmp(op, "-") == 0) {
+    } else if (strcmp(op, "-") == 0 || strcmp(op, "-=") == 0) {
         return "sub";
-    } else if (strcmp(op, "*") == 0) {
+    } else if (strcmp(op, "*") == 0 || strcmp(op, "*=") == 0) {
         return "mul";
-    } else if (strcmp(op, "/") == 0) {
+    } else if (strcmp(op, "/") == 0 || strcmp(op, "/=") == 0) {
         return "div";
     } else if (strcmp(op, "%") == 0) {
         return "rem";

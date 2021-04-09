@@ -15,15 +15,8 @@ int main1(int a, char b, float c) {
     // int d = 10, e = 1;
     // a = d;
 
-    a = a + a;
-
-    a = a % a;
-
-    b = (char) (b - b);
-
-    c = c * c;
-
-    c = c / c;
+    b -= b;
+    c *= c;
     return a;
 }
 
