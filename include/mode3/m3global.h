@@ -138,5 +138,7 @@ extern void m4handle_ulval(Type *t, char *op);
 extern void m4handle_utilde();
 extern void m4hanlde_uminus(Type *t);
 
+extern void m4handle_cast_exp(Type *t1, Type *t2);
+
 
 #endif

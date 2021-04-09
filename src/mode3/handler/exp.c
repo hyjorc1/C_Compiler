@@ -101,6 +101,7 @@ Type *handle_cast_exp(Type *t2) {
         else if (!strcmp(t1->name, float_str))
             res = new_type_ast(strdup(float_str), 0, 0, 0);
         res->is_const = (t2->is_const) ? 1 : 0;
+        m4handle_cast_exp(t1, t2);
     }
     free_type_ast(t1);
     free_type_ast(t2);

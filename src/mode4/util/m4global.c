@@ -253,6 +253,15 @@ void m4hanlde_uminus(Type *t) {
     fclose(f);
 }
 
+void m4handle_cast_exp(Type *t1, Type *t2) {
+    if (mode != 4)
+        return;
+    print("m4handle_cast_exp\n");
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%s%sto%s\n", ident8, to_ensembly_T_str(t2), to_ensembly_T_str(t1));
+    fclose(f);
+}
+
 // caller is responsible for the free
 char *to_ensembly_type_str(Type *t) {
     print("to_ensembly_type_str\n");

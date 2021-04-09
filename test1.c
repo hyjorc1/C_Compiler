@@ -14,8 +14,9 @@ int main1(int a, char b, float c) {
     // a = x;
     // int d = 10, e = 1;
     // a = d;
-    a = -a;
-    c = -c;
+    a = (int) b;
+    b = (char) a;
+    c = (float) a;
     return a;
 }
 
