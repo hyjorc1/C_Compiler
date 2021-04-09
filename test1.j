@@ -31,20 +31,34 @@
 ; Methods
 
 .method public static main1 : (ICF)I
-    .code stack 1 locals 3
-        ;; test1 17 expression
-        fload 2 ; load from c
-        f2i
-        istore 0 ; store to a
+    .code stack 6 locals 3
         ;; test1 18 expression
         iload 0 ; load from a
+        iload 0 ; load from a
+        iadd
+        istore 0 ; store to a
+        ;; test1 20 expression
+        iload 0 ; load from a
+        iload 0 ; load from a
+        irem
+        istore 0 ; store to a
+        ;; test1 22 expression
+        iload 1 ; load from b
+        iload 1 ; load from b
+        isub
         i2c
         istore 1 ; store to b
-        ;; test1 19 expression
-        iload 0 ; load from a
-        i2f
+        ;; test1 24 expression
+        fload 2 ; load from c
+        fload 2 ; load from c
+        fmul
         fstore 2 ; store to c
-        ;; test1 20 expression
+        ;; test1 26 expression
+        fload 2 ; load from c
+        fload 2 ; load from c
+        fdiv
+        fstore 2 ; store to c
+        ;; test1 27 expression
         iload 0 ; load from a
         ireturn
     .end code
@@ -52,7 +66,7 @@
 
 .method public static main : ()I
     .code stack 3 locals 0
-        ;; test1 24 expression
+        ;; test1 31 expression
         ldc 10
         bipush 97
         ldc +1.0f

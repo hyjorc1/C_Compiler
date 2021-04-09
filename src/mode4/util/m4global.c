@@ -262,6 +262,54 @@ void m4handle_cast_exp(Type *t1, Type *t2) {
     fclose(f);
 }
 
+void m4handle_r8_exp(Type *t, char *op) {
+    if (mode != 4)
+        return;
+    print("m4handle_r8_exp\n");
+    char2int(t);
+    FILE *f = get_file(m4_exp_tmp_file);
+    char *type_str = to_ensembly_T_str1(t);
+    char *op_str = to_ensembly_binary_op_str(op);
+    fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
+    fclose(f);
+}
+
+void m4handle_r9_exp(Type *t, char *op) {
+    if (mode != 4)
+        return;
+    print("m4handle_r9_exp\n");
+    char2int(t);
+    FILE *f = get_file(m4_exp_tmp_file);
+    char *type_str = to_ensembly_T_str1(t);
+    char *op_str = to_ensembly_binary_op_str(op);
+    fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
+    fclose(f);
+}
+
+void char2int(Type *t) {
+    if (strcmp(t->name, char_str) == 0) {
+        free(t->name);
+        t->name = strdup(int_str);
+    }
+}
+
+char *to_ensembly_binary_op_str(char *op) {
+    print("to_ensembly_binary_op_str\n");
+    if (strcmp(op, "+") == 0) {
+        return "add";
+    } else if (strcmp(op, "-") == 0) {
+        return "sub";
+    } else if (strcmp(op, "*") == 0) {
+        return "mul";
+    } else if (strcmp(op, "/") == 0) {
+        return "div";
+    } else if (strcmp(op, "%") == 0) {
+        return "rem";
+    } else {
+        return "-error-";
+    }
+}
+
 // caller is responsible for the free
 char *to_ensembly_type_str(Type *t) {
     print("to_ensembly_type_str\n");

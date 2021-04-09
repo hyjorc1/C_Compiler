@@ -18,6 +18,10 @@ extern char *last_exp_inst;
 
 extern void m4increment(Function *f);
 extern void m4decrement(Function *f);
+
+extern void char2int(Type *t);
+
+extern char *to_ensembly_binary_op_str(char *op);
 extern char *to_ensembly_type_str(Type *t);
 extern char *to_ensembly_T_str1(Type *t);
 extern char *to_ensembly_T_str2(Type *t);

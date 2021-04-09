@@ -124,6 +124,7 @@ Type *handle_r8_exp(Type *t1, char *op, Type *t2) {
     } else {
         res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
         res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
+        m4handle_r8_exp(res, op);
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -146,6 +147,7 @@ Type *handle_r9_exp(Type *t1, char *op, Type *t2) {
     } else {
         res = widen_match_type(t1, t2) ? deep_copy_type_ast(t2) : deep_copy_type_ast(t1);
         res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
+        m4handle_r9_exp(res, op);
     }
     free_type_ast(t1);
     free_type_ast(t2);
