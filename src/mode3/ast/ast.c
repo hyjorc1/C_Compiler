@@ -13,6 +13,7 @@ Type *new_type_ast(char *name, char is_const, char is_struct, char is_array) {
     t->addr = -1;
     t->id = NULL;
     t->is_global = -1;
+    t->array_access = 0;
     return t;
 }
 
@@ -29,6 +30,7 @@ Type *deep_copy_type_ast(Type *t) {
     copy->addr = t->addr;
     copy->id = t->id ? strdup(t->id) : NULL;
     copy->is_global = t->is_global;
+    copy->array_access = t->array_access;
     return copy;
 }
 

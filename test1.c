@@ -1,26 +1,31 @@
-int x = 1, y;
+// int x[10];
+// char y[10];
+// float z[10];
 
-// int m1() {
-//     return 0;
+// int main1(int a[], int b) {
+//     return a[0] + b;
 // }
 
-int main1(int a, char b, float c) {
-    // b = 'a';
-    // c = (float) 1.0;
-    // a = m1();
-    // a = getchar();
-    // a = putchar(0);
-    // x = a;
-    // a = x;
-    // int d = 10, e = 1;
-    // a = d;
-
-    b -= b;
-    c *= c;
-    return a;
+int main2(char a[]) {
+    int x = a[0] + 1;
+    return x;
 }
 
+// int x[10];
+
 int main() {
-    return main1(10, 'a', 1.0);
+    // int x[10];
+    // char ly[10];
+    // float lz[10];
+    // x[0] = 10;
+    // x[0] += 1;
+    // x[0] -= 1;
+    // x[0] /= 2;
+    // x[0] *= 2;
+    // x[0] = x[0] + x[0] + x[0] + 1;
+    // return main1(x, 9);
+    // return main1(10, 'a', 1.0);
+
+    return main2("hi");
 }
 

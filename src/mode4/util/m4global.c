@@ -25,6 +25,26 @@ void m4decrement(Function *f) {
     }
 }
 
+void m4handle_arr_init(char *id, char *num) {
+    if (mode != 4)
+        return;
+    print("m4handle_arr_init\n");
+    m4handle_int(num);
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%snewarray %s\n", ident8, cur_type->name);
+    if (m3_is_global) {
+        char *type_str = to_ensembly_type_str(cur_type);
+        fprintf(f, "%sputstatic Field %s %s [%s\n", ident8, m4_class_name, id, type_str);
+        free(type_str);
+    } else {
+        int addr = m3_local_map == NULL ? 0 : m3_local_map->size;
+        fprintf(f, "%sastore %d ; store to %s\n", ident8, addr, id);
+    }
+    fclose(f);
+    if (m3_is_global)
+        m4handle_global_var_init(id);
+}
+
 void m4handle_global_var(char *id) {
     if (mode != 4)
         return;
@@ -136,6 +156,19 @@ void m4handle_real(char *val) {
     fclose(f);
     m4increment(cur_fn);
 }
+
+void m4handle_str(char *val) {
+    if (mode != 4)
+        return;
+    FILE *f = get_file(m4_exp_tmp_file);
+    int char_cnt = strlen(val) - 2;
+    val++;
+    fprintf(f, "%sldc '%.*s'\n", ident8, char_cnt, val);
+    fprintf(f, "%sinvokevirtual Method java/lang/String toCharArray ()[C\n", ident8);
+    fclose(f);
+    m4increment(cur_fn);
+}
+
 void m4handle_char(char *val) {
     if (mode != 4)
         return;
@@ -145,10 +178,10 @@ void m4handle_char(char *val) {
     m4increment(cur_fn);
 }
 
-void m4handle_assgin_exp(Type *lt, char *op, Type *res) {
+void m4handle_assign_exp(Type *lt, char *op, Type *res) {
     if (mode != 4)
         return;
-    print("m4handle_assgin_exp\n");
+    print("m4handle_assign_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);
     if (strcmp(op, "=") != 0) {
         char2int(res);
@@ -156,7 +189,9 @@ void m4handle_assgin_exp(Type *lt, char *op, Type *res) {
         char *op_str = to_ensembly_binary_op_str(op);
         fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
     }
-    if (lt->is_global) {
+    if (lt->array_access) {
+        fprintf(f, "%s%sastore\n", ident8, to_ensembly_T_str1(lt));
+    } else if (lt->is_global) {
         char *type_str = to_ensembly_type_str(lt);
         fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, lt->id, type_str);
         free(type_str);
@@ -210,7 +245,11 @@ Type *m4handle_lval(Type *t) {
         return t;
     print("m4handle_lval\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    if (t->is_global) {
+    if (t->array_access) {
+        if (cur_op)
+            fprintf(f, "%sdup2\n", ident8);
+        fprintf(f, "%s%saload\n", ident8, to_ensembly_T_str2(t));
+    } else if (t->is_global) {
         char *type_str = to_ensembly_type_str(t);
         fprintf(f, "%sgetstatic Field %s %s %s\n", ident8, m4_class_name, t->id, type_str);
         free(type_str);

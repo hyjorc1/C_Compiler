@@ -103,7 +103,7 @@ extern Type *handle_r10_exp(Type *t1, char *op, Type *t2);
 extern Type *handle_r11_exp(char *op, Type *t2);
 extern Type *handle_r12_exp(Type *t1, char *op);
 extern Type *handle_assign_exp(char is_init, Type *t1, char *op, Type *t2);
-extern Type *handle_l_array_access(char *id, Type *op);
+extern Type *handle_l_array_access(Type *t, Type *op);
 extern Type *handle_l_member(Type *mt, char *m);
 extern Type *handle_l_array_member(Type *st, char *m, Type *op);
 
@@ -115,7 +115,10 @@ extern Type *handle_l_ident(char *id);
 
 extern void print_err_func_sig(Function *f);
 
-/* ---------------- mode 4 functions --------------------- */
+/* ---------------- mode 4  --------------------- */
+extern char *cur_op;
+
+extern void m4handle_arr_init(char *id, char *num);
 extern void m4handle_global_var(char *id);
 extern void m4handle_global_var_init(char *id);
 extern void m4handle_func_def();
@@ -128,8 +131,9 @@ extern void m4handle_return_stmt(Type *t);
 
 extern void m4handle_int(char *val);
 extern void m4handle_real(char *val);
+extern void m4handle_str(char *val);
 extern void m4handle_char(char *val);
-extern void m4handle_assgin_exp(Type *lt, char *op, Type *res);
+extern void m4handle_assign_exp(Type *lt, char *op, Type *res);
 
 extern void m4handle_func_call_exp(Function *fn);
 extern void m4handle_root_exp_before();
@@ -142,6 +146,5 @@ extern void m4hanlde_uminus(Type *t);
 extern void m4handle_cast_exp(Type *t1, Type *t2);
 extern void m4handle_r8_exp(Type *t, char *op);
 extern void m4handle_r9_exp(Type *t, char *op);
-
 
 #endif

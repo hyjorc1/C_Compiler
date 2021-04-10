@@ -87,7 +87,7 @@ char *cur_op = NULL;
 %type <v> var init_var noinit_var para
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp root_exp lval_xx_assign
+%type <t> exp l_val cond_exp root_exp lval_xx_assign array_ident
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -128,7 +128,7 @@ init_var : var                          { m3dprint("init_var var", ""); $$ = upd
     ;
 
 var : IDENT                             { m3dprint("IDENT", $1); $$ = handle_var_ident($1, 0); }
-    | IDENT LBRACKET INTCONST RBRACKET  { m3dprint("IDENT [int]", $1); $$ = handle_var_ident($1, 1); }
+    | IDENT LBRACKET INTCONST RBRACKET  { m3dprint("IDENT [int]", $1); $$ = handle_var_ident($1, 1); m4handle_arr_init($1, $3); }
     ;
 
 /* part 2 - 2.4 Extra credit: user-defined structs 
@@ -280,7 +280,7 @@ emp : %empty                            { m3dprint("root exp", ""); m4handle_roo
 /* part 2 - 10. expression */
 exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_type_ast(strdup(int_str), 1, 0, 0); m4handle_int($1); }
     | REALCONST                         { m3dprint("REALCONST", $1); $$ = new_type_ast(strdup(float_str), 1, 0, 0); m4handle_real($1); }
-    | STRCONST                          { m3dprint("STRCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 1); }
+    | STRCONST                          { m3dprint("STRCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 1); m4handle_str($1); }
     | CHARCONST                         { m3dprint("CHARCONST", $1); $$ = new_type_ast(strdup(char_str), 1, 0, 0); m4handle_char($1); }
     | IDENT LPAR exp_list RPAR          { m3dprint("IDENT(exps)", $1); $$ = handle_func_call_exp($1, $3); }
     | IDENT LPAR RPAR                   { m3dprint("IDENT()", $1); $$ = handle_func_call_exp($1, NULL); }
@@ -291,7 +291,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
     | l_val                             { m3dprint("l_val", ""); $$ = m4handle_lval($1); }
     | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); }
-    | lval_xx_assign exp              { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, cur_op, $2); }
+    | lval_xx_assign exp                { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, cur_op, $2); cur_op = NULL; }
     | INCR l_val %prec UINCR            { /* part 3 - R11 */ m3dprint("INCR l_val", "++"); $$ = handle_r11_exp("++", $2); }
     | DECR l_val %prec UDECR            { /* part 3 - R11 */ m3dprint("DECR l_val", "--"); $$ = handle_r11_exp("--", $2); }
     | l_val INCR %prec UINCR            { /* part 3 - R12 */ m3dprint("l_val INCR", "++"); $$ = handle_r12_exp($1, "++"); }
@@ -325,10 +325,10 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 
-lval_xx_assign : l_val PLUSASSIGN       { $$ = m4handle_lval($1); cur_op = "+="; }
-    | l_val MINUSASSIGN                 { $$ = m4handle_lval($1); cur_op = "-="; }
-    | l_val STARASSIGN                  { $$ = m4handle_lval($1); cur_op = "*="; }
-    | l_val SLASHASSIGN                 { $$ = m4handle_lval($1); cur_op = "/="; }
+lval_xx_assign : l_val PLUSASSIGN       { cur_op = "+="; $$ = m4handle_lval($1); }
+    | l_val MINUSASSIGN                 { cur_op = "-="; $$ = m4handle_lval($1); }
+    | l_val STARASSIGN                  { cur_op = "*="; $$ = m4handle_lval($1); }
+    | l_val SLASHASSIGN                 { cur_op = "/="; $$ = m4handle_lval($1); }
     ;
 
 exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }
@@ -337,9 +337,12 @@ exp_list : exp                          { m3dprint("single exp", ""); $$ = handl
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */
 l_val : IDENT                               { m3dprint("l_val id", $1); $$ = handle_l_ident($1); }
-    | IDENT LBRACKET exp RBRACKET           { m3dprint("l_val id[exp]", $1); $$ = handle_l_array_access($1, $3); }
+    | array_ident LBRACKET exp RBRACKET     { m3dprint("l_val id[exp]", $1->id); $$ = handle_l_array_access($1, $3); }
     | l_val DOT IDENT                       { /* part 3 - R15 */ m3dprint("l_val.member", $3); $$ = handle_l_member($1, $3); }
     | l_val DOT IDENT LBRACKET exp RBRACKET { /* part 3 - R15 */ m3dprint("l_val.member[exp]", $3); $$ = handle_l_array_member($1, $3, $5); }
+    ;
+
+array_ident : IDENT                         { $$ = m4handle_lval(handle_l_ident($1)); }
     ;
 
 %%

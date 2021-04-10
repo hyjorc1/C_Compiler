@@ -12,6 +12,7 @@ typedef struct {
     int addr;
     char *id;
     int is_global;
+    int array_access;
 } Type;
 
 Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);

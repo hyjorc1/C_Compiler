@@ -228,7 +228,7 @@ Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
     } else if (is_type_N(lt) && is_type_N(rt) && widen_match_type(rt, lt)) {
         res = deep_copy_type_ast(lt);
         res->is_const = (rt->is_const && lt->is_const) ? 1 : 0;
-        m4handle_assgin_exp(lt, op, res);
+        m4handle_assign_exp(lt, op, res);
     } else {
         char *lt_str = type_to_str(lt);
         char *rt_str = type_to_str(rt);
@@ -263,19 +263,19 @@ Type *handle_l_ident(char *id) {
 }
 
 /* R14: T[int] -> N  */
-Type *handle_l_array_access(char *id, Type *op) {
-    Type *t = handle_l_ident(id);
+Type *handle_l_array_access(Type *t, Type *op) {
     Type *res = NULL;
     if (t == NULL || op == NULL) {
         // omit
     } else if (!t->is_array) {
         m3err();
-        fprintf(stderr, "\tIdentifier %s is not an array\n", id);
+        fprintf(stderr, "\tIdentifier %s is not an array\n", t->id);
     } else if (!is_type_I(op)) {
         m3err();
-        fprintf(stderr, "\tIndex to array %s is not an integer\n", id);
+        fprintf(stderr, "\tIndex to array %s is not an integer\n", t->id);
     } else {
         t->is_array = 0;
+        t->array_access = 1;
         res = t;
     }
     free(op);
