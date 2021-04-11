@@ -16,10 +16,13 @@ extern const char *ident8;
 
 extern char *last_exp_inst;
 
-extern void m4increment(Function *f);
-extern void m4decrement(Function *f);
+/* mode 4 utilties */
+
+extern int update_depth(int num);
 
 extern void char2int(Type *t);
+
+extern void copy_files(FILE *dest, const char *src_file);
 
 extern char *to_ensembly_binary_op_str(char *op);
 extern char *to_ensembly_type_str(Type *t);

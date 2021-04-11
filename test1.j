@@ -11,9 +11,9 @@
 .method static <clinit> : ()V
     .code stack 1 locals 0
         ; Initializing x
-        ldc 5
+        ldc 5 ; depth 0
         newarray int
-        putstatic Field test1 x [I
+        putstatic Field test1 x [I ; depth 0
         return
     .end code
 .end method
@@ -31,30 +31,27 @@
 ; Methods
 
 .method public static main : ()I
-    .code stack 4 locals 0
-        ;; test1 6 expression
-        ;; depth++
-        getstatic Field test1 x [I
-        ldc 3
-        ;; depth++
-        ldc 10
-        ;; depth++
-        ;; depth++
-        ;; depth--
-        ;; depth--
-        ;; depth--
-        dup_x2
-        iastore
-        pop
+    .code stack 6 locals 0
         ;; test1 8 expression
-        ;; depth++
-        getstatic Field test1 x [I
-        ldc 3
-        ;; depth++
-        ;; depth++
-        iaload
-        ireturn
-        ;; depth--
+        getstatic Field test1 x [I ; depth 1
+        ldc 3 ; depth 1
+        getstatic Field test1 x [I ; depth 1
+        ldc 2 ; depth 1
+        ldc 10 ; depth 1
+        dup_x2 ; depth 1
+        iastore ; depth -3
+        dup_x2 ; depth 1
+        iastore ; depth -3
+        pop ; depth -1
+        ;; test1 9 expression
+        getstatic Field test1 x [I ; depth 1
+        ldc 2 ; depth 1
+        iaload ; depth -1
+        getstatic Field test1 x [I ; depth 1
+        ldc 3 ; depth 1
+        iaload ; depth -1
+        iadd
+        ireturn ; depth -1
     .end code
 .end method
 

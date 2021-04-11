@@ -6,7 +6,7 @@ void handle_exp_stmt(Type *t) {
     if (m3_local_stmts == NULL)
         m3_local_stmts = list_new(sizeof(Statement), free_statement_ast);
     list_add_last(m3_local_stmts, new_statement_ast(m3lineno, t));
-    m4hanlde_exp_stmt();
+    m4handle_exp_stmt();
 }
 
 void handle_return_stmt(Type *t) {
