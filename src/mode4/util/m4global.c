@@ -16,13 +16,33 @@ void m4increment(Function *f) {
         f->depth++;
         if (f->depth > f->max)
             f->max = f->depth;
+        stmt_stack_depth++;
+        FILE *f = get_file(m4_exp_tmp_file);
+        fprintf(f, "%s;; depth++\n", ident8);
+        fclose(f);
     }
 }
 
 void m4decrement(Function *f) {
     if (f) {
         f->depth--;
+        stmt_stack_depth--;
+        FILE *f = get_file(m4_exp_tmp_file);
+        fprintf(f, "%s;; depth--\n", ident8);
+        fclose(f);
     }
+}
+
+void m4hanlde_exp_stmt() {
+    if (mode != 4)
+        return;
+    print("m4hanlde_exp_stmt\n");
+    FILE *f = get_file(m4_exp_tmp_file);
+    while (stmt_stack_depth > 0) {
+        fprintf(f, "%spop\n", ident8);
+        stmt_stack_depth--;
+    }
+    fclose(f);
 }
 
 void m4handle_arr_init(char *id, char *num) {
@@ -40,6 +60,9 @@ void m4handle_arr_init(char *id, char *num) {
         int addr = m3_local_map == NULL ? 0 : m3_local_map->size;
         fprintf(f, "%sastore %d ; store to %s\n", ident8, addr, id);
     }
+    m4decrement(cur_fn);
+    m4decrement(cur_fn);
+    m4decrement(cur_fn);
     fclose(f);
     if (m3_is_global)
         m4handle_global_var_init(id);
@@ -182,23 +205,34 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
     if (mode != 4)
         return;
     print("m4handle_assign_exp\n");
+
     FILE *f = get_file(m4_exp_tmp_file);
+
     if (strcmp(op, "=") != 0) {
         char2int(res);
         char *type_str = to_ensembly_T_str1(res);
         char *op_str = to_ensembly_binary_op_str(op);
         fprintf(f, "%s%s%s\n", ident8, type_str, op_str);
     }
+
+    char *dup_str = lt->array_access ? "dup_x2" : "dup";
+    fprintf(f, "%s%s\n", ident8, dup_str);
+    m4increment(cur_fn);
+
     if (lt->array_access) {
         fprintf(f, "%s%sastore\n", ident8, to_ensembly_T_str1(lt));
+        m4decrement(cur_fn);
+        m4decrement(cur_fn);
+        m4decrement(cur_fn);
     } else if (lt->is_global) {
         char *type_str = to_ensembly_type_str(lt);
         fprintf(f, "%sputstatic Field %s %s %s\n", ident8, m4_class_name, lt->id, type_str);
         free(type_str);
+        m4decrement(cur_fn);
     } else {
         fprintf(f, "%s%sstore %d ; store to %s\n", ident8, to_ensembly_T_str1(lt), lt->addr, lt->id);
+        m4decrement(cur_fn);
     }
-    m4decrement(cur_fn);
     fclose(f);
 }
 
@@ -207,7 +241,8 @@ void m4handle_func_call_exp(Function *fn) {
         return;
     print("m4handle_func_call_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%sinvokestatic Method %s %s (", ident8, m4_class_name, fn->name);
+    const char *class_name = fn->class_name ? fn->class_name : m4_class_name;
+    fprintf(f, "%sinvokestatic Method %s %s (", ident8, class_name, fn->name);
     print("m4handle_func_call_exp 1\n");
     // add parameter types
     if (fn->parameters) {
@@ -235,6 +270,7 @@ void m4handle_root_exp_before() {
     if (mode != 4)
         return;
     print("m4handle_root_exp_before\n");
+    stmt_stack_depth = 0;
     FILE *dest = get_file(m4_exp_tmp_file);
     fprintf(dest, "%s;; %s %d expression\n", ident8, m4_class_name, m3lineno);
     fclose(dest);
@@ -434,7 +470,9 @@ void m4preprocess() {
     m3_global_funcs = list_new(sizeof(Function), free_function_ast);
     Function *getchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("getchar"), -1);
     getchar_fn->is_proto = 0;
+    getchar_fn->class_name = strdup("libc");
     list_add_last(m3_global_funcs, getchar_fn);
+
 
     // add function int putchar(int c)
     Function *putchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("putchar"), -1);
@@ -445,6 +483,7 @@ void m4preprocess() {
     map_put(putchar_fn->local_var_map, v->name, t);
     free_type_ast(t);
     putchar_fn->is_proto = 0;
+    putchar_fn->class_name = strdup("libc");
     list_add_last(m3_global_funcs, putchar_fn);
 }
 

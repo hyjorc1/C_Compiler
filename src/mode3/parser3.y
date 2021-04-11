@@ -36,6 +36,7 @@ const char *error_str = "error";
 
 /* binary operator */
 char *cur_op = NULL;
+int stmt_stack_depth = 0;
 
 %}
 

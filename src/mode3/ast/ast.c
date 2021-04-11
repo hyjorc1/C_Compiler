@@ -163,6 +163,7 @@ Function *new_function_ast(Type *return_type, char *name, int lineno) {
     // mode 4
     f->depth = 0;
     f->max = 0;
+    f->class_name = NULL;
     return f;
 }
 
@@ -188,6 +189,7 @@ void free_function_ast(void *p) {
     list_destroy(f->statements);
     // print(">>>>>>>>free_function_ast 8\n");
 
+    free(f->class_name);
     free(p);
     // print(">>>>>>>>free_function_ast 9\n");
 }

@@ -60,6 +60,7 @@ typedef struct {
     // mode 4
     int depth;
     int max;
+    char *class_name;
 } Function;
 
 Function *new_function_ast(Type *return_type, char *name, int lineno);

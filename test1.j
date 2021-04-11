@@ -6,6 +6,18 @@
 
 ; Global vars
 
+.field static x [I
+
+.method static <clinit> : ()V
+    .code stack 1 locals 0
+        ; Initializing x
+        ldc 5
+        newarray int
+        putstatic Field test1 x [I
+        return
+    .end code
+.end method
+
 ; Default constructor
 
 .method <init> : ()V
@@ -18,27 +30,31 @@
 
 ; Methods
 
-.method public static main2 : ([C)I
-    .code stack 4 locals 2
-        aload 0 ; load from a
-        ldc 0
-        caload
-        ldc 1
-        iadd
-        istore 1 ; store to x
-        ;; test1 11 expression
-        iload 1 ; load from x
-        ireturn
-    .end code
-.end method
-
 .method public static main : ()I
-    .code stack 1 locals 0
-        ;; test1 29 expression
-        ldc 'hi'
-        invokevirtual Method java/lang/String toCharArray ()[C
-        invokestatic Method test1 main2 ([C)I
+    .code stack 4 locals 0
+        ;; test1 6 expression
+        ;; depth++
+        getstatic Field test1 x [I
+        ldc 3
+        ;; depth++
+        ldc 10
+        ;; depth++
+        ;; depth++
+        ;; depth--
+        ;; depth--
+        ;; depth--
+        dup_x2
+        iastore
+        pop
+        ;; test1 8 expression
+        ;; depth++
+        getstatic Field test1 x [I
+        ldc 3
+        ;; depth++
+        ;; depth++
+        iaload
         ireturn
+        ;; depth--
     .end code
 .end method
 
