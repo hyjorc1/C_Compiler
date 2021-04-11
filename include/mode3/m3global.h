@@ -16,6 +16,8 @@ extern void m3restart(FILE *input_file);
 /* global data structures and variables for mode 3 */
 extern char *m3_cur_file_name;
 extern char m3_is_global;
+extern char m3_error;
+extern char m3_return_error;
 
 /* Variables */ 
 extern Type *cur_type;
@@ -47,6 +49,7 @@ extern const char *error_str;
 /* interface to the parser with prefix 'm3' */
 extern int m3parse();
 extern void m3error(const char* msg);
+extern void m3warn();
 extern void m3err();
 extern void m3dprint(const char* s1, const char* s2);
 

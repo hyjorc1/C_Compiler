@@ -4,7 +4,13 @@ void m3error(const char* msg) {
     fprintf(stderr, "Error near %s line %d text '%s'\n\t%s\n", m3_cur_file_name, m3lineno, m3text, msg);
 }
 
+void m3warn() {
+    m3_error = 1;
+    fprintf(stderr, "Warning near %s line %d\n", m3_cur_file_name, m3lineno);
+}
+
 void m3err() {
+    m3_error = 1;
     fprintf(stderr, "Error near %s line %d\n", m3_cur_file_name, m3lineno);
 }
 

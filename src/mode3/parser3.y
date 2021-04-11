@@ -6,6 +6,8 @@
 
 char *m3_cur_file_name = NULL;
 char m3_is_global = 1;
+char m3_error = 0;
+char m3_return_error = 0;
 
 /* Variables */ 
 Type *cur_type = NULL;

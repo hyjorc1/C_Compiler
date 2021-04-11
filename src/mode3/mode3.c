@@ -158,6 +158,8 @@ void mode3(int argc, char *argv[], int fileIdx) {
         }
         m3_cur_file_name = argv[i];
         m3lineno = 1;
+        m3_error = 0;
+        m3_return_error = 0;
         m3restart(f);
         print("Parse return %d\n", m3parse());
 

@@ -141,6 +141,7 @@ void handle_para(char *id, char is_array) {
 }
 
 void print_err_func(Function *f) {
+    m3_error = 1;
     fprintf(stderr, "Error near %s line %d\n", m3_cur_file_name, cur_fn->lineno);
     fprintf(stderr, "Function %s originally declared with different type:\n", f->name);
     print_err_func_sig(f);
@@ -149,6 +150,13 @@ void print_err_func(Function *f) {
     print_err_func_sig(cur_fn);
     fprintf(stderr, " declared in %s near line %d\n", m3_cur_file_name, cur_fn->lineno);
     free_function_ast(cur_fn);
+}
+
+void m4return_warning() {
+    if (mode != 4)
+        return;
+    m3warn();
+    fprintf(stderr, "\tunsure if function %s returns a value\n", cur_fn->name);
 }
 
 void handle_func_def() {
@@ -188,6 +196,11 @@ void handle_func_def() {
             m3_global_funcs = list_new(sizeof(Function), free_function_ast);
         list_add_last(m3_global_funcs, cur_fn);
         m4handle_func_def();
+    }
+
+    if (m3_return_error) {
+        m4return_warning();
+        m3_return_error = 0;
     }
 
     m3_is_global = 1;

@@ -88,20 +88,25 @@ void mode4(int argc, char *argv[], int fileIdx) {
             perror(argv[i]);
             return;
         }
+
         m3_cur_file_name = argv[i];
         m4_class_name = substr(m3_cur_file_name, 0, strlen(m3_cur_file_name) - 2);
         m3lineno = 1;
+        m3_error = 0;
+        m3_return_error = 0;
+
         m3restart(f);
         print("Parse return %d\n", m3parse());
         
-        print_bytecode_class();
-        print_bytecode_global_vars();
-        print_bytecode_default_constructor();
-        print_bytecode_methods();
-        print_bytecode_java_main();
+        if (!m3_error) {
+            print_bytecode_class();
+            print_bytecode_global_vars();
+            print_bytecode_default_constructor();
+            print_bytecode_methods();
+            print_bytecode_java_main();
+        }
 
         fclose(f);
-
         m4postprocess();
     }
 

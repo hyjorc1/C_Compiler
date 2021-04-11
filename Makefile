@@ -161,13 +161,14 @@ SRC4	:= $(SRC)/mode4
 MODE4	:= $(SRC4)/mode4
 UTIL4   := $(patsubst %.c,%.o,$(wildcard $(SRC4)/util/*.c))
 OBJ4 	:= $(MODE4).o $(UTIL4)
-TEST4	:= test/Grading4
+TEST4	:= test/Tests4
+TEST4CMD:= ./Run.sh mycc -s *.c
 
 test4: link mode4-test
 
 mode4-test:
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 4 Test @@@@@@@@@@@@@@@@@@@@@@@'
-	cp $(EXE) $(TEST4) && cd $(TEST4) && $(TEST_CMD) && rm $(EXE) && cd ../../
+	cp $(EXE) $(TEST4) && cd $(TEST4) && $(TEST4CMD) && rm $(EXE) && cd ../../
 
 mode4: $(OBJ4)
 	@echo '========================================================'

@@ -6,7 +6,7 @@ MODE=4
 DASHO=""
 FLAGS=""
 GENERATE=""
-ASSEMBLE="assemble.py"
+ASSEMBLE="../Krakatau/assemble.py"
 DETAIL=""
 
 usage() 
