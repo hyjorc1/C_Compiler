@@ -9,7 +9,7 @@ jassemble: link
 .PHONY: clean
 clean: compiler-clean latex-clean
 
-test: link mode1-test mode2-test mode3-test
+test: link mode1-test mode2-test mode3-test mode4-test
 
 #=================================================================#
 ################################ latex ############################
