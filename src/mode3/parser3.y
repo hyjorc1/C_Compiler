@@ -11,6 +11,7 @@ char m3_return_error = 0;
 
 /* Variables */ 
 Type *cur_type = NULL;
+Type *cast_type = NULL;
 List *m3_global_vars = NULL;
 HashMap *m3_global_map = NULL;
 
@@ -89,7 +90,7 @@ char *cur_op = NULL;
 %type <v> var init_var noinit_var para
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp root_exp lval_xx_assign array_ident
+%type <t> exp l_val cond_exp root_exp lval_xx_assign array_ident gtype all_type
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -111,13 +112,19 @@ var_decl : type init_var_list SEMI      { m3dprint("type init var list ;", ""); 
     ;
 
 /* part 2 - 2.3 and part 3 - 2.6 Extra credit: constants */
-type : all_type                         { m3dprint("all_type", ""); }
-    | CONST all_type                    { m3dprint("CONST all_type", ""); if (cur_type) cur_type->is_const = 1; }
-    | all_type CONST                    { m3dprint("all_type CONST", ""); if (cur_type) cur_type->is_const = 1; }
+type : gtype                            { cur_type = $1; }
     ;
 
-all_type : PRIMTYPE                     { m3dprint("PRIMTYPE", $1); cur_type = new_type_ast($1, 0, 0, 0); }
-    | STRUCT IDENT                      { m3dprint("STRUCT IDENT", $2); cur_type = handle_struct_type_var($2); }
+cast_type : gtype                       { cast_type = $1; }
+    ;
+
+gtype : all_type                        { m3dprint("all_type", ""); $$ = $1; }
+    | CONST all_type                    { m3dprint("CONST all_type", ""); if ($2) $2->is_const = 1; $$ = $2; }
+    | all_type CONST                    { m3dprint("all_type CONST", ""); if ($1) $1->is_const = 1; $$ = $1; }
+    ;
+
+all_type : PRIMTYPE                     { m3dprint("PRIMTYPE", $1); $$ = new_type_ast($1, 0, 0, 0); }
+    | STRUCT IDENT                      { m3dprint("STRUCT IDENT", $2); $$ = handle_struct_type_var($2); }
     ;
 
 init_var_list : init_var                { m3dprint("single init var init var list", ""); update_var_list($1); }
@@ -323,7 +330,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
     | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
-    | LPAR type RPAR exp                { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
+    | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 

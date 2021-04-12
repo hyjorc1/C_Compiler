@@ -21,6 +21,7 @@ extern char m3_return_error;
 
 /* Variables */ 
 extern Type *cur_type;
+extern Type *cast_type;
 extern List *m3_global_vars;
 extern HashMap *m3_global_map;
 
@@ -138,7 +139,7 @@ extern void m4handle_real(char *val);
 extern void m4handle_str(char *val);
 extern void m4handle_char(char *val);
 
-extern void m4handle_assign_exp(Type *lt, char *op, Type *res);
+extern void m4handle_assign_exp(char is_init, Type *lt, char *op, Type *res);
 
 extern void m4handle_func_call_exp(Function *fn);
 extern void m4handle_root_exp_before();

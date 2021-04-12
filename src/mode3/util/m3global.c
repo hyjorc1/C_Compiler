@@ -30,6 +30,11 @@ void postprocess() {
         free(cur_type);
         cur_type = NULL;
     }
+    if (cast_type) {
+        print("cast_type is not NULL\n");
+        free(cast_type);
+        cast_type = NULL;
+    }
     if (m3_local_vars) {
         print("m3_local_vars is not NULL\n");
         list_destroy(m3_local_vars);

@@ -156,7 +156,7 @@ void m4handle_char(char *val) {
     fclose(f);
 }
 
-void m4handle_assign_exp(Type *lt, char *op, Type *res) {
+void m4handle_assign_exp(char is_init, Type *lt, char *op, Type *res) {
     if (mode != 4 || m3_error)
         return;
     print("m4handle_assign_exp\n");
@@ -170,8 +170,10 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
         fprintf(f, "%s%s%s ; depth %d\n", ident8, type_str, op_str, update_depth(-1));
     }
 
-    char *dup_str = lt->array_access ? "dup_x2" : "dup";
-    fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
+    if (!is_init) {
+        char *dup_str = lt->array_access ? "dup_x2" : "dup";
+        fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
+    }
 
     if (lt->array_access) {
         fprintf(f, "%s%sastore ; depth %d\n",
@@ -209,7 +211,7 @@ void m4handle_func_call_exp(Function *fn) {
         
     }
     int para_num = fn->parameters ? fn->parameters->size : 0;
-    int change = update_depth(1) + update_depth(-para_num);
+    int change = update_depth(-para_num) + update_depth(1);
     char *return_type_str = to_ensembly_type_str(fn->return_type);
     fprintf(f, ")%s ; depth %d\n", return_type_str, change);
     free(return_type_str);
@@ -281,13 +283,25 @@ void m4hanlde_uminus(Type *t) {
     fclose(f);
 }
 
+char m4cast_cond(Type *from, Type *to) {
+    if (strcmp(from->name, float_str) == 0 && strcmp(to->name, int_str) == 0)
+        return 1;
+    if (strcmp(from->name, int_str) == 0) {
+        if (strcmp(to->name, char_str) == 0 || strcmp(to->name, float_str) == 0)
+            return 1;
+    }
+    return 0;
+}
+
 void m4handle_cast_exp(Type *t1, Type *t2) {
     if (mode != 4 || m3_error)
         return;
     print("m4handle_cast_exp\n");
-    FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s%s2%s\n", ident8, to_ensembly_T_str2(t2), to_ensembly_T_str2(t1));
-    fclose(f);
+    if (m4cast_cond(t2, t1)) {
+        FILE *f = get_file(m4_exp_tmp_file);
+        fprintf(f, "%s%s2%s\n", ident8, to_ensembly_T_str2(t2), to_ensembly_T_str2(t1));
+        fclose(f);
+    }
 }
 
 void m4handle_r8_exp(Type *t, char *op) {

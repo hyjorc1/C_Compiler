@@ -54,8 +54,14 @@ Variable *update_type_map(Variable *var) {
 
 Variable *handle_init_var(Variable *var, Type *rt) {
     print("handle_init_var\n");
-    if (var == NULL || cur_type == NULL)
+    if (var == NULL || cur_type == NULL) {
+        if (var == NULL) {
+            print("handle_init_var null var\n");
+        } else {
+            print("handle_init_var null cur_type\n");
+        }
         return NULL;
+    }
     update_type_map(var);
     Type *lt = m3_is_global ? map_get(m3_global_map, var->name) : 
     map_get(m3_local_map, var->name);
