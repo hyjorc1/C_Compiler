@@ -38,7 +38,7 @@ const char *void_str = "void";
 const char *error_str = "error";
 
 /* binary operator */
-char *cur_op = NULL;
+char binary_assign = 0;
 
 %}
 
@@ -90,7 +90,7 @@ char *cur_op = NULL;
 %type <v> var init_var noinit_var para
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp root_exp lval_xx_assign array_ident gtype all_type
+%type <t> exp l_val cond_exp root_exp lval_assign array_ident gtype all_type
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -300,7 +300,10 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
     | l_val                             { m3dprint("l_val", ""); $$ = m4handle_lval($1); }
     | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); }
-    | lval_xx_assign exp                { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, cur_op, $2); cur_op = NULL; }
+    | lval_assign PLUSASSIGN exp        { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, "+=", $3); }
+    | lval_assign MINUSASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); $$ = handle_assign_exp(0, $1, "-=", $3); }
+    | lval_assign STARASSIGN exp        { /* part 3 - R13 */ m3dprint("l_val *= exp", "*="); $$ = handle_assign_exp(0, $1, "*=", $3); }
+    | lval_assign SLASHASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val /= exp", "/="); $$ = handle_assign_exp(0, $1, "/=", $3); }
     | INCR l_val %prec UINCR            { /* part 3 - R11 */ m3dprint("INCR l_val", "++"); $$ = handle_r11_exp("++", $2); }
     | DECR l_val %prec UDECR            { /* part 3 - R11 */ m3dprint("DECR l_val", "--"); $$ = handle_r11_exp("--", $2); }
     | l_val INCR %prec UINCR            { /* part 3 - R12 */ m3dprint("l_val INCR", "++"); $$ = handle_r12_exp($1, "++"); }
@@ -334,10 +337,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 
-lval_xx_assign : l_val PLUSASSIGN       { cur_op = "+="; $$ = m4handle_lval($1); }
-    | l_val MINUSASSIGN                 { cur_op = "-="; $$ = m4handle_lval($1); }
-    | l_val STARASSIGN                  { cur_op = "*="; $$ = m4handle_lval($1); }
-    | l_val SLASHASSIGN                 { cur_op = "/="; $$ = m4handle_lval($1); }
+lval_assign : l_val                     { binary_assign = 1; $$ = m4handle_lval($1); }
     ;
 
 exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }

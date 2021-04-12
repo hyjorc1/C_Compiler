@@ -156,6 +156,21 @@ void m4handle_char(char *val) {
     fclose(f);
 }
 
+void m4store(FILE *f, Type *lt) {
+    if (lt->array_access) {
+        fprintf(f, "%s%sastore ; depth %d\n",
+            ident8, to_ensembly_T_str1(lt), update_depth(-3));
+    } else if (lt->is_global) {
+        char *type_str = to_ensembly_type_str(lt);
+        fprintf(f, "%sputstatic Field %s %s %s ; depth %d\n",
+            ident8, m4_class_name, lt->id, type_str, update_depth(-1));
+        free(type_str);
+    } else {
+        fprintf(f, "%s%sstore %d ; store to %s and depth %d\n",
+            ident8, to_ensembly_T_str1(lt), lt->addr, lt->id, update_depth(-1));
+    }
+}
+
 void m4handle_assign_exp(char is_init, Type *lt, char *op, Type *res) {
     if (mode != 4 || m3_error)
         return;
@@ -175,18 +190,7 @@ void m4handle_assign_exp(char is_init, Type *lt, char *op, Type *res) {
         fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
     }
 
-    if (lt->array_access) {
-        fprintf(f, "%s%sastore ; depth %d\n",
-            ident8, to_ensembly_T_str1(lt), update_depth(-3));
-    } else if (lt->is_global) {
-        char *type_str = to_ensembly_type_str(lt);
-        fprintf(f, "%sputstatic Field %s %s %s ; depth %d\n",
-            ident8, m4_class_name, lt->id, type_str, update_depth(-1));
-        free(type_str);
-    } else {
-        fprintf(f, "%s%sstore %d ; store to %s and depth %d\n",
-            ident8, to_ensembly_T_str1(lt), lt->addr, lt->id, update_depth(-1));
-    }
+    m4store(f, lt);
     fclose(f);
 }
 
@@ -233,7 +237,7 @@ Type *m4handle_lval(Type *t) {
     print("m4handle_lval\n");
     FILE *f = get_file(m4_exp_tmp_file);
     if (t->array_access) {
-        if (cur_op)
+        if (binary_assign)
             fprintf(f, "%sdup2 ; depth %d\n", ident8, update_depth(2));
         fprintf(f, "%s%saload ; depth %d\n",
             ident8, to_ensembly_T_str2(t), update_depth(-1));
@@ -250,18 +254,43 @@ Type *m4handle_lval(Type *t) {
     return t;
 }
 
-void m4handle_ulval(Type *t, char *op) {
+void m4handle_r11_exp(char *op, Type *t2) {
     if (mode != 4 || m3_error)
         return;
-    m4handle_lval(t);
-    print("m4handle_ulval\n");
+    print("m4handle_r12_exp\n");
+    binary_assign = 1;
+    m4handle_lval(t2);
     FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%siconst_1 ; depth %d\n", ident8, update_depth(1));
+
+    char *inst = strcmp(op, "++") == 0 ? "iadd" : "isub";
+    fprintf(f, "%s%s ; depth %d\n", ident8, inst, update_depth(-1));
+
+    char *dup_str = t2->array_access ? "dup_x2" : "dup";
+    fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
+
+    m4store(f, t2);
+    fclose(f);
+    binary_assign = 0;
+}
+
+void m4handle_r12_exp(Type *t1, char *op) {
+    if (mode != 4 || m3_error)
+        return;
+    print("m4handle_r12_exp\n");
+    binary_assign = 1;
+    m4handle_lval(t1);
+    FILE *f = get_file(m4_exp_tmp_file);
+    char *dup_str = t1->array_access ? "dup_x2" : "dup";
+    fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
 
     fprintf(f, "%siconst_1 ; depth %d\n", ident8, update_depth(1));
 
     char *inst = strcmp(op, "++") == 0 ? "iadd" : "isub";
     fprintf(f, "%s%s ; depth %d\n", ident8, inst, update_depth(-1));
+    m4store(f, t1);
     fclose(f);
+    binary_assign = 0;
 }
 
 void m4handle_utilde() {

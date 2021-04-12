@@ -189,7 +189,7 @@ Type *handle_r11_exp(char *op, Type *t2) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t2);
-        m4handle_ulval(t2, op);
+        m4handle_r11_exp(op, t2);
     }
     free_type_ast(t2);
     return res;
@@ -208,7 +208,7 @@ Type *handle_r12_exp(Type *t1, char *op) {
         free(t_str);
     } else {
         res = deep_copy_type_ast(t1);
-        m4handle_ulval(t1, op);
+        m4handle_r12_exp(t1, op);
     }
     free_type_ast(t1);
     return res;
@@ -243,6 +243,7 @@ Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
     }
     free_type_ast(lt);
     free_type_ast(rt);
+    binary_assign = 0;
     return res;
 }
 
