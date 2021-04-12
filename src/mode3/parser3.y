@@ -39,6 +39,7 @@ const char *error_str = "error";
 
 /* binary operator */
 char binary_assign = 0;
+int return_count = 0;
 
 %}
 
@@ -87,10 +88,10 @@ char binary_assign = 0;
 
 %nonassoc UMINUS UBANG UTILDE UINCR UDECR
 
-%type <v> var init_var noinit_var para
+%type <v> var init_var noinit_var para var_return
 %type <l> para_list exp_list
 /* part 3 - exp returns type */
-%type <t> exp l_val cond_exp root_exp lval_assign array_ident gtype all_type
+%type <t> exp l_val cond_exp root_exp lval_assign lval_bassign array_ident gtype all_type
 %type <fn> func_decl func_proto func_def
 
 %%
@@ -133,7 +134,10 @@ init_var_list : init_var                { m3dprint("single init var init var lis
 
 /* part 2 - 2.2 and part 3 - 2.5 Extra credit: variable initialization */
 init_var : var                          { m3dprint("init_var var", ""); $$ = update_type_map($1); }
-    | var ASSIGN exp                    { m3dprint("var = exp", "="); $$ = handle_init_var($1, $3); }
+    | var_return ASSIGN exp             { m3dprint("var = exp", "="); $$ = handle_init_var($1, $3); return_count--; }
+    ;
+
+var_return : var                        { $$ = $1; return_count++; }
     ;
 
 var : IDENT                             { m3dprint("IDENT", $1); $$ = handle_var_ident($1, 0); }
@@ -233,7 +237,10 @@ stmt : SEMI                             { m3dprint("SEMI", ""); }
     ;
 
 return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
-    | RETURN root_exp SEMI              { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
+    | return_request root_exp SEMI      { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); return_count--; }
+    ;
+
+return_request : RETURN                 { return_count++; }
     ;
 
 if_stmt : if_cond block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""); }
@@ -299,11 +306,11 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
         access to a single dimension. */
     /* part 3 - 2.4 Extra credit: widening for R8, R9, R10, R13, return stmt, call func */
     | l_val                             { m3dprint("l_val", ""); $$ = m4handle_lval($1); }
-    | l_val ASSIGN exp                  { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); }
-    | lval_assign PLUSASSIGN exp        { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, "+=", $3); }
-    | lval_assign MINUSASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); $$ = handle_assign_exp(0, $1, "-=", $3); }
-    | lval_assign STARASSIGN exp        { /* part 3 - R13 */ m3dprint("l_val *= exp", "*="); $$ = handle_assign_exp(0, $1, "*=", $3); }
-    | lval_assign SLASHASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val /= exp", "/="); $$ = handle_assign_exp(0, $1, "/=", $3); }
+    | lval_assign ASSIGN exp            { /* part 3 - R13 */ m3dprint("l_val = exp", "="); $$ = handle_assign_exp(0, $1, "=", $3); return_count--; }
+    | lval_bassign PLUSASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val += exp", "+="); $$ = handle_assign_exp(0, $1, "+=", $3); return_count--; binary_assign = 0; }
+    | lval_bassign MINUSASSIGN exp      { /* part 3 - R13 */ m3dprint("l_val -= exp", "-="); $$ = handle_assign_exp(0, $1, "-=", $3); return_count--; binary_assign = 0; }
+    | lval_bassign STARASSIGN exp       { /* part 3 - R13 */ m3dprint("l_val *= exp", "*="); $$ = handle_assign_exp(0, $1, "*=", $3); return_count--; binary_assign = 0; }
+    | lval_bassign SLASHASSIGN exp      { /* part 3 - R13 */ m3dprint("l_val /= exp", "/="); $$ = handle_assign_exp(0, $1, "/=", $3); return_count--; binary_assign = 0; }
     | INCR l_val %prec UINCR            { /* part 3 - R11 */ m3dprint("INCR l_val", "++"); $$ = handle_r11_exp("++", $2); }
     | DECR l_val %prec UDECR            { /* part 3 - R11 */ m3dprint("DECR l_val", "--"); $$ = handle_r11_exp("--", $2); }
     | l_val INCR %prec UINCR            { /* part 3 - R12 */ m3dprint("l_val INCR", "++"); $$ = handle_r12_exp($1, "++"); }
@@ -337,7 +344,10 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 
-lval_assign : l_val                     { binary_assign = 1; $$ = m4handle_lval($1); }
+lval_assign : l_val                     { return_count++; $$ = $1; }
+    ;
+
+lval_bassign : l_val                    { return_count++; binary_assign = 1; $$ = m4handle_lval($1); }
     ;
 
 exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }

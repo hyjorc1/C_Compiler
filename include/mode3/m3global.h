@@ -121,6 +121,7 @@ extern void print_err_func_sig(Function *f);
 
 /* ---------------- mode 4  --------------------- */
 extern char binary_assign;
+extern int return_count;
 
 extern void m4handle_arr_init(char *id, char *num);
 extern void m4handle_global_var(char *id);
@@ -139,7 +140,7 @@ extern void m4handle_real(char *val);
 extern void m4handle_str(char *val);
 extern void m4handle_char(char *val);
 
-extern void m4handle_assign_exp(char is_init, Type *lt, char *op, Type *res);
+extern void m4handle_assign_exp(Type *lt, char *op, Type *res);
 
 extern void m4handle_func_call_exp(Function *fn);
 extern void m4handle_root_exp_before();

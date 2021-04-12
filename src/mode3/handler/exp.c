@@ -228,7 +228,7 @@ Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
     } else if (is_type_N(lt) && is_type_N(rt) && widen_match_type(rt, lt)) {
         res = deep_copy_type_ast(lt);
         res->is_const = (rt->is_const && lt->is_const) ? 1 : 0;
-        m4handle_assign_exp(is_init, lt, op, res);
+        m4handle_assign_exp(lt, op, res);
     } else {
         char *lt_str = type_to_str(lt);
         char *rt_str = type_to_str(rt);
@@ -243,7 +243,6 @@ Type *handle_assign_exp(char is_init, Type *lt, char *op, Type *rt) {
     }
     free_type_ast(lt);
     free_type_ast(rt);
-    binary_assign = 0;
     return res;
 }
 
