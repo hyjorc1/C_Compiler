@@ -13,9 +13,9 @@ char *last_exp_inst = NULL; // track last exp instruction in methods
 
 int update_depth(int num) {
     if (cur_fn) {
-        cur_fn->depth += num;
-        if (cur_fn->depth > cur_fn->max)
-            cur_fn->max = cur_fn->depth;
+        cur_fn->stack_size += num;
+        if (cur_fn->stack_size > cur_fn->stack_max)
+            cur_fn->stack_max = cur_fn->stack_size;
     }
     return num;
 }

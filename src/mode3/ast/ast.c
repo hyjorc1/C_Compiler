@@ -161,8 +161,8 @@ Function *new_function_ast(Type *return_type, char *name, int lineno) {
     f->lineno = lineno;
 
     // mode 4
-    f->depth = 0;
-    f->max = 0;
+    f->stack_size = 0;
+    f->stack_max = 0;
     f->class_name = NULL;
     return f;
 }

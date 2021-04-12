@@ -79,7 +79,7 @@ void m4handle_func_def() {
     // second line
     int var_num = (cur_fn->parameters ? cur_fn->parameters->size : 0)
         + (cur_fn->local_vars ? cur_fn->local_vars->size : 0);
-    fprintf(dest, "    .code stack %d locals %d\n", cur_fn->max, var_num);
+    fprintf(dest, "    .code stack %d locals %d\n", cur_fn->stack_max, var_num);
 
     // copy exp instructions
     copy_files(dest, m4_exp_tmp_file);
@@ -113,7 +113,7 @@ void m4handle_exp_stmt() {
         return;
     print("m4hanlde_exp_stmt\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    while (cur_fn->depth > 0) {
+    while (cur_fn->stack_size > 0) {
         fprintf(f, "%spop ; depth %d\n", ident8, update_depth(-1));
     }
     fclose(f);

@@ -58,8 +58,8 @@ typedef struct {
     int lineno;
 
     // mode 4
-    int depth;
-    int max;
+    int stack_size;
+    int stack_max;
     char *class_name;
 } Function;
 

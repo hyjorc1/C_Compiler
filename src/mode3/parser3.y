@@ -287,10 +287,10 @@ do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_c
 cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
     ;
 
-root_exp : emp exp                      { m3dprint("root exp", ""); $$ = $2; }
+root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
     ;
 
-emp : %empty                            { m3dprint("root exp", ""); m4handle_root_exp_before(); }
+prev_root : %empty                      { m3dprint("root exp", ""); m4handle_root_exp_before(); }
     ;
 
 /* part 2 - 10. expression */
