@@ -61,7 +61,7 @@ void printusage() {
     fprintf(stderr, "\t-1: Mode 1\n");
     fprintf(stderr, "\t-2: Mode 2\n");
     fprintf(stderr, "\t-3: Mode 3\n");
-    fprintf(stderr, "\t-4: (not implemented yet)\n");
+    fprintf(stderr, "\t-4: Mode 4\n");
     fprintf(stderr, "\t-5: (not implemented yet)\n");
     fprintf(stderr, "\nValid options:\n");
     fprintf(stderr, "\t-o outfile: write to outfile instead of standard output\n");
@@ -70,8 +70,8 @@ void printusage() {
 void printversion() {
     fprintf(stdout, "My bare-bones C compiler (for COM 540)\n");
     fprintf(stdout, "\tWritten by Yijia Huang (hyj@iastate.edu)\n");
-    fprintf(stdout, "\tVersion 0.3\n");
-    fprintf(stdout, "\t23 Mar, 2021\n");
+    fprintf(stdout, "\tVersion 0.4\n");
+    fprintf(stdout, "\t12 Apr, 2021\n");
 }
 
 char *concat(char *s1, char *s2) {

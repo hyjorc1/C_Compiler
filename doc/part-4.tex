@@ -1,0 +1,18 @@
+\section*{PART 4}
+
+When executed with a mode of 4, your compiler should read the specified input file, and check it for correctness (including type checking) as done in part 3. If there are no errors, then your compiler should output an equivalent program in JVM instructions. This mode is implemented by extending mode 3. We utilized Bison post-order traversal to generate the Java assembly code in a incremental approach.
+
+\subsection*{1.1 \large\textbf{src/mode4}}
+\begin{enumerate}
+    
+    \item \textbf{mode4.c} contains the main program for mode 4 to process the input files and output results.
+
+    \item \textbf{util/handler.c} contains the implementation to generate the equivalent Java assembly program.
+
+    \item \textbf{util/m4global.c} contains the general utilities for mode 4.
+\end{enumerate}
+
+\subsection*{1.2 \large\textbf{include/mode4}}
+\begin{enumerate}
+    \item \textbf{m4global.h} contains local variables and methods designated for mode 4.
+\end{enumerate} 

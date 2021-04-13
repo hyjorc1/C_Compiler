@@ -6,7 +6,7 @@ This project is a C compiler implemented in C(clang 12.0.0), FLex(2.6.4), and GN
 
 2. `make clean` removes all generated files.
 
-3. `make test` tests mode (1 - 3). For testing mode X only then `make testX`.
+3. `make test` tests mode (1 - 4). For testing mode X only then `make testX`.
 
 NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.15.7).
 
@@ -31,7 +31,9 @@ NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.
    that the file has correct C syntax. If the input file is not syntactically correct, then display
    an appropriate error message. The implemented rules are [here](./doc/mode2.md).
 
-5. **[Mode 3](./doc/post-3.pdf)**: When executed with a mode of 3, the compiler should read the specified input file and check that the file has correct C syntax, and perform type checking on all expressions.
+5. **[Mode 3](./doc/post-3.pdf)**: When executed with a mode of 3, the compiler reads the specified input file and check that the file has correct C syntax, and perform type checking on all expressions.
+
+6. **[Mode 4](./doc/post-4.pdf)**: The compiler reads the specified input file and check it for correctness (including type checking) as done in mode 3. If there are no errors, then the compiler  output ans equivalent Java assembly code consists of JVM instructions.
 
 ## Note
 
