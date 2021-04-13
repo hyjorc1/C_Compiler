@@ -122,6 +122,8 @@ extern void print_err_func_sig(Function *f);
 /* ---------------- mode 4  --------------------- */
 extern char binary_assign;
 extern int return_count;
+extern const char *ident4;
+extern const char *ident8;
 
 extern void m4handle_arr_init(char *id, char *num);
 extern void m4handle_global_var(char *id);

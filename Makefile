@@ -161,6 +161,7 @@ SRC4	:= $(SRC)/mode4
 MODE4	:= $(SRC4)/mode4
 UTIL4   := $(patsubst %.c,%.o,$(wildcard $(SRC4)/util/*.c))
 OBJ4 	:= $(MODE4).o $(UTIL4)
+TMP4	:= m4_gvar_tmp_tmp m4_gvar_clinit_tmp m4_method_tmp_tmp m4_exp_tmp m4_stmt_tmp
 TEST4	:= test/Tests4
 TEST4CMD:= ./Run.sh mycc -s *.c
 
@@ -178,7 +179,7 @@ mode4: $(OBJ4)
 	@echo ''
 
 mode4-clean:
-	rm -rf $(OBJ4)
+	rm -rf $(OBJ4) $(TMP4)
 	@echo '=================== Cleaned Mode4 ====================='
 
 #=================================================================#

@@ -1,11 +1,11 @@
 #include "m4global.h"
 
 const char *m4_class_name = NULL;
-const char *m4_gvar_tmp_file = "mode4_gvar_tmp_tmp";
-const char *m4_gvar_clinit_tmp_file = "mode4_gvar_clinit_tmp";
-const char *m4_method_tmp_file = "mode4_method_tmp_tmp";
-const char *m4_exp_tmp_file = "mode4_exp_tmp";
-const char *m4_stmt_tmp_file = "mode4_stmt_tmp";
+const char *m4_gvar_tmp_file        = "m4_gvar_tmp_tmp";
+const char *m4_gvar_clinit_tmp_file = "m4_gvar_clinit_tmp";
+const char *m4_method_tmp_file      = "m4_method_tmp_tmp";
+const char *m4_exp_tmp_file         = "m4_exp_tmp";
+const char *m4_stmt_tmp_file        = "m4_stmt_tmp";
 const char *ident4 = "    ";
 const char *ident8 = "        ";
 

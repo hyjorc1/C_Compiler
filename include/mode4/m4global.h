@@ -11,8 +11,7 @@ extern const char *m4_method_tmp_file;
 extern const char *m4_exp_tmp_file;
 extern const char *m4_stmt_tmp_file;
 
-extern const char *ident4;
-extern const char *ident8;
+
 
 extern char *last_exp_inst;
 
