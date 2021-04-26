@@ -1,11 +1,12 @@
-all: link latex
+NAME := user4
 
-# ./$(EXE) -4 test1.c
+all: link
+	./$(EXE) -4 $(NAME).c
 
-# jassemble: link
-# 	./$(EXE) -4 -o test1.j test1.c
-# 	./test/Krakatau/assemble.py test1.j
-# 	java test1
+jassemble: link
+	./$(EXE) -4 -o $(NAME).j $(NAME).c
+	./test/Krakatau/assemble.py $(NAME).j
+	java $(NAME)
 
 .PHONY: clean
 clean: compiler-clean latex-clean
@@ -163,14 +164,20 @@ MODE4	:= $(SRC4)/mode4
 UTIL4   := $(patsubst %.c,%.o,$(wildcard $(SRC4)/util/*.c))
 OBJ4 	:= $(MODE4).o $(UTIL4)
 TMP4	:= m4_gvar_tmp_tmp m4_gvar_clinit_tmp m4_method_tmp_tmp m4_exp_tmp m4_stmt_tmp
-TEST4	:= test/Tests4
-TEST4CMD:= ./Run.sh mycc -s *.c
+TEST4	:= test/Grading4
+T4_OWN	:= test/Tests4
+T4_RUN	:= ./Run.sh mycc -s *.c
+T4_USR	:= ./CheckUser.sh mycc user*.c
+T4_JXP	:= ./CheckJexpr.sh mycc *.c
 
 test4: link mode4-test
 
 mode4-test:
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 4 Test @@@@@@@@@@@@@@@@@@@@@@@'
-	cp $(EXE) $(TEST4) && cd $(TEST4) && $(TEST4CMD) && rm $(EXE) && cd ../../
+	cp $(EXE) $(T4_OWN) && cd $(T4_OWN) && $(T4_RUN) && rm $(EXE) && cd ../../
+	cp $(EXE) $(TEST4) && cd $(TEST4) && $(T4_RUN) && rm $(EXE) && cd ../../
+	cp $(EXE) $(TEST4) && cd $(TEST4) && $(T4_USR) && rm $(EXE) && cd ../../
+# cp $(EXE) $(TEST4) && cd $(TEST4) && $(T4_JXP) && rm $(EXE) && cd ../../
 
 mode4: $(OBJ4)
 	@echo '========================================================'

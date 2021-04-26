@@ -139,7 +139,7 @@ void m4preprocess() {
     // add function int getchar()
     m3_global_funcs = list_new(sizeof(Function), free_function_ast);
     Function *getchar_fn = new_function_ast(new_type_ast(strdup(int_str), 0, 0, 0), strdup("getchar"), -1);
-    getchar_fn->is_proto = 0;
+    getchar_fn->is_proto = 1;
     getchar_fn->class_name = strdup("libc");
     list_add_last(m3_global_funcs, getchar_fn);
 
@@ -152,7 +152,7 @@ void m4preprocess() {
     putchar_fn->local_var_map = new_map();
     map_put(putchar_fn->local_var_map, v->name, t);
     free_type_ast(t);
-    putchar_fn->is_proto = 0;
+    putchar_fn->is_proto = 1;
     putchar_fn->class_name = strdup("libc");
     list_add_last(m3_global_funcs, putchar_fn);
 }

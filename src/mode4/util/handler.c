@@ -215,7 +215,8 @@ void m4handle_func_call_exp(Function *fn) {
         
     }
     int para_num = fn->parameters ? fn->parameters->size : 0;
-    int change = update_depth(-para_num) + update_depth(1);
+    int return_num = strcmp(fn->return_type->name, void_str) == 0 ? 0 : 1;
+    int change = update_depth(-para_num) + update_depth(return_num);
     char *return_type_str = to_ensembly_type_str(fn->return_type);
     fprintf(f, ")%s ; depth %d\n", return_type_str, change);
     free(return_type_str);
@@ -270,7 +271,6 @@ void m4handle_r11_exp(char *op, Type *t2) {
         char *dup_str = t2->array_access ? "dup_x2" : "dup";
         fprintf(f, "%s%s ; depth %d\n", ident8, dup_str, update_depth(1));
     }
-    
 
     m4store(f, t2);
     fclose(f);
