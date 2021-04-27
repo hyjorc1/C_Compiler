@@ -153,7 +153,7 @@ void print_err_func(Function *f) {
 }
 
 void m4return_warning() {
-    if (mode != 4)
+    if (mode < 4)
         return;
     m3warn();
     fprintf(stderr, "\tunsure if function %s returns a value\n", cur_fn->name);

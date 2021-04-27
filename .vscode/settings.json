@@ -31,6 +31,9 @@
         "iterator": "c",
         "limits": "c",
         "ratio": "c",
-        "utility": "c"
+        "utility": "c",
+        "cstdio": "c",
+        "cwchar": "c",
+        "vector": "c"
     }
 }

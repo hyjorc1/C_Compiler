@@ -3,7 +3,7 @@
 // JVM instructions - https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html
 
 void m4handle_arr_init(char *id, char *num) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_arr_init\n");
 
@@ -30,7 +30,7 @@ void m4handle_arr_init(char *id, char *num) {
 }
 
 void m4handle_global_var(char *id) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4_update_global_vars\n");
 
@@ -42,7 +42,7 @@ void m4handle_global_var(char *id) {
 }
 
 void m4handle_global_var_init(char *id) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_global_var_init\n");
 
@@ -53,7 +53,7 @@ void m4handle_global_var_init(char *id) {
 }
 
 void m4handle_func_def() {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_func_def\n");
 
@@ -98,7 +98,7 @@ void m4handle_func_def() {
 }
 
 void m4handle_return_stmt(Type *t) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_return_stmt\n");
 
@@ -109,7 +109,7 @@ void m4handle_return_stmt(Type *t) {
 }
 
 void m4handle_exp_stmt() {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4hanlde_exp_stmt\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -123,14 +123,14 @@ void m4handle_exp_stmt() {
 
 void m4handle_int(char *val) {
     print("m4handle_int\n");
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sldc %s ; depth %d\n", ident8, val, update_depth(1));
     fclose(f);
 }
 void m4handle_real(char *val) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sldc +%sf ; depth %d\n", ident8, val, update_depth(1));
@@ -138,7 +138,7 @@ void m4handle_real(char *val) {
 }
 
 void m4handle_str(char *val) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     FILE *f = get_file(m4_exp_tmp_file);
     int char_cnt = strlen(val) - 2;
@@ -149,7 +149,7 @@ void m4handle_str(char *val) {
 }
 
 void m4handle_char(char *val) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sbipush %d ; depth %d\n", ident8, val[1], update_depth(1));
@@ -172,7 +172,7 @@ void m4store(FILE *f, Type *lt) {
 }
 
 void m4handle_assign_exp(Type *lt, char *op, Type *res) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_assign_exp\n");
 
@@ -195,7 +195,7 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
 }
 
 void m4handle_func_call_exp(Function *fn) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_func_call_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -224,16 +224,16 @@ void m4handle_func_call_exp(Function *fn) {
 }
 
 void m4handle_root_exp_before() {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_root_exp_before\n");
     FILE *dest = get_file(m4_exp_tmp_file);
-    fprintf(dest, "%s;; %s %d expression\n", ident8, m4_class_name, m3lineno);
+    fprintf(dest, "%s;; %s %d expression\n", ident8, m3_cur_file_name, m3lineno);
     fclose(dest);
 }
 
 Type *m4handle_lval(Type *t) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return t;
     print("m4handle_lval\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -256,7 +256,7 @@ Type *m4handle_lval(Type *t) {
 }
 
 void m4handle_r11_exp(char *op, Type *t2) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_r12_exp\n");
     binary_assign = 1;
@@ -278,7 +278,7 @@ void m4handle_r11_exp(char *op, Type *t2) {
 }
 
 void m4handle_r12_exp(Type *t1, char *op) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_r12_exp\n");
     binary_assign = 1;
@@ -299,7 +299,7 @@ void m4handle_r12_exp(Type *t1, char *op) {
 }
 
 void m4handle_utilde() {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_utilde\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -309,7 +309,7 @@ void m4handle_utilde() {
 }
 
 void m4hanlde_uminus(Type *t) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_utilde\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -328,7 +328,7 @@ char m4cast_cond(Type *from, Type *to) {
 }
 
 void m4handle_cast_exp(Type *t1, Type *t2) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_cast_exp\n");
     if (m4cast_cond(t2, t1)) {
@@ -339,7 +339,7 @@ void m4handle_cast_exp(Type *t1, Type *t2) {
 }
 
 void m4handle_r8_exp(Type *t, char *op) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_r8_exp\n");
     char2int(t);
@@ -351,7 +351,7 @@ void m4handle_r8_exp(Type *t, char *op) {
 }
 
 void m4handle_r9_exp(Type *t, char *op) {
-    if (mode != 4 || m3_error)
+    if (mode < 4 || m3_error)
         return;
     print("m4handle_r9_exp\n");
     FILE *f = get_file(m4_exp_tmp_file);

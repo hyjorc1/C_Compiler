@@ -157,6 +157,25 @@ void m4preprocess() {
     list_add_last(m3_global_funcs, putchar_fn);
 }
 
+void m4process(char *argv[], int i) {
+    print("\nstart file %s\n", argv[i]);
+    FILE *f = fopen(argv[i], "r");
+    if (!f) {
+        perror(argv[i]);
+        return;
+    }
+
+    m3_cur_file_name = argv[i];
+    m4_class_name = substr(m3_cur_file_name, 0, strlen(m3_cur_file_name) - 2);
+    m3lineno = 1;
+    m3_error = 0;
+    m3_return_error = 0;
+
+    m3restart(f);
+    print("Parse return %d\n", m3parse());
+    fclose(f);
+}
+
 void m4postprocess() {
     postprocess();
     clear_tmp_files();

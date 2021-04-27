@@ -1,10 +1,10 @@
 NAME := user4
 
 all: link
-	./$(EXE) -4 $(NAME).c
+	./$(EXE) -5 $(NAME).c
 
 jassemble: link
-	./$(EXE) -4 -o $(NAME).j $(NAME).c
+	./$(EXE) -5 -o $(NAME).j $(NAME).c
 	./test/Krakatau/assemble.py $(NAME).j
 	java $(NAME)
 
@@ -36,7 +36,7 @@ INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
-OBJ 		= $(MAIN).o $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4)
+OBJ 		= $(MAIN).o $(OBJ1) $(OBJ2) $(OBJ3) $(OBJ4) $(OBJ5)
 
 link: mycc $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(EXE) $(OBJ)
@@ -46,9 +46,9 @@ link: mycc $(OBJ)
 	@echo ''
 	@echo ''
 
-mycc: $(MAIN).o mode1 mode2 mode3 mode4
+mycc: $(MAIN).o mode1 mode2 mode3 mode4 mode5
 
-compiler-clean: mode1-clean mode2-clean mode3-clean mode4-clean
+compiler-clean: mode1-clean mode2-clean mode3-clean mode4-clean mode5-clean
 	rm -rf $(MAIN).o $(EXE)
 	@echo '================= Cleaned Compiler ===================='
 
@@ -189,6 +189,35 @@ mode4: $(OBJ4)
 mode4-clean:
 	rm -rf $(OBJ4) $(TMP4)
 	@echo '=================== Cleaned Mode4 ====================='
+
+#=================================================================#
+#------------------------------ mode 5 ---------------------------#
+#=================================================================#
+SRC5	:= $(SRC)/mode5
+MODE5	:= $(SRC5)/mode5
+UTIL5   := $(patsubst %.c,%.o,$(wildcard $(SRC5)/util/*.c))
+OBJ5 	:= $(MODE5).o $(UTIL5)
+TEST5	:= test/Grading5
+
+test5: link mode5-test
+
+mode5-test:
+	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 5 Test @@@@@@@@@@@@@@@@@@@@@@@'
+# cp $(EXE) $(T5_OWN) && cd $(T5_OWN) && $(T5_RUN) && rm $(EXE) && cd ../../
+# cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_RUN) && rm $(EXE) && cd ../../
+# cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_USR) && rm $(EXE) && cd ../../
+# cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_JXP) && rm $(EXE) && cd ../../
+
+mode5: $(OBJ5)
+	@echo '========================================================'
+	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 5'
+	@echo '========================================================'
+	@echo ''
+	@echo ''
+
+mode5-clean:
+	rm -rf $(OBJ5) $(TMP5)
+	@echo '=================== Cleaned Mode5 ====================='
 
 #=================================================================#
 #----------------------- GNU auto variables ----------------------#

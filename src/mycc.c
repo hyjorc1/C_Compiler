@@ -36,8 +36,9 @@ int main(int argc, char *argv[]) {
         } else if (!strcmp(argv[1], "-4")) {
             mode = 4;
             mode4(argc, argv, fileIdx);
-        } else if (strlen(argv[1]) >= 2 && argv[1][1] >= '1' && argv[1][1] <= '5') {
-            fprintf(stderr, "The other modes are not implemented.\n");
+        } else if (!strcmp(argv[1], "-5")) {
+            mode = 5;
+            mode5(argc, argv, fileIdx);
         } else {
             printusage();
         }

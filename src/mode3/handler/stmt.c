@@ -26,7 +26,7 @@ void handle_return_stmt(Type *t) {
         fprintf(stderr, "\tReturn with a value (type was %s) in a %s function\n", type, return_type);
         m3_return_error = 1;
     } else if (!widen_match_type(t, cur_fn->return_type)) {
-        if (mode == 4 && widen_match_type(cur_fn->return_type, t)) {
+        if (mode >= 4 && widen_match_type(cur_fn->return_type, t)) {
             m4handle_cast_exp(cur_fn->return_type, t);
         } else {
             m3err();

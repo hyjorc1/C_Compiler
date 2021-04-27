@@ -28,5 +28,6 @@ extern void mode1(int argc, char *argv[], int fileIdx);
 extern void mode2(int argc, char *argv[], int fileIdx);
 extern void mode3(int argc, char *argv[], int fileIdx);
 extern void mode4(int argc, char *argv[], int fileIdx);
+extern void mode5(int argc, char *argv[], int fileIdx);
 
 #endif
