@@ -44,7 +44,6 @@ link: mycc $(OBJ)
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built mycc'
 	@echo '========================================================'
 	@echo ''
-	@echo ''
 
 mycc: $(MAIN).o mode1 mode2 mode3 mode4 mode5
 
@@ -70,6 +69,7 @@ TEST1	:= test/Grading1
 test1: link mode1-test
 
 mode1-test:
+	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 1 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST1) && cd $(TEST1) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
@@ -77,7 +77,6 @@ mode1: $(OBJ1)
 	@echo '========================================================'
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 1'
 	@echo '========================================================'
-	@echo ''
 	@echo ''
 
 $(LEX1).yy.c:
@@ -100,6 +99,7 @@ TEST2	:= test/Grading2
 test2: link mode2-test
 
 mode2-test:
+	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 2 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST2) && cd $(TEST2) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
@@ -107,7 +107,6 @@ mode2: $(OBJ2)
 	@echo '========================================================'
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 2'
 	@echo '========================================================'
-	@echo ''
 	@echo ''
 
 $(PASER2).tab.h $(PASER2).tab.c: $(PASER2).y
@@ -136,6 +135,7 @@ TEST3	:= test/Grading3
 test3: link mode3-test
 
 mode3-test:
+	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 3 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(TEST3) && cd $(TEST3) && $(TEST_CMD) && rm $(EXE) && cd ../../
 
@@ -143,7 +143,6 @@ mode3: $(OBJ3)
 	@echo '========================================================'
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 3'
 	@echo '========================================================'
-	@echo ''
 	@echo ''
 
 $(PASER3).tab.h $(PASER3).tab.c: $(PASER3).y
@@ -173,6 +172,7 @@ T4_JXP	:= ./CheckJexpr.sh mycc *.c
 test4: link mode4-test
 
 mode4-test:
+	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 4 Test @@@@@@@@@@@@@@@@@@@@@@@'
 	cp $(EXE) $(T4_OWN) && cd $(T4_OWN) && $(T4_RUN) && rm $(EXE) && cd ../../
 	cp $(EXE) $(TEST4) && cd $(TEST4) && $(T4_RUN) && rm $(EXE) && cd ../../
@@ -183,7 +183,6 @@ mode4: $(OBJ4)
 	@echo '========================================================'
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 4'
 	@echo '========================================================'
-	@echo ''
 	@echo ''
 
 mode4-clean:
@@ -202,6 +201,7 @@ TEST5	:= test/Grading5
 test5: link mode5-test
 
 mode5-test:
+	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 5 Test @@@@@@@@@@@@@@@@@@@@@@@'
 # cp $(EXE) $(T5_OWN) && cd $(T5_OWN) && $(T5_RUN) && rm $(EXE) && cd ../../
 # cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_RUN) && rm $(EXE) && cd ../../
@@ -212,7 +212,6 @@ mode5: $(OBJ5)
 	@echo '========================================================'
 	@echo '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Built Mode 5'
 	@echo '========================================================'
-	@echo ''
 	@echo ''
 
 mode5-clean:
