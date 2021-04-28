@@ -74,7 +74,7 @@ Type *handle_ubang(Type *t) {
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
         res->is_const = (t->is_const) ? 1 : 0;
-        m5handle_ubang(t);
+        m5handle_ubang(res, t);
     }
     free_type_ast(t);
     return res;
@@ -171,7 +171,7 @@ Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
         res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
-        m5hanlde_r10_exp(t1, op, t2);
+        m5hanlde_r10_exp(res, t1, op, t2);
     }
     free_type_ast(t1);
     free_type_ast(t2);
@@ -331,8 +331,9 @@ Type *handle_l_array_member(Type *st, char *m, Type *op) {
     return res;
 }
 
-void handle_cond_exp(char *msg, Type *t) {
+Type *handle_cond_exp(char *msg, Type *t) {
     print("handle_cond_exp\n");
+    Type *res = NULL;
     if (t == NULL) {
         // omit
     } else if (!is_type_N(t)) {
@@ -340,8 +341,10 @@ void handle_cond_exp(char *msg, Type *t) {
         m3err();
         fprintf(stderr, "\tCondition of %s has invalid type: %s\n", msg, type_str);
         free(type_str);
+    } else {
+        res = t;
     }
-    free(t);
+    return res;
 }
 
 void print_err_func_sig(Function *f) {

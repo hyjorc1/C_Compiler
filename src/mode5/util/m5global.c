@@ -1,6 +1,6 @@
 #include "m5global.h"
 
-void printInt(void *n) { 
+void print_int(void *n) { 
     printf("%d", *(int *)n); 
 }
 

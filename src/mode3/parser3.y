@@ -57,6 +57,7 @@ int instr_label = 0;
     Struct *st;
     Function *fn;
     List *l;
+    int num;
 }
 
 /* part 2 - 3. A type name is one of the simple types: void, char, int, float. */
@@ -97,6 +98,9 @@ int instr_label = 0;
 /* part 3 - exp returns type */
 %type <t> exp l_val cond_exp root_exp lval_assign lval_bassign array_ident gtype all_type
 %type <fn> func_decl func_proto func_def
+/* part 5 */
+%type <num> MK
+%type <t> if_cond cond_emp_exp while_cond do_cond
 
 %%
 
@@ -247,17 +251,16 @@ return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_re
 return_request : RETURN                 { return_count++; }
     ;
 
-if_stmt : if_cond block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""); }
-    | if_cond block_stmt ELSE block_stmt          { m3dprint("IF block_stmt ELSE block_stmt", ""); }
-    | if_cond block_stmt ELSE stmt                { m3dprint("IF block_stmt ELSE stmt", ""); }
-    
-    | if_cond stmt %prec WITHOUT_ELSE             { m3dprint("IF stmt", ""); }
-    | if_cond stmt ELSE block_stmt                { m3dprint("IF stmt ELSE block_stmt", ""); }
-    | if_cond stmt ELSE stmt                      { m3dprint("IF stmt ELSE stmt", ""); }
+if_stmt : if_cond MK stmts %prec WITHOUT_ELSE               { m3dprint("IF (cond){}", ""); /* m5handle_if($1, $2, $3); */ }
+    | if_cond MK block_stmt NL ELSE MK block_stmt           { m3dprint("IF (cond){} ELSE {}", ""); }
+    ;
+
+stmts : block_stmt                      
+    | stmt
     ;
 
 /* The expression inside an if condition is numerical. */
-if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); handle_cond_exp("if statement", $3); }
+if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = handle_cond_exp("if statement", $3); }
     ;
 
 for_stmt : FOR LPAR emp_exp SEMI cond_emp_exp SEMI emp_exp RPAR block_stmt { m3dprint("FOR block_stmt", ""); }
@@ -269,21 +272,21 @@ emp_exp : %empty                        { m3dprint("false emp_exp", ""); }
     ;
 
 cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); }
-    | cond_exp                          { m3dprint("true cond_emp_exp", ""); handle_cond_exp("for loop", $1); }
+    | cond_exp                          { m3dprint("true cond_emp_exp", ""); $$ = handle_cond_exp("for loop", $1); }
     ;
 
 while_stmt : while_cond block_stmt      { m3dprint("WHILE block_stmt", ""); }
     | while_cond stmt                   { m3dprint("WHILE stmt", ""); }
     ;
 
-while_cond : WHILE LPAR cond_exp RPAR   { m3dprint("WHILE stmt", ""); handle_cond_exp("while loop", $3); }
+while_cond : WHILE LPAR cond_exp RPAR   { m3dprint("WHILE stmt", ""); $$ = handle_cond_exp("while loop", $3); }
     ;
 
 do_stmt : DO block_stmt do_cond SEMI    { m3dprint("DO block_stmt WIHILE", ""); }
     | DO stmt do_cond SEMI              { m3dprint("DO stmt WIHILE", ""); }
     ;
 
-do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_cond_exp("do while loop", $3); }
+do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); $$ = handle_cond_exp("do while loop", $3); }
     ;
 
 /* part 3 - 2.3 The expression given for the condition 
@@ -346,6 +349,14 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
+    ;
+
+/* part 5 marker */
+MK : %empty                             { $$ = m5handle_label(); }
+    ;
+
+/* part 5 next list */
+NL : %empty                             {  }
     ;
 
 lval_assign : l_val                     { return_count++; $$ = $1; }

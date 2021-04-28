@@ -111,7 +111,7 @@ extern Type *handle_l_array_access(Type *t, Type *op);
 extern Type *handle_l_member(Type *mt, char *m);
 extern Type *handle_l_array_member(Type *st, char *m, Type *op);
 
-extern void handle_cond_exp(char *msg, Type *t);
+extern Type *handle_cond_exp(char *msg, Type *t);
 extern Type *handle_func_call_exp(char *id, List *arg_types);
 extern List *handle_single_type(Type *t);
 
@@ -164,8 +164,9 @@ extern int instr_line;
 extern int instr_label;
 
 /* ---------------- mode 5 exp functions --------------------- */
+extern int m5handle_label();
 extern Type *m5handle_cond_exp(Type *t);
-extern void m5handle_ubang(Type *t);
-extern void m5hanlde_r10_exp(Type *t1, char *op, Type *t2);
+extern void m5handle_ubang(Type *res, Type *t);
+extern void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2);
 
 #endif
