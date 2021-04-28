@@ -1,5 +1,15 @@
 #include "m5global.h"
 
+void printInt(void *n) { 
+    printf("%d", *(int *)n); 
+}
+
+int *new_int(int num) {
+    int *p = (int *)malloc(sizeof(int));
+    *p = num;
+    return p;
+}
+
 void m5preprocess() {
     m4preprocess();
 

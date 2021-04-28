@@ -6,6 +6,9 @@
 
 /* mode 5 utilties */
 
+extern void printInt(void *n);
+extern int *new_int(int num);
+
 extern void m5preprocess();
 extern void m5process(char *argv[], int i);
 extern void m5postprocess();
