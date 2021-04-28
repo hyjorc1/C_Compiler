@@ -37,9 +37,13 @@ const char *float_str = "float";
 const char *void_str = "void";
 const char *error_str = "error";
 
-/* binary operator */
+/* mode 4 */
 char binary_assign = 0;
 int return_count = 0;
+
+/* mode 5 */
+int instr_line = 0;
+int instr_label = 0;
 
 %}
 

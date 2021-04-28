@@ -28,12 +28,18 @@ void copy_files(FILE *dest, const char *src_file) {
         size_t len = 0;
         while(getline(&line, &len, src) != -1) {
             fprintf(dest, "%s", line);
+            // printf("'%s'\n", line);s
             free(last_exp_inst);
             last_exp_inst = strdup(line);
         }
         free(line);
         fclose(src);
         remove(src_file);
+
+        if (strcmp(src_file, m4_exp_tmp_file) == 0) {
+            instr_line = 0;
+            instr_label = 0;
+        }
     }
 }
 

@@ -159,4 +159,8 @@ extern void m4handle_cast_exp(Type *t1, Type *t2);
 extern void m4handle_r8_exp(Type *t, char *op);
 extern void m4handle_r9_exp(Type *t, char *op);
 
+/* ---------------- mode 5  --------------------- */
+extern int instr_line;
+extern int instr_label;
+
 #endif
