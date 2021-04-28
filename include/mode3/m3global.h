@@ -163,4 +163,9 @@ extern void m4handle_r9_exp(Type *t, char *op);
 extern int instr_line;
 extern int instr_label;
 
+/* ---------------- mode 5 exp functions --------------------- */
+extern Type *m5handle_cond_exp(Type *t);
+extern void m5handle_ubang(Type *t);
+extern void m5hanlde_r10_exp(Type *t1, char *op, Type *t2);
+
 #endif

@@ -74,6 +74,7 @@ Type *handle_ubang(Type *t) {
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
         res->is_const = (t->is_const) ? 1 : 0;
+        m5handle_ubang(t);
     }
     free_type_ast(t);
     return res;
@@ -170,6 +171,7 @@ Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
         res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
+        m5hanlde_r10_exp(t1, op, t2);
     }
     free_type_ast(t1);
     free_type_ast(t2);

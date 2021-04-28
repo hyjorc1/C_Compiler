@@ -260,16 +260,16 @@ if_stmt : if_cond block_stmt %prec WITHOUT_ELSE   { m3dprint("IF block_stmt", ""
 if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); handle_cond_exp("if statement", $3); }
     ;
 
-for_stmt : FOR LPAR bool_exp SEMI cond_bool_exp SEMI bool_exp RPAR block_stmt { m3dprint("FOR block_stmt", ""); }
-    | FOR LPAR bool_exp SEMI cond_bool_exp SEMI bool_exp RPAR stmt            { m3dprint("FOR stmt", ""); }
+for_stmt : FOR LPAR emp_exp SEMI cond_emp_exp SEMI emp_exp RPAR block_stmt { m3dprint("FOR block_stmt", ""); }
+    | FOR LPAR emp_exp SEMI cond_emp_exp SEMI emp_exp RPAR stmt            { m3dprint("FOR stmt", ""); }
     ;
 
-bool_exp : %empty                       { m3dprint("false bool_exp", ""); }
-    | exp                               { m3dprint("true bool_exp", ""); }
+emp_exp : %empty                        { m3dprint("false emp_exp", ""); }
+    | exp                               { m3dprint("true emp_exp", ""); }
     ;
 
-cond_bool_exp : %empty                  { m3dprint("false cond_bool_exp", ""); }
-    | cond_exp                          { m3dprint("true cond_bool_exp", ""); handle_cond_exp("for loop", $1); }
+cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); }
+    | cond_exp                          { m3dprint("true cond_emp_exp", ""); handle_cond_exp("for loop", $1); }
     ;
 
 while_stmt : while_cond block_stmt      { m3dprint("WHILE block_stmt", ""); }
@@ -288,7 +288,7 @@ do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_c
 
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
-cond_exp : exp                          { m3dprint("boolean exp", ""); $$ = $1; }
+cond_exp : exp                          { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
     ;
 
 root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
@@ -321,7 +321,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | l_val DECR %prec UDECR            { /* part 3 - R12 */ m3dprint("l_val DECR", "--"); $$ = handle_r12_exp($1, "--"); }
 
     /* part 2 - 12. Unary operators (for any expression) are: -, !, ~ */
-    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_ubang($2); }
+    | BANG cond_exp %prec UBANG         { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_ubang($2); }
     | TILDE exp %prec UTILDE            { /* part 3 - R2 */ m3dprint("UTILDE", "~"); $$ = handle_utilde($2); }
     | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); $$ = handle_uminus($2); }
 
@@ -339,8 +339,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | exp GE exp                        { /* part 3 - R10 */ m3dprint("GE", ">="); $$ = handle_r10_exp($1, ">=", $3); }
     | exp LT exp                        { /* part 3 - R10 */ m3dprint("LT", "<"); $$ = handle_r10_exp($1, "<", $3); }
     | exp LE exp                        { /* part 3 - R10 */ m3dprint("LE", "<="); $$ = handle_r10_exp($1, "<=", $3); }
-    | exp DPIPE exp                     { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_exp($1, "||", $3); }
-    | exp DAMP exp                      { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
+    | cond_exp DPIPE cond_exp           { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_exp($1, "||", $3); }
+    | cond_exp DAMP cond_exp            { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
     | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
