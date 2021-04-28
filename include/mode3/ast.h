@@ -1,7 +1,6 @@
 #ifndef AST_H
 #define AST_H
 
-#include "deque.h"
 #include "map.h"
 
 /* -------------------- Variable AST -------------------- */

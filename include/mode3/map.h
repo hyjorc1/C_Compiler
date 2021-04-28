@@ -1,7 +1,9 @@
 #ifndef MAP_H
 #define MAP_H
-/* -------------------- Type AST -------------------- */
 
+#include "deque.h"
+
+/* -------------------- Type AST -------------------- */
 typedef struct {
     char *name;
     char is_const;
@@ -13,6 +15,9 @@ typedef struct {
     char *id;
     int is_global;
     int array_access;
+    // mode 5
+    List *falselist;
+    List *truelist;
 } Type;
 
 Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);

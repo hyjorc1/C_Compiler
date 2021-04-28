@@ -284,7 +284,7 @@ do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); handle_c
 
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
-cond_exp : exp                          { m3dprint("cond exp", ""); $$ = $1; }
+cond_exp : exp                          { m3dprint("boolean exp", ""); $$ = $1; }
     ;
 
 root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }

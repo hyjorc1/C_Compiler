@@ -11,6 +11,10 @@ void m5print_bytecode_java_main() {
     printf(".end method\n");
 }
 
+void printInt(void *n) { 
+    printf("%d", *(int *)n); 
+}
+
 void mode5(int argc, char *argv[], int fileIdx) {
     for (int i = fileIdx; i < argc; i++) {
         m5preprocess();
@@ -26,4 +30,10 @@ void mode5(int argc, char *argv[], int fileIdx) {
 
         m5postprocess();
     }
+
+    // List *l = list_new(sizeof(int), free);
+    // list_add_last(l, 1);
+    // list_add_last(l, 2);
+    // list_print(l, printInt);
+    // list_destroy(l);
 }
