@@ -101,7 +101,7 @@ int instr_label = 0;
 /* part 5 */
 %type <num> MK
 %type <t> if_cond cond_emp_exp while_cond do_cond
-%type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts
+%type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts NL
 
 %%
 
@@ -253,8 +253,8 @@ return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_re
 return_request : RETURN                 { return_count++; }
     ;
 
-if_stmt : if_cond MK stmts %prec WITHOUT_ELSE               { m3dprint("IF (cond){}", ""); $$ = m5handle_if($1, $2, $3); }
-    | if_cond MK block_stmt NL ELSE MK block_stmt           { m3dprint("IF (cond){} ELSE {}", ""); $$ = NULL; }
+if_stmt : if_cond MK stmts %prec WITHOUT_ELSE   { m3dprint("IF (cond){}", ""); $$ = m5handle_if($1, $2, $3); }
+    | if_cond MK stmts ELSE NL MK stmts         { m3dprint("IF (cond){} ELSE {}", ""); $$ = m5handle_ifelse($1, $2, $3, $5, $6, $7); }
     ;
 
 stmts : block_stmt                      { $$ = $1; }           
@@ -358,7 +358,7 @@ MK : %empty                             { $$ = m5handle_label(); }
     ;
 
 /* part 5 next list */
-NL : %empty                             {  }
+NL : %empty                             { $$ = m5handle_next_line(); }
     ;
 
 lval_assign : l_val                     { return_count++; $$ = $1; }

@@ -24,5 +24,6 @@ void m5process(char *argv[], int i) {
 
 void m5postprocess() {
     m4postprocess();
-    
+
+    gotomap_free(gotomap);
 }

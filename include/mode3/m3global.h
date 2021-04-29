@@ -169,10 +169,13 @@ extern void backpatch(List *list, int label);
 
 
 /* ---------------- mode 5 stmt functions --------------------- */
-extern List *m5handle_if(Type *t, int label, List *list);
+extern List *m5handle_if(Type *b, int true_label, List *s_list);
+extern List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list, int false_label, List *false_list);
 
 /* ---------------- mode 5 exp functions --------------------- */
 extern int m5handle_label();
+extern List *m5handle_next_line();
+
 extern Type *m5handle_cond_exp(Type *t);
 extern void m5handle_ubang(Type *res, Type *t);
 extern void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2);

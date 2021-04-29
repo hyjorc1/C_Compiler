@@ -24,6 +24,8 @@ void backpatch(List *list, int label) {
 List *m5handle_if(Type *b, int true_label, List *s_list) {
     if (mode != 5)
         return NULL;
+    print("m5handle_if\n");
+
     backpatch(b->truelist, true_label);
     b->truelist = NULL;
     List *false_list = b->falselist;
@@ -31,6 +33,20 @@ List *m5handle_if(Type *b, int true_label, List *s_list) {
     list_merge(false_list, s_list);
     free_type_ast(b);
     return false_list;
+}
+
+List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list, int false_label, List *false_list) {
+    if (mode != 5)
+        return NULL;
+    print("m5handle_ifelse\n");
+
+    backpatch(b->truelist, true_label);
+    b->truelist = NULL;
+    backpatch(b->falselist, false_label);
+    b->falselist = NULL;
+    List *l = list_merge(list_merge(true_list, false_list), next_list);
+    free_type_ast(b);
+    return l;
 }
 
 int m5handle_label() {
@@ -41,6 +57,19 @@ int m5handle_label() {
     fprintf(f, "L%d:\n", instr_label++);
     fclose(f);
     return instr_label - 1;
+}
+
+List *m5handle_next_line() {
+    if (mode != 5)
+        return NULL;
+    print("m5handle_next_line\n");
+
+    FILE *f = get_file(m4_exp_tmp_file);
+    List *l = list_new(sizeof(int), free);
+    list_add_last(l, new_int(instr_line));
+    fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
+    fclose(f);
+    return l;
 }
 
 Type *m5handle_cond_exp(Type *t) {

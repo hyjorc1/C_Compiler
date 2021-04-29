@@ -52,6 +52,8 @@ void gotomap_remove(GotoMap* map, int key) {
 }
 
 void gotomap_free(GotoMap* map) {
+    if (map == NULL)
+        return;
     for (int i = 0; i < SIZE; i++) {
         GotoEntry *cur = map->data[i];
         while (cur != NULL) {
