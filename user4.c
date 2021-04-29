@@ -1,13 +1,9 @@
 
 
 int main() {
-    int i = 0;
-    if (i) {
-        if (i - 1) {
-            i = 2;
-        } else {
-            i = 4;
-        }
+    int i = 10;
+    while (i) {
+        i--;
     }
     putchar(i + 48);
     putchar(10);

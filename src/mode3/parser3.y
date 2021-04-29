@@ -100,7 +100,7 @@ int instr_label = 0;
 %type <fn> func_decl func_proto func_def
 /* part 5 */
 %type <num> MK
-%type <t> if_cond cond_emp_exp while_cond do_cond
+%type <t> if_cond cond_emp_exp do_cond while_cond
 %type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts NL
 
 %%
@@ -277,11 +277,10 @@ cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); }
     | cond_exp                          { m3dprint("true cond_emp_exp", ""); $$ = handle_cond_exp("for loop", $1); }
     ;
 
-while_stmt : while_cond block_stmt      { m3dprint("WHILE block_stmt", ""); }
-    | while_cond stmt                   { m3dprint("WHILE stmt", ""); }
+while_stmt : WHILE MK while_cond MK stmts      { m3dprint("WHILE block_stmt", ""); $$ = m5handle_while($2, $3, $4, $5); }
     ;
 
-while_cond : WHILE LPAR cond_exp RPAR   { m3dprint("WHILE stmt", ""); $$ = handle_cond_exp("while loop", $3); }
+while_cond : LPAR cond_exp RPAR         { $$ = handle_cond_exp("while loop", $2); };
     ;
 
 do_stmt : DO block_stmt do_cond SEMI    { m3dprint("DO block_stmt WIHILE", ""); }
