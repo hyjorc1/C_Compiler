@@ -2,6 +2,37 @@
 
 // JVM instructions - https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html
 
+void backpatch(List *list, int label) {
+    if (mode != 5 || list == NULL)
+        return;
+    print("backpath\n");
+    // list_print(list, print_int);
+    // printf("%d\n", label);
+
+    if (gotomap == NULL)
+        gotomap = new_gotomap();
+    ListNode *cur = list->first;
+    while (cur != NULL) {
+        int *line = (int *)cur->data;
+        gotomap_put(gotomap, *line, label);
+        cur = cur->next;
+    }
+    list_destroy(list);
+    // gotomap_print(gotomap);
+}
+
+List *m5handle_if(Type *b, int true_label, List *s_list) {
+    if (mode != 5)
+        return NULL;
+    backpatch(b->truelist, true_label);
+    b->truelist = NULL;
+    List *false_list = b->falselist;
+    b->falselist = NULL;
+    list_merge(false_list, s_list);
+    free_type_ast(b);
+    return false_list;
+}
+
 int m5handle_label() {
     if (mode != 5)
         return -1;
@@ -21,11 +52,11 @@ Type *m5handle_cond_exp(Type *t) {
 
     t->truelist = list_new(sizeof(int), free);
     list_add_last(t->truelist, new_int(instr_line));
-    fprintf(f, "%sifne _ ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(-1));
+    fprintf(f, "%sifne # ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(-1));
 
     t->falselist = list_new(sizeof(int), free);
     list_add_last(t->falselist, new_int(instr_line));
-    fprintf(f, "%sgoto _ ; instr_line %d depth 0\n", ident8, instr_line++);
+    fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
 
     fclose(f);
     return t;

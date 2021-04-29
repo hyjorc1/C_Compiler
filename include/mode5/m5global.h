@@ -2,7 +2,6 @@
 #define M5_GLOBAL_H
 
 #include "m4global.h"
-#include "goto_map.h"
 
 /* mode 5 utilties */
 

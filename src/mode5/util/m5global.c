@@ -1,5 +1,7 @@
 #include "m5global.h"
 
+GotoMap *gotomap = NULL;
+
 void print_int(void *n) { 
     printf("%d", *(int *)n); 
 }

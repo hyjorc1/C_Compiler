@@ -1,10 +1,12 @@
 
 
 int main() {
-    int i;
+    int i = 0;
     if (i) {
-        i = 1;
+        i = 2;
     }
     // i = 2;
+    putchar(i + 48);
+    putchar(10);
     return i;
 }

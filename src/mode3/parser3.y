@@ -101,6 +101,7 @@ int instr_label = 0;
 /* part 5 */
 %type <num> MK
 %type <t> if_cond cond_emp_exp while_cond do_cond
+%type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts
 
 %%
 
@@ -212,6 +213,7 @@ para : type IDENT                       { m3dprint("type IDENT", $2); handle_par
     statements, and a right brace. Note that this definition requires all variable 
     declarations to appear before statements. */
 func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   { m3dprint("func(){func_body}", ""); handle_func_def(); }
+    | func_decl LBRACE func_local_decls RBRACE   { m3dprint("func(){func_local_decls}", ""); handle_func_def(); }
     ;
 
 func_local_decls : %empty               { m3dprint("empty func_local_decls", ""); }
@@ -224,24 +226,24 @@ local_decl : var_decl                   { m3dprint("local var decl", ""); }
     ;
 
 /* part 2 - 8. A statement block is a left brace, a sequence of zero or more statements, and a right brace. */
-block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); }
+block_stmt : LBRACE stmt_list RBRACE    { m3dprint("{ stmt list }", ""); $$ = $2; }
+    | LBRACE RBRACE                     { m3dprint("{ empty }", ""); $$ = NULL; }
     ;
 
-stmt_list : %empty                      { m3dprint("empty stmt list", ""); }
-    | stmt_list stmt                    { m3dprint("stmt_list stmt", ""); }
-    | stmt                              { m3dprint("stmt", ""); }
+stmt_list : stmt_list MK stmt           { m3dprint("stmt list stmt", ""); $$ = $3; backpatch($1, $2); }
+    | stmt                              { m3dprint("stmt", ""); $$ = $1; }
     ;
 
 /* part 2 - 9. statement */
-stmt : SEMI                             { m3dprint("SEMI", ""); }
-    | root_exp SEMI                     { m3dprint("exp SEMI", ""); handle_exp_stmt($1); }
-    | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); }
-    | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); }
-    | return_stmt                       { m3dprint("return_stmt", ""); }
-    | if_stmt                           { m3dprint("if_stmt", ""); }
-    | for_stmt                          { m3dprint("for_stmt", ""); }
-    | while_stmt                        { m3dprint("while_stmt", ""); }
-    | do_stmt                           { m3dprint("do_stmt", ""); }
+stmt : SEMI                             { m3dprint("SEMI", ""); $$ = NULL; }
+    | root_exp SEMI                     { m3dprint("exp SEMI", ""); handle_exp_stmt($1); $$ = NULL; }
+    | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); $$ = NULL; }
+    | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); $$ = NULL; }
+    | return_stmt                       { m3dprint("return_stmt", ""); $$ = NULL; }
+    | if_stmt                           { m3dprint("if_stmt", ""); $$ = $1; }
+    | for_stmt                          { m3dprint("for_stmt", ""); $$ = $1; }
+    | while_stmt                        { m3dprint("while_stmt", ""); $$ = $1; }
+    | do_stmt                           { m3dprint("do_stmt", ""); $$ = $1; }
     ;
 
 return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
@@ -251,12 +253,12 @@ return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_re
 return_request : RETURN                 { return_count++; }
     ;
 
-if_stmt : if_cond MK stmts %prec WITHOUT_ELSE               { m3dprint("IF (cond){}", ""); /* m5handle_if($1, $2, $3); */ }
-    | if_cond MK block_stmt NL ELSE MK block_stmt           { m3dprint("IF (cond){} ELSE {}", ""); }
+if_stmt : if_cond MK stmts %prec WITHOUT_ELSE               { m3dprint("IF (cond){}", ""); $$ = m5handle_if($1, $2, $3); }
+    | if_cond MK block_stmt NL ELSE MK block_stmt           { m3dprint("IF (cond){} ELSE {}", ""); $$ = NULL; }
     ;
 
-stmts : block_stmt                      
-    | stmt
+stmts : block_stmt                      { $$ = $1; }           
+    | stmt                              { $$ = $1; }
     ;
 
 /* The expression inside an if condition is numerical. */

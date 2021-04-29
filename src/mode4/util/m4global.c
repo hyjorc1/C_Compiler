@@ -21,24 +21,49 @@ int update_depth(int num) {
 }
 
 void copy_files(FILE *dest, const char *src_file) {
-    if (file_exists(src_file)) {
-        FILE *src = fopen(src_file, "r");
-        // copy file line by line
-        char *line = NULL;
-        size_t len = 0;
-        while(getline(&line, &len, src) != -1) {
-            fprintf(dest, "%s", line);
-            // printf("'%s'\n", line);s
-            free(last_exp_inst);
-            last_exp_inst = strdup(line);
-        }
-        free(line);
-        fclose(src);
-        remove(src_file);
+    if (!file_exists(src_file))
+        return;
 
-        if (strcmp(src_file, m4_exp_tmp_file) == 0) {
-            instr_line = 0;
-            instr_label = 0;
+    FILE *src = fopen(src_file, "r");
+    // copy file line by line
+    char *line = NULL;
+    size_t len = 0;
+    int line_no = -1;
+    while(getline(&line, &len, src) != -1) {
+        char update_got = 0;
+        if (mode == 5 && line[0] != 'L' && line[9] != ';') {
+            line_no++;
+            if (gotomap && gotomap_get(gotomap, line_no) != -1) {
+                // printf("'%s'\n", line);
+                // printf("goto line size %lu %lu \n", strlen(line), len);
+                int size = strlen(line), label = gotomap_get(gotomap, line_no);
+                for (char *p = line; size > 0; size--, p++) {
+                    if (p[0] == '#') {
+                        fprintf(dest, "L%d", label);
+                    } else {
+                        fprintf(dest, "%c", p[0]);
+                    }
+                }
+                update_got = 1;
+            }
+        }
+        if (!update_got)
+            fprintf(dest, "%s", line);
+        // printf("'%s'\n", line);
+        free(last_exp_inst);
+        last_exp_inst = strdup(line);
+    }
+    free(line);
+    fclose(src);
+    remove(src_file);
+
+    if (strcmp(src_file, m4_exp_tmp_file) == 0) {
+        instr_line = 0;
+        instr_label = 0;
+        if (gotomap != NULL) {
+            print("free gotomap\n");
+            gotomap_free(gotomap);
+            gotomap = NULL;
         }
     }
 }

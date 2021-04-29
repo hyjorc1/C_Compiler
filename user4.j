@@ -19,15 +19,32 @@
 ; Methods
 
 .method public static main : ()I
-    .code stack 1 locals 2
-        bipush 48 ; instr_line 0 depth 1
-        istore 0 ; store to c instr_line 1 depth -1
-        ;; user4.c 19 expression
-        iload 0 ; load from c instr_line 2 depth 1
-        istore 1 ; store to x instr_line 3 depth -1
-        ;; user4.c 20 expression
-        iload 0 ; load from c instr_line 4 depth 1
-        ireturn ; instr_line 5 depth -1
+    .code stack 2 locals 1
+        ldc 0 ; instr_line 0 depth 1
+        istore 0 ; store to i instr_line 1 depth -1
+        iload 0 ; load from i instr_line 2 depth 1
+        ifne L0 ; instr_line 3 depth -1
+        goto L1 ; instr_line 4 depth 0
+L0:
+        ;; user4.c 6 expression
+        ldc 2 ; instr_line 5 depth 1
+        istore 0 ; store to i instr_line 6 depth -1
+L1:
+        ;; user4.c 9 expression
+        iload 0 ; load from i instr_line 7 depth 1
+        ldc 48 ; instr_line 8 depth 1
+        iadd ; instr_line 9 depth -1
+        invokestatic Method libc putchar (I)I ; instr_line 10 depth 0
+        pop ; instr_line 11 depth -1
+L2:
+        ;; user4.c 10 expression
+        ldc 10 ; instr_line 12 depth 1
+        invokestatic Method libc putchar (I)I ; instr_line 13 depth 0
+        pop ; instr_line 14 depth -1
+L3:
+        ;; user4.c 11 expression
+        iload 0 ; load from i instr_line 15 depth 1
+        ireturn ; instr_line 16 depth -1
     .end code
 .end method
 

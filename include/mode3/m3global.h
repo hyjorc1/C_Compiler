@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "ast.h"
+#include "goto_map.h"
 
 /* interface to the lexer with prefix 'm3' */
 extern char *m3text;
@@ -162,6 +163,13 @@ extern void m4handle_r9_exp(Type *t, char *op);
 /* ---------------- mode 5  --------------------- */
 extern int instr_line;
 extern int instr_label;
+extern GotoMap *gotomap;
+
+extern void backpatch(List *list, int label);
+
+
+/* ---------------- mode 5 stmt functions --------------------- */
+extern List *m5handle_if(Type *t, int label, List *list);
 
 /* ---------------- mode 5 exp functions --------------------- */
 extern int m5handle_label();
