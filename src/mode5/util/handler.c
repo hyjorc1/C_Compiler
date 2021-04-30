@@ -49,7 +49,7 @@ List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list,
     return l;
 }
 
-List *m5handle_while(int while_label, Type *b, int do_label, List *s_list) {
+List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
     if (mode != 5)
         return NULL;
     print("m5handle_while\n");
@@ -59,24 +59,24 @@ List *m5handle_while(int while_label, Type *b, int do_label, List *s_list) {
     List *l = b->falselist;
     b->falselist = NULL;
 
-    backpatch(s_list, while_label);
+    backpatch(s_list, cond_label);
 
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, while_label, instr_line++);
+    fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, cond_label, instr_line++);
     fclose(f);
 
     free_type_ast(b);
     return l;
 }
 
-List *m5handle_do(int do_label, List *s_list, int while_label, Type *b) {
+List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b) {
     if (mode != 5)
         return NULL;
     print("m5handle_do\n");
 
     backpatch(b->truelist, do_label);
     b->truelist = NULL;
-    backpatch(s_list, while_label);
+    backpatch(s_list, cond_label);
 
     List *l = b->falselist;
     b->falselist = NULL;
