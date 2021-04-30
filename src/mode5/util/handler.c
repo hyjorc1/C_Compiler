@@ -67,6 +67,43 @@ List *m5handle_while(int while_label, Type *b, int do_label, List *s_list) {
     return l;
 }
 
+List *m5handle_do(int do_label, List *s_list, int while_label, Type *b) {
+    if (mode != 5)
+        return NULL;
+    print("m5handle_do\n");
+
+    backpatch(b->truelist, do_label);
+    b->truelist = NULL;
+    backpatch(s_list, while_label);
+
+    List *l = b->falselist;
+    b->falselist = NULL;
+
+    free_type_ast(b);
+    return l;
+}
+
+List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int stmt_label, List *s_list) {
+    if (mode != 5)
+        return NULL;
+    print("m5handle_for\n");
+
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, post_label, instr_line++);
+    fclose(f);
+
+    backpatch(next_list, cond_label);
+
+    backpatch(b->truelist, stmt_label);
+    b->truelist = NULL;
+
+    List *l = b->falselist;
+    b->falselist = NULL;
+
+    free_type_ast(b);
+    return l;
+}
+
 int m5handle_label() {
     if (mode != 5)
         return -1;

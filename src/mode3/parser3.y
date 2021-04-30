@@ -100,7 +100,7 @@ int instr_label = 0;
 %type <fn> func_decl func_proto func_def
 /* part 5 */
 %type <num> MK
-%type <t> if_cond cond_emp_exp do_cond while_cond
+%type <t> if_cond cond_emp_exp emp_exp do_cond while_cond 
 %type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts NL
 
 %%
@@ -265,15 +265,15 @@ stmts : block_stmt                      { $$ = $1; }
 if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = handle_cond_exp("if statement", $3); }
     ;
 
-for_stmt : FOR LPAR emp_exp SEMI cond_emp_exp SEMI emp_exp RPAR block_stmt { m3dprint("FOR block_stmt", ""); }
-    | FOR LPAR emp_exp SEMI cond_emp_exp SEMI emp_exp RPAR stmt            { m3dprint("FOR stmt", ""); }
+for_stmt : FOR LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
+                                        { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13);  }
     ;
 
-emp_exp : %empty                        { m3dprint("false emp_exp", ""); }
-    | exp                               { m3dprint("true emp_exp", ""); }
+emp_exp : %empty                        { m3dprint("false emp_exp", ""); $$ = NULL; }
+    | exp                               { m3dprint("true emp_exp", ""); $$ = $1; }
     ;
 
-cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); }
+cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); $$ = NULL; }
     | cond_exp                          { m3dprint("true cond_emp_exp", ""); $$ = handle_cond_exp("for loop", $1); }
     ;
 
@@ -283,11 +283,10 @@ while_stmt : WHILE MK while_cond MK stmts      { m3dprint("WHILE block_stmt", ""
 while_cond : LPAR cond_exp RPAR         { $$ = handle_cond_exp("while loop", $2); };
     ;
 
-do_stmt : DO block_stmt do_cond SEMI    { m3dprint("DO block_stmt WIHILE", ""); }
-    | DO stmt do_cond SEMI              { m3dprint("DO stmt WIHILE", ""); }
+do_stmt : DO MK stmts WHILE MK do_cond SEMI   { m3dprint("do{}while(cond)", ""); $$ = m5handle_do($2, $3, $5, $6); }
     ;
 
-do_cond : WHILE LPAR cond_exp RPAR      { m3dprint("Do condition", ""); $$ = handle_cond_exp("do while loop", $3); }
+do_cond : LPAR cond_exp RPAR            { m3dprint("do condition", ""); $$ = handle_cond_exp("do while loop", $2); }
     ;
 
 /* part 3 - 2.3 The expression given for the condition 
