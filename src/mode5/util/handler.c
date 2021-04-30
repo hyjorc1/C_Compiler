@@ -165,3 +165,17 @@ void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2) {
     print("m5handle_ubang\n");
 
 }
+
+void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label) {
+    if (mode != 5)
+        return;
+    print("m5handle_ternary_exp\n");
+
+    backpatch(b->truelist, true_label);
+    b->truelist = NULL;
+    backpatch(b->falselist, false_label);
+    b->falselist = NULL;
+    backpatch(true_next, end_label);
+
+    update_depth(-1);
+}

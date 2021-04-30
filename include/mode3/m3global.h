@@ -97,7 +97,7 @@ extern void handle_exp_stmt(Type *t);
 extern void handle_return_stmt(Type *t);
 
 /* expression handlers */
-extern Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3);
+extern Type *handle_ternary_exp(Type *t1, int true_label, Type *t2, List *true_next, int false_label, Type *t3, int end_label);
 extern Type *handle_utilde(Type *t);
 extern Type *handle_uminus(Type *t);
 extern Type *handle_ubang(Type *t);
@@ -182,5 +182,7 @@ extern List *m5handle_next_line();
 extern Type *m5handle_cond_exp(Type *t);
 extern void m5handle_ubang(Type *res, Type *t);
 extern void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2);
+
+extern void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label);
 
 #endif

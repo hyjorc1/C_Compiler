@@ -1,7 +1,7 @@
 #include "m3global.h"
 
 /* R1: N ? T : T -> T */
-Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3) {
+Type *handle_ternary_exp(Type *t1, int true_label, Type *t2, List *true_next, int false_label, Type *t3, int end_label) {
     Type *res = NULL;
     if (t1 == NULL || t2 == NULL || t3 == NULL) {
         // omit
@@ -18,6 +18,7 @@ Type *handle_ternary_exp(Type *t1, Type *t2, Type *t3) {
         res = widen_match_type(t2, t3) ? deep_copy_type_ast(t3) : deep_copy_type_ast(t2);
         if (t1->is_const && t2->is_const && t3->is_const)
             res->is_const = 1;
+        m5handle_ternary_exp(t1, true_label, true_next, false_label, end_label);
     }
     free_type_ast(t1);
     free_type_ast(t2);

@@ -346,7 +346,8 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | cond_exp DAMP cond_exp            { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
-    | cond_exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
+    | cond_exp QUEST MK exp NL COLON MK exp MK           
+                                        { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $4, $5, $7, $8, $9); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;

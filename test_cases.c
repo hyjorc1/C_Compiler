@@ -53,3 +53,11 @@ void for_stmt() {
     putchar(10);
 }
 
+void ternary_exp() {
+    int i = 0 ? 2 : (0 ? 3 : 4); // 4
+    int j = 1 ? (1 ? 2 : 0) : 3; // 2
+    putchar(i + j + 48); // 6
+    putchar(10);
+}
+
+
