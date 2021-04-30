@@ -59,6 +59,8 @@ List *m5handle_while(int while_label, Type *b, int do_label, List *s_list) {
     List *l = b->falselist;
     b->falselist = NULL;
 
+    backpatch(s_list, while_label);
+
     FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, while_label, instr_line++);
     fclose(f);
@@ -87,6 +89,8 @@ List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int
     if (mode != 5)
         return NULL;
     print("m5handle_for\n");
+
+    backpatch(s_list, post_label);
 
     FILE *f = get_file(m4_exp_tmp_file);
     fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, post_label, instr_line++);

@@ -24,12 +24,12 @@ void if_else_stmt() {
 }
 
 void while_stmt() {
-    int i = 3, j = 0;
+    int i = 4, j = 0;
     while (i) {
         i--;
         j++;
     }
-    putchar(j + 48); // 3
+    putchar(j + 48); // 4
     putchar(10);
 }
 
@@ -45,11 +45,11 @@ void do_stmt() {
 
 void for_stmt() {
     int i, j = 0;
-    for (i = 3; i; i--) {
+    for (i = 5; i; i--) {
         j++;
     }
     
-    putchar(j + 48); // 3
+    putchar(j + 48); // 5
     putchar(10);
 }
 

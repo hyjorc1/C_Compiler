@@ -266,7 +266,7 @@ if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = han
     ;
 
 for_stmt : FOR LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
-                                        { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13);  }
+                                        { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13); }
     ;
 
 emp_exp : %empty                        { m3dprint("false emp_exp", ""); $$ = NULL; }
@@ -346,7 +346,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | cond_exp DAMP cond_exp            { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
-    | exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
+    | cond_exp QUEST exp COLON exp           { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $5); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;

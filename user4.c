@@ -1,8 +1,8 @@
 
 
 int main() {
-    int i = 0;
-    return i;
+
+    return 0;
 }
 
 
