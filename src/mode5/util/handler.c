@@ -3,7 +3,7 @@
 // JVM instructions - https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html
 
 void backpatch(List *list, int label) {
-    if (mode != 5 || list == NULL)
+    if (mode != 5 || list == NULL || m3_error)
         return;
     print("backpath\n");
     // list_print(list, print_int);
@@ -22,7 +22,7 @@ void backpatch(List *list, int label) {
 }
 
 void m5handle_loop() {
-    if (mode != 5 || !cur_fn)
+    if (mode != 5 || !cur_fn || m3_error)
         return;
     print("m5handle_loop\n");
 
@@ -36,7 +36,7 @@ void m5handle_loop() {
 }
 
 List *m5handle_if(Type *b, int true_label, List *s_list) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_if\n");
 
@@ -50,7 +50,7 @@ List *m5handle_if(Type *b, int true_label, List *s_list) {
 }
 
 List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list, int false_label, List *false_list) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_ifelse\n");
 
@@ -63,19 +63,8 @@ List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list,
     return l;
 }
 
-void update_breaks(List *next_list) {
-    List *break_list = (List *)list_remove_last(cur_fn->breaks);
-    ListNode *cur_break = break_list->first;
-    while (cur_break != NULL) {
-        int line = *(int *)(cur_break->data);
-        list_add_last(next_list, new_int(line));
-        cur_break = cur_break->next;
-    }
-    list_destroy(break_list);
-}
-
 List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_while\n");
 
@@ -91,13 +80,14 @@ List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
     fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, cond_label, instr_line++);
     fclose(f);
 
-    update_breaks(l);
+    l = list_merge(l, (List *)list_remove_last(cur_fn->breaks)); // update breaks
+    backpatch((List *)list_remove_last(cur_fn->continues), cond_label); // update continues
         
     return l;
 }
 
 List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_do\n");
 
@@ -109,13 +99,14 @@ List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b) {
     b->falselist = NULL;
     free_type_ast(b);
 
-    update_breaks(l);
+    l = list_merge(l, (List *)list_remove_last(cur_fn->breaks)); // update breaks
+    backpatch((List *)list_remove_last(cur_fn->continues), cond_label); // update continues
     
     return l;
 }
 
 List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int stmt_label, List *s_list) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_for\n");
 
@@ -133,13 +124,14 @@ List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int
     b->falselist = NULL;
     free_type_ast(b);
 
-    update_breaks(l);
+    l = list_merge(l, (List *)list_remove_last(cur_fn->breaks)); // update breaks
+    backpatch((List *)list_remove_last(cur_fn->continues), post_label); // update continues
 
     return l;
 }
 
 void m5handle_break() {
-    if (mode != 5 || !cur_fn)
+    if (mode != 5 || !cur_fn || m3_error)
         return;
     print("m5handle_break\n");
 
@@ -157,8 +149,27 @@ void m5handle_break() {
     fclose(f);
 }
 
+void m5handle_continue() {
+    if (mode != 5 || !cur_fn || m3_error)
+        return;
+    print("m5handle_continue\n");
+
+    if (cur_fn->continues == NULL || cur_fn->continues->size == 0) {
+        m3err();
+        fprintf(stderr, "\tNo enclosing loop found for the continue statement at %d\n", m3lineno);
+        return;
+    }
+
+    List *cont_list = (List *)cur_fn->continues->last->data;
+    list_add_last(cont_list, new_int(instr_line));
+
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
+    fclose(f);
+}
+
 int m5handle_label() {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return -1;
     print("m5handle_label\n");
     FILE *f = get_file(m4_exp_tmp_file);
@@ -168,7 +179,7 @@ int m5handle_label() {
 }
 
 List *m5handle_next_line() {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return NULL;
     print("m5handle_next_line\n");
 
@@ -182,7 +193,7 @@ List *m5handle_next_line() {
 }
 
 Type *m5handle_cond_exp(Type *t) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return t;
     print("m5handle_cond_exp\n");
 
@@ -201,7 +212,7 @@ Type *m5handle_cond_exp(Type *t) {
 }
 
 void m5handle_ubang(Type *res, Type *t) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return;
     print("m5handle_ubang\n");
 
@@ -209,14 +220,14 @@ void m5handle_ubang(Type *res, Type *t) {
 }
 
 void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return;
     print("m5handle_ubang\n");
 
 }
 
 void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label) {
-    if (mode != 5)
+    if (mode != 5 || m3_error)
         return;
     print("m5handle_ternary_exp\n");
 

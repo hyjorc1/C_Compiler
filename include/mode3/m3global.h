@@ -176,6 +176,7 @@ extern List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list)
 extern List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b);
 extern List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int stmt_label, List *s_list);
 extern void m5handle_break();
+extern void m5handle_continue();
 
 /* ---------------- mode 5 exp functions --------------------- */
 extern int m5handle_label();

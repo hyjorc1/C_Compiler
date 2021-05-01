@@ -106,3 +106,36 @@ void break_stmt3() {
     putchar(10);
 }
 
+void continue_stmt1() {
+    int i = 3;
+    while (i) {
+        i--;
+        continue;
+        i = 1;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
+void continue_stmt2() {
+    int i = 3;
+    do {
+        i--;
+        continue;
+        i = 1;
+    } while (i);
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
+void continue_stmt3() {
+    int i;
+    for (i = 3; i; i--) {
+        continue;
+        i = 2;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+    return 0;
+}
+
