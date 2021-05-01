@@ -1,12 +1,11 @@
 
 
 int main() {
-    int i;
-    for (i = 3; i; i--) {
-        continue;
-        i = 2;
+    int i = 1;
+    if (i < 1) {
+        i = 3;
     }
-    putchar(i + 48); // 0
+    putchar(i + 48); // 1
     putchar(10);
     return 0;
 }

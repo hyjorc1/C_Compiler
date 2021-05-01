@@ -139,3 +139,59 @@ void continue_stmt3() {
     return 0;
 }
 
+void cmp_exp1() {
+    int i = 0;
+    if (i == 0) {
+        i = 3;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+}
+
+void cmp_exp2() {
+    int i = 0;
+    if (i != 0) {
+        i = 3;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
+void cmp_exp3() {
+    int i = 1;
+    if (i >= 0) {
+        i = 3;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+}
+
+void cmp_exp4() {
+    int i = 1;
+    if (i > 1) {
+        i = 3;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
+void cmp_exp5() {
+    int i = 1;
+    if (i <= 0) {
+        i = 3;
+    }
+    putchar(i + 48); // 1
+    putchar(10);
+}
+
+void cmp_exp6() {
+    int i = 1;
+    if (i < 1) {
+        i = 3;
+    }
+    putchar(i + 48); // 1
+    putchar(10);
+}
+
+
+

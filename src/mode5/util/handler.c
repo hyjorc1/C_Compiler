@@ -192,22 +192,41 @@ List *m5handle_next_line() {
     return l;
 }
 
-Type *m5handle_cond_exp(Type *t) {
-    if (mode != 5 || m3_error)
-        return t;
-    print("m5handle_cond_exp\n");
-
+void update_tf_lists(Type *t, char *op, int depth) {
     FILE *f = get_file(m4_exp_tmp_file);
 
     t->truelist = list_new(sizeof(int), free);
     list_add_last(t->truelist, new_int(instr_line));
-    fprintf(f, "%sifne # ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(-1));
+    fprintf(f, "%sif%s # ; instr_line %d depth %d\n", ident8, op, instr_line++, depth);
 
     t->falselist = list_new(sizeof(int), free);
     list_add_last(t->falselist, new_int(instr_line));
     fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
 
     fclose(f);
+}
+
+Type *m5handle_cond_exp(Type *t) {
+    if (mode != 5 || m3_error)
+        return t;
+    print("m5handle_cond_exp\n");
+
+    // FILE *f = get_file(m4_exp_tmp_file);
+
+    // t->truelist = list_new(sizeof(int), free);
+    // list_add_last(t->truelist, new_int(instr_line));
+    // fprintf(f, "%sifne # ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(-1));
+
+    // t->falselist = list_new(sizeof(int), free);
+    // list_add_last(t->falselist, new_int(instr_line));
+    // fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
+
+    // fclose(f);
+
+    if (!t->is_comp) {
+        update_tf_lists(t, "ne", update_depth(-1));
+    }
+    
     return t;
 }
 
@@ -216,7 +235,25 @@ void m5handle_ubang(Type *res, Type *t) {
         return;
     print("m5handle_ubang\n");
 
+    res->truelist = t->falselist;
+    res->falselist = t->truelist;
+}
 
+char *convert_op(char *op) {
+    if (strcmp(op, "==") == 0) {
+        return "_icmpeq";
+    } else if (strcmp(op, "!=") == 0) {
+        return "_icmpne";
+    } else if (strcmp(op, ">=") == 0) {
+        return "_icmpge";
+    } else if (strcmp(op, ">") == 0) {
+        return "_icmpgt";
+    } else if (strcmp(op, "<=") == 0) {
+        return "_icmple";
+    } else if (strcmp(op, "<") == 0) {
+        return "_icmplt";
+    }
+    return "error";
 }
 
 void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2) {
@@ -224,6 +261,14 @@ void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2) {
         return;
     print("m5handle_ubang\n");
 
+    if (strcmp(op, "||") == 0) {
+
+    } else if (strcmp(op, "&&") == 0) {
+
+    } else {
+        update_tf_lists(res, convert_op(op), update_depth(-2));
+    }
+    res->is_comp = 1;
 }
 
 void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label) {
