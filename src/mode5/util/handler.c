@@ -21,6 +21,20 @@ void backpatch(List *list, int label) {
     // gotomap_print(gotomap);
 }
 
+void m5handle_loop() {
+    if (mode != 5 || !cur_fn)
+        return;
+    print("m5handle_loop\n");
+
+    if (!(cur_fn->breaks))
+        cur_fn->breaks = list_new(sizeof(List), list_destroy_void);
+    if (!(cur_fn->continues))
+        cur_fn->continues = list_new(sizeof(List), list_destroy_void);
+
+    list_add_last(cur_fn->breaks, list_new(sizeof(int), free));
+    list_add_last(cur_fn->continues, list_new(sizeof(int), free));
+}
+
 List *m5handle_if(Type *b, int true_label, List *s_list) {
     if (mode != 5)
         return NULL;
@@ -49,6 +63,17 @@ List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list,
     return l;
 }
 
+void update_breaks(List *next_list) {
+    List *break_list = (List *)list_remove_last(cur_fn->breaks);
+    ListNode *cur_break = break_list->first;
+    while (cur_break != NULL) {
+        int line = *(int *)(cur_break->data);
+        list_add_last(next_list, new_int(line));
+        cur_break = cur_break->next;
+    }
+    list_destroy(break_list);
+}
+
 List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
     if (mode != 5)
         return NULL;
@@ -58,6 +83,7 @@ List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
     b->truelist = NULL;
     List *l = b->falselist;
     b->falselist = NULL;
+    free_type_ast(b);
 
     backpatch(s_list, cond_label);
 
@@ -65,7 +91,8 @@ List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list) {
     fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, cond_label, instr_line++);
     fclose(f);
 
-    free_type_ast(b);
+    update_breaks(l);
+        
     return l;
 }
 
@@ -74,14 +101,16 @@ List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b) {
         return NULL;
     print("m5handle_do\n");
 
-    backpatch(b->truelist, do_label);
-    b->truelist = NULL;
     backpatch(s_list, cond_label);
 
+    backpatch(b->truelist, do_label);
+    b->truelist = NULL;
     List *l = b->falselist;
     b->falselist = NULL;
-
     free_type_ast(b);
+
+    update_breaks(l);
+    
     return l;
 }
 
@@ -100,12 +129,32 @@ List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int
 
     backpatch(b->truelist, stmt_label);
     b->truelist = NULL;
-
     List *l = b->falselist;
     b->falselist = NULL;
-
     free_type_ast(b);
+
+    update_breaks(l);
+
     return l;
+}
+
+void m5handle_break() {
+    if (mode != 5 || !cur_fn)
+        return;
+    print("m5handle_break\n");
+
+    if (cur_fn->breaks == NULL || cur_fn->breaks->size == 0) {
+        m3err();
+        fprintf(stderr, "\tNo enclosing loop found for the break statement at %d\n", m3lineno);
+        return;
+    }
+
+    List *break_list = (List *)cur_fn->breaks->last->data;
+    list_add_last(break_list, new_int(instr_line));
+
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
+    fclose(f);
 }
 
 int m5handle_label() {

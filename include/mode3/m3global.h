@@ -167,6 +167,7 @@ extern GotoMap *gotomap;
 
 extern void backpatch(List *list, int label);
 
+extern void m5handle_loop();
 
 /* ---------------- mode 5 stmt functions --------------------- */
 extern List *m5handle_if(Type *b, int true_label, List *s_list);
@@ -174,6 +175,7 @@ extern List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *nex
 extern List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list);
 extern List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b);
 extern List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int stmt_label, List *s_list);
+extern void m5handle_break();
 
 /* ---------------- mode 5 exp functions --------------------- */
 extern int m5handle_label();

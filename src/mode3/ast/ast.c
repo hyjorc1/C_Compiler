@@ -175,6 +175,10 @@ Function *new_function_ast(Type *return_type, char *name, int lineno) {
     f->stack_size = 0;
     f->stack_max = 0;
     f->class_name = NULL;
+
+    // mode 5
+    f->breaks = NULL;
+    f->continues = NULL;
     return f;
 }
 
@@ -201,6 +205,11 @@ void free_function_ast(void *p) {
     // print(">>>>>>>>free_function_ast 8\n");
 
     free(f->class_name);
+
+    list_destroy(f->breaks);
+
+    list_destroy(f->continues);
+
     free(p);
     // print(">>>>>>>>free_function_ast 9\n");
 }

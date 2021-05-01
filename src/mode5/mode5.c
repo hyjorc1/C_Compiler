@@ -26,4 +26,32 @@ void mode5(int argc, char *argv[], int fileIdx) {
 
         m5postprocess();
     }
+
+    // List *l = list_new(sizeof(List), list_destroy_void);
+
+    // List *e1 = list_new(sizeof(int), free);
+    // list_add_last(e1, new_int(1));
+    // list_add_last(e1, new_int(2));
+    // list_print(e1, print_int);
+
+    // while (e1->size > 0) {
+    //     int *data = (int *)(list_remove_last(e1));
+    //     printf("%d\n", *data);
+    // }
+
+    // List *e2 = list_new(sizeof(int), free);
+    // list_add_last(e2, new_int(3));
+    // list_add_last(e2, new_int(4));
+    // list_print(e2, print_int);
+
+    // list_add_last(l, e1);
+    // list_add_last(l, e2);
+
+    // ListNode *cur = l->first;
+    // while (cur != NULL) {
+    //     List *e = (List *)cur->data;
+    //     list_print(e, print_int);
+    //     cur = cur->next;
+    // }
+    // list_destroy(l);
 }

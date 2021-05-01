@@ -36,6 +36,12 @@ void list_destroy(List *l) {
     free(l);
 }
 
+void list_destroy_void(void *v) {
+    if (v == NULL)
+        return;
+    list_destroy((List *)v);
+}
+
 List *list_add_first(List *l, void *data) {
     if (l == NULL || data == NULL)
         return l;
@@ -66,6 +72,23 @@ List *list_add_last(List *l, void *data) {
     }
     l->size++;
     return l;
+}
+
+void *list_remove_last(List *l) {
+    if (l == NULL || l->size == 0)
+        return NULL;
+    ListNode *n = l->last;
+    if (l->first == l->last) {
+        l->first = NULL;
+        l->last = NULL;
+    } else {
+        n->prev->next = NULL;
+        l->last = n->prev;
+    }
+    l->size--;
+    void *data = n->data;
+    free(n);
+    return data;
 }
 
 void list_print(List *l, void (*print_data)(void *)) {

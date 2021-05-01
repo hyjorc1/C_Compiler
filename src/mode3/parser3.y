@@ -237,7 +237,7 @@ stmt_list : stmt_list MK stmt           { m3dprint("stmt list stmt", ""); $$ = $
 /* part 2 - 9. statement */
 stmt : SEMI                             { m3dprint("SEMI", ""); $$ = NULL; }
     | root_exp SEMI                     { m3dprint("exp SEMI", ""); handle_exp_stmt($1); $$ = NULL; }
-    | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); $$ = NULL; }
+    | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); m5handle_break(); $$ = NULL; }
     | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); $$ = NULL; }
     | return_stmt                       { m3dprint("return_stmt", ""); $$ = NULL; }
     | if_stmt                           { m3dprint("if_stmt", ""); $$ = $1; }
@@ -265,8 +265,11 @@ stmts : block_stmt                      { $$ = $1; }
 if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = handle_cond_exp("if statement", $3); }
     ;
 
-for_stmt : FOR LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
+for_stmt : for LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
                                         { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13); }
+    ;
+
+for : FOR                               { m5handle_loop(); }
     ;
 
 emp_exp : %empty                        { m3dprint("false emp_exp", ""); $$ = NULL; }
@@ -277,13 +280,19 @@ cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); $$
     | cond_exp                          { m3dprint("true cond_emp_exp", ""); $$ = handle_cond_exp("for loop", $1); }
     ;
 
-while_stmt : WHILE MK while_cond MK stmts      { m3dprint("WHILE block_stmt", ""); $$ = m5handle_while($2, $3, $4, $5); }
+while_stmt : while MK while_cond MK stmts      { m3dprint("WHILE block_stmt", ""); $$ = m5handle_while($2, $3, $4, $5); }
+    ;
+
+while : WHILE                           { m5handle_loop(); }
     ;
 
 while_cond : LPAR cond_exp RPAR         { $$ = handle_cond_exp("while loop", $2); };
     ;
 
-do_stmt : DO MK stmts WHILE MK do_cond SEMI   { m3dprint("do{}while(cond)", ""); $$ = m5handle_do($2, $3, $5, $6); }
+do_stmt : do MK stmts WHILE MK do_cond SEMI   { m3dprint("do{}while(cond)", ""); $$ = m5handle_do($2, $3, $5, $6); }
+    ;
+
+do : DO                                 { m5handle_loop(); }
     ;
 
 do_cond : LPAR cond_exp RPAR            { m3dprint("do condition", ""); $$ = handle_cond_exp("do while loop", $2); }

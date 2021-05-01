@@ -60,6 +60,10 @@ typedef struct {
     int stack_size;
     int stack_max;
     char *class_name;
+
+    // mode 5
+    List *breaks;
+    List *continues;
 } Function;
 
 Function *new_function_ast(Type *return_type, char *name, int lineno);

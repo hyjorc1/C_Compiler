@@ -61,3 +61,48 @@ void ternary_exp() {
 }
 
 
+void break_stmt1() {
+    int i = 3;
+    while (i) {
+        i--;
+        while(i) {
+            i--;
+            if (1) {
+                i = 2;
+                if (1) {
+                    i = 3;
+                    break;
+                } else {
+                    i = 4;
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        break;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+}
+
+void break_stmt2() {
+    int i = 3;
+    do {
+        i--;
+        break;
+    } while(i);
+    putchar(i + 48); // 2
+    putchar(10);
+}
+
+void break_stmt3() {
+    int i;
+    for (i = 2; i; i--) {
+        i++;
+        break;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+}
+
