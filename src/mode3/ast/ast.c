@@ -17,7 +17,7 @@ Type *new_type_ast(char *name, char is_const, char is_struct, char is_array) {
     // mode 5
     t->truelist = NULL;
     t->falselist = NULL;
-    t->is_comp = 0;
+    t->is_cond = 0;
     return t;
 }
 
@@ -40,7 +40,7 @@ Type *deep_copy_type_ast(Type *t) {
     t->truelist = NULL;
     copy->falselist = t->falselist;
     t->falselist = NULL;
-    copy->is_comp = t->is_comp;
+    copy->is_cond = t->is_cond;
     return copy;
 }
 

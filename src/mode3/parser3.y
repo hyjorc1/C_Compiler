@@ -333,7 +333,7 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | l_val DECR %prec UDECR            { /* part 3 - R12 */ m3dprint("l_val DECR", "--"); $$ = handle_r12_exp($1, "--"); }
 
     /* part 2 - 12. Unary operators (for any expression) are: -, !, ~ */
-    | BANG cond_exp %prec UBANG         { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_ubang($2); }
+    | BANG exp %prec UBANG              { /* part 3 - R4 */ m3dprint("UBANG", "!"); $$ = handle_ubang($2); }
     | TILDE exp %prec UTILDE            { /* part 3 - R2 */ m3dprint("UTILDE", "~"); $$ = handle_utilde($2); }
     | MINUS exp %prec UMINUS            { /* part 3 - R3 */ m3dprint("UMINUS", "-"); $$ = handle_uminus($2); }
 
@@ -351,11 +351,11 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | exp GE exp                        { /* part 3 - R10 */ m3dprint("GE", ">="); $$ = handle_r10_exp($1, ">=", $3); }
     | exp LT exp                        { /* part 3 - R10 */ m3dprint("LT", "<"); $$ = handle_r10_exp($1, "<", $3); }
     | exp LE exp                        { /* part 3 - R10 */ m3dprint("LE", "<="); $$ = handle_r10_exp($1, "<=", $3); }
-    | cond_exp DPIPE cond_exp           { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_exp($1, "||", $3); }
-    | cond_exp DAMP cond_exp            { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_exp($1, "&&", $3); }
+    | exp DPIPE MK exp                  { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_marker($1, "||", $3, $4); }
+    | exp DAMP MK exp                   { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_marker($1, "&&", $3, $4); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
-    | cond_exp QUEST MK exp NL COLON MK exp MK           
+    | exp QUEST MK exp NL COLON MK exp MK           
                                         { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $4, $5, $7, $8, $9); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }

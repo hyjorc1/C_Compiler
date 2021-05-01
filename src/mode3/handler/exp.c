@@ -172,7 +172,29 @@ Type *handle_r10_exp(Type *t1, char *op, Type *t2) {
     } else {
         res = new_type_ast(strdup(char_str), 0, 0, 0);
         res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
-        m5hanlde_r10_exp(res, t1, op, t2);
+        m5handle_r10_exp(res, op);
+    }
+    free_type_ast(t1);
+    free_type_ast(t2);
+    return res;
+}
+
+Type *handle_r10_marker(Type *t1, char *op, int label, Type *t2) {
+    Type *res = NULL;
+    if (t1 == NULL || t2 == NULL) {
+        // omit
+    } else if (!is_type_N(t1) || !is_type_N(t2)
+        || (!widen_match_type(t1, t2) && !widen_match_type(t2, t1))) {
+        char *t1_str = type_to_str(t1);
+        char *t2_str = type_to_str(t2);
+        m3err();
+        fprintf(stderr, "\tOperation not supported: %s %s %s\n", t1_str, op, t2_str);
+        free(t1_str);
+        free(t2_str);
+    } else {
+        res = new_type_ast(strdup(char_str), 0, 0, 0);
+        res->is_const = (t1->is_const && t2->is_const) ? 1 : 0;
+        m5handle_r10_marker(res, t1, op, label, t2);
     }
     free_type_ast(t1);
     free_type_ast(t2);

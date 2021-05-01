@@ -18,7 +18,7 @@ typedef struct {
     // mode 5
     List *falselist;
     List *truelist;
-    char is_comp;
+    char is_cond;
 } Type;
 
 Type *new_type_ast(char *name, char is_const, char is_struct, char is_array);

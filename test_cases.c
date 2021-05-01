@@ -193,5 +193,32 @@ void cmp_exp6() {
     putchar(10);
 }
 
+void or_exp() {
+    int i = 4;
+    if (i <= 2 || i >= 5 || i == 3) {
+        i = 0;
+    }
+    putchar(i + 48); // 4
+    putchar(10);
+}
+
+void not_exp() {
+    int i = 4;
+    if (!(i < 2)) {
+        i = 0;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
+void and_exp() {
+    int i = 15;
+    if (i % 3 == 0 && i % 5 == 0) {
+        i = 0;
+    }
+    putchar(i + 48); // 0
+    putchar(10);
+}
+
 
 

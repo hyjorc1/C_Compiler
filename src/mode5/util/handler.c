@@ -210,23 +210,9 @@ Type *m5handle_cond_exp(Type *t) {
     if (mode != 5 || m3_error)
         return t;
     print("m5handle_cond_exp\n");
-
-    // FILE *f = get_file(m4_exp_tmp_file);
-
-    // t->truelist = list_new(sizeof(int), free);
-    // list_add_last(t->truelist, new_int(instr_line));
-    // fprintf(f, "%sifne # ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(-1));
-
-    // t->falselist = list_new(sizeof(int), free);
-    // list_add_last(t->falselist, new_int(instr_line));
-    // fprintf(f, "%sgoto # ; instr_line %d depth 0\n", ident8, instr_line++);
-
-    // fclose(f);
-
-    if (!t->is_comp) {
+    if (!(t->is_cond)) {
         update_tf_lists(t, "ne", update_depth(-1));
     }
-    
     return t;
 }
 
@@ -236,7 +222,10 @@ void m5handle_ubang(Type *res, Type *t) {
     print("m5handle_ubang\n");
 
     res->truelist = t->falselist;
+    t->falselist = NULL;
     res->falselist = t->truelist;
+    t->truelist = NULL;
+    res->is_cond = 1;
 }
 
 char *convert_op(char *op) {
@@ -256,25 +245,53 @@ char *convert_op(char *op) {
     return "error";
 }
 
-void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2) {
+void m5handle_r10_exp(Type *res, char *op) {
     if (mode != 5 || m3_error)
         return;
-    print("m5handle_ubang\n");
+    print("m5handle_r10_exp\n");
+
+    update_tf_lists(res, convert_op(op), update_depth(-2));
+    res->is_cond = 1;
+}
+
+void m5handle_r10_marker(Type *res, Type *t1, char *op, int label, Type *t2) {
+    if (mode != 5 || m3_error)
+        return;
+    print("m5handle_r10_marker\n");
+
+    m5handle_cond_exp(t1);
+    m5handle_cond_exp(t2);
 
     if (strcmp(op, "||") == 0) {
+        res->truelist = list_merge(t1->truelist, t2->truelist);
+        t1->truelist = NULL;
+        t2->truelist = NULL;
 
-    } else if (strcmp(op, "&&") == 0) {
+        res->falselist = t2->falselist;
+        t2->falselist = NULL;
 
+        backpatch(t1->falselist, label);
+        t1->falselist = NULL;
     } else {
-        update_tf_lists(res, convert_op(op), update_depth(-2));
+        res->truelist = t2->truelist;
+        t2->truelist = NULL;
+
+        res->falselist = list_merge(t1->falselist, t2->falselist);
+        t1->falselist = NULL;
+        t2->falselist = NULL;
+
+        backpatch(t1->truelist, label);
+        t1->truelist = NULL;
     }
-    res->is_comp = 1;
+    res->is_cond = 1;
 }
 
 void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label) {
     if (mode != 5 || m3_error)
         return;
     print("m5handle_ternary_exp\n");
+
+    m5handle_cond_exp(b);
 
     backpatch(b->truelist, true_label);
     b->truelist = NULL;

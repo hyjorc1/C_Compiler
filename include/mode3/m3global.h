@@ -105,6 +105,7 @@ extern Type *handle_cast_exp(Type *t2);
 extern Type *handle_r8_exp(Type *t1, char *op, Type *t2);
 extern Type *handle_r9_exp(Type *t1, char *op, Type *t2);
 extern Type *handle_r10_exp(Type *t1, char *op, Type *t2);
+extern Type *handle_r10_marker(Type *t1, char *op, int label, Type *t2);
 extern Type *handle_r11_exp(char *op, Type *t2);
 extern Type *handle_r12_exp(Type *t1, char *op);
 extern Type *handle_assign_exp(char is_init, Type *t1, char *op, Type *t2);
@@ -184,7 +185,8 @@ extern List *m5handle_next_line();
 
 extern Type *m5handle_cond_exp(Type *t);
 extern void m5handle_ubang(Type *res, Type *t);
-extern void m5hanlde_r10_exp(Type *res, Type *t1, char *op, Type *t2);
+extern void m5handle_r10_exp(Type *res, char *op);
+extern void m5handle_r10_marker(Type *res, Type *t1, char *op, int label, Type *t2);
 
 extern void m5handle_ternary_exp(Type *b, int true_label, List *true_next, int false_label, int end_label);
 
