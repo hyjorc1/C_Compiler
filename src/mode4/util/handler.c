@@ -174,6 +174,11 @@ void m4store(FILE *f, Type *lt) {
     }
 }
 
+void m4handle_dup(FILE *f, Type *t) {
+    char *dup_str = t->array_access ? "dup_x2" : "dup";
+    fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
+}
+
 void m4handle_assign_exp(Type *lt, char *op, Type *res) {
     if (mode < 4 || m3_error)
         return;
@@ -189,9 +194,8 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
             ident8, type_str, op_str, instr_line++, update_depth(-1));
     }
 
-    if (return_count > 1 || cond_trigger) {
-        char *dup_str = lt->array_access ? "dup_x2" : "dup";
-        fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
+    if (return_count > 1) {
+        m4handle_dup(f, lt);
     }
 
     m4store(f, lt);
@@ -227,12 +231,12 @@ void m4handle_func_call_exp(Function *fn) {
     fclose(f);
 }
 
-void m4handle_root_exp_before() {
+void m4handle_comment(char *cmt) {
     if (mode < 4 || m3_error)
         return;
-    print("m4handle_root_exp_before\n");
+    print("m4handle_comment\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s;; %s %d expression\n", ident8, m3_cur_file_name, m3lineno);
+    fprintf(f, "%s;; %s %d %s\n", ident4, m3_cur_file_name, m3lineno, cmt);
     update_depth(0);
     fclose(f);
 }
@@ -273,9 +277,8 @@ void m4handle_r11_exp(char *op, Type *t2) {
     char *inst = strcmp(op, "++") == 0 ? "iadd" : "isub";
     fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, inst, instr_line++, update_depth(-1));
 
-    if (return_count > 0 || cond_trigger) {
-        char *dup_str = t2->array_access ? "dup_x2" : "dup";
-        fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
+    if (return_count > 0) {
+        m4handle_dup(f, t2);
     }
 
     m4store(f, t2);
@@ -291,9 +294,8 @@ void m4handle_r12_exp(Type *t1, char *op) {
     m4handle_lval(t1);
     FILE *f = get_file(m4_exp_tmp_file);
 
-    if (return_count > 0 || cond_trigger) {
-        char *dup_str = t1->array_access ? "dup_x2" : "dup";
-        fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
+    if (return_count > 0) {
+        m4handle_dup(f, t1);
     }
 
     fprintf(f, "%siconst_1 ; instr_line %d depth %d\n", ident8, instr_line++, update_depth(1));

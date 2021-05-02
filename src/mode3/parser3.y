@@ -241,8 +241,8 @@ stmt_list : stmt_list MK stmt           { m3dprint("stmt list stmt", ""); $$ = $
 /* part 2 - 9. statement */
 stmt : SEMI                             { m3dprint("SEMI", ""); $$ = NULL; }
     | root_exp SEMI                     { m3dprint("exp SEMI", ""); handle_exp_stmt($1); $$ = NULL; }
-    | BREAK SEMI                        { m3dprint("BREAK SEMI", ""); m5handle_break(); $$ = NULL; }
-    | CONTINUE SEMI                     { m3dprint("CONTINUE SEMI", ""); m5handle_continue(); $$ = NULL; }
+    | break SEMI                        { m3dprint("BREAK SEMI", ""); m5handle_break(); $$ = NULL; }
+    | continue SEMI                     { m3dprint("CONTINUE SEMI", ""); m5handle_continue(); $$ = NULL; }
     | return_stmt                       { m3dprint("return_stmt", ""); $$ = NULL; }
     | if_stmt                           { m3dprint("if_stmt", ""); $$ = $1; }
     | for_stmt                          { m3dprint("for_stmt", ""); $$ = $1; }
@@ -250,8 +250,17 @@ stmt : SEMI                             { m3dprint("SEMI", ""); $$ = NULL; }
     | do_stmt                           { m3dprint("do_stmt", ""); $$ = $1; }
     ;
 
-return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
-    | RETURN rexp SEMI                  { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
+break : BREAK                           { m4handle_comment("break"); }
+    ;
+
+continue : CONTINUE                     { m4handle_comment("continue"); }
+    ;
+
+return_stmt : return SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
+    | return rexp SEMI                  { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
+    ;
+
+return : RETURN                         { m4handle_comment("return"); }
     ;
 
 if_stmt : if_cond MK stmts %prec WITHOUT_ELSE   { m3dprint("IF (cond){}", ""); $$ = m5handle_if($1, $2, $3); }
@@ -263,14 +272,17 @@ stmts : block_stmt                      { $$ = $1; }
     ;
 
 /* The expression inside an if condition is numerical. */
-if_cond : IF LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = handle_cond_exp("if statement", $3); }
+if_cond : if LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = handle_cond_exp("if statement", $3); }
+    ;
+
+if : IF                                 { m4handle_comment("if statement"); }
     ;
 
 for_stmt : for LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
                                         { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13); }
     ;
 
-for : FOR                               { m5handle_loop(); }
+for : FOR                               { m4handle_comment("for statement"); m5handle_loop(); }
     ;
 
 emp_exp : %empty                        { m3dprint("false emp_exp", ""); $$ = NULL; }
@@ -284,7 +296,7 @@ cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); $$
 while_stmt : while MK while_cond MK stmts      { m3dprint("WHILE block_stmt", ""); $$ = m5handle_while($2, $3, $4, $5); }
     ;
 
-while : WHILE                           { m5handle_loop(); }
+while : WHILE                           { m4handle_comment("while statement"); m5handle_loop(); }
     ;
 
 while_cond : LPAR cond_exp RPAR         { $$ = handle_cond_exp("while loop", $2); };
@@ -293,21 +305,10 @@ while_cond : LPAR cond_exp RPAR         { $$ = handle_cond_exp("while loop", $2)
 do_stmt : do MK stmts WHILE MK do_cond SEMI   { m3dprint("do{}while(cond)", ""); $$ = m5handle_do($2, $3, $5, $6); }
     ;
 
-do : DO                                 { m5handle_loop(); }
+do : DO                                 { m4handle_comment("do-while statement"); m5handle_loop(); }
     ;
 
 do_cond : LPAR cond_exp RPAR            { m3dprint("do condition", ""); $$ = handle_cond_exp("do while loop", $2); }
-    ;
-
-/* part 3 - 2.3 The expression given for the condition 
-    is a numerical type (one of char, int, or float). */
-cond_exp : rexp                         { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
-    ;
-
-root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
-    ;
-
-prev_root : %empty                      { m3dprint("root exp", ""); m4handle_root_exp_before(); }
     ;
 
 /* part 2 - 10. expression */
@@ -360,6 +361,17 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
                                         { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $4, $5, $7, $8, $9); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
+    ;
+
+/* part 3 - 2.3 The expression given for the condition 
+    is a numerical type (one of char, int, or float). */
+cond_exp : rexp                         { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
+    ;
+
+root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
+    ;
+
+prev_root : %empty                      { m3dprint("root exp", ""); m4handle_comment("expression"); }
     ;
 
 rexp : prer exp posr { $$ = $2; }

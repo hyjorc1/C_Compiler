@@ -135,6 +135,7 @@ extern void m4handle_func_def();
 
 extern void m4handle_return_stmt(Type *t);
 extern void m4handle_exp_stmt();
+extern void m4handle_comment(char *cmt);
 
 
 /* ---------------- mode 4 exp functions --------------------- */
@@ -147,7 +148,6 @@ extern void m4handle_char(char *val);
 extern void m4handle_assign_exp(Type *lt, char *op, Type *res);
 
 extern void m4handle_func_call_exp(Function *fn);
-extern void m4handle_root_exp_before();
 
 extern Type *m4handle_lval(Type *t);
 
@@ -164,7 +164,6 @@ extern void m4handle_r9_exp(Type *t, char *op);
 /* ---------------- mode 5  --------------------- */
 extern int instr_line;
 extern int instr_label;
-extern char cond_trigger;
 extern GotoMap *gotomap;
 
 extern void backpatch(List *list, int label);
