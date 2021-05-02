@@ -197,13 +197,15 @@ MODE5	:= $(SRC5)/mode5
 UTIL5   := $(patsubst %.c,%.o,$(wildcard $(SRC5)/util/*.c))
 OBJ5 	:= $(MODE5).o $(UTIL5)
 TEST5	:= test/Grading5
+T5_OWN	:= test/Tests5
+T5_RUN	:= ./Run.sh mycc -s *.c
 
 test5: link mode5-test
 
 mode5-test:
 	@echo ''
 	@echo '@@@@@@@@@@@@@@@@@@@@ Mode 5 Test @@@@@@@@@@@@@@@@@@@@@@@'
-# cp $(EXE) $(T5_OWN) && cd $(T5_OWN) && $(T5_RUN) && rm $(EXE) && cd ../../
+	cp $(EXE) $(T5_OWN) && cd $(T5_OWN) && $(T5_RUN) && rm $(EXE) && cd ../../
 # cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_RUN) && rm $(EXE) && cd ../../
 # cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_USR) && rm $(EXE) && cd ../../
 # cp $(EXE) $(TEST5) && cd $(TEST5) && $(T5_JXP) && rm $(EXE) && cd ../../

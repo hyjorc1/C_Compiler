@@ -220,5 +220,71 @@ void and_exp() {
     putchar(10);
 }
 
+void short_circuiting() {
+    // if
+    int i = 1;
+    if (i > 0 && (i == 1 || i == 2)) {
+        i = 3;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+
+    // if else
+    i = 0;
+    if (i > 1 || i) {
+        i = 1;
+    } else {
+        i = 3;
+    }
+    putchar(i + 48); // 3
+    putchar(10);
+
+    // ternary
+    i = 3;
+    i = (i > 0 && (i == 1 || i == 2)) ? 3 : 4;
+    putchar(i + 48); // 4
+    putchar(10);
+
+    i = 8;
+    if (i == 0 || i != 1 || i > 1 || i >= 4 || i < 5 || i <= 6)
+        i = 4;
+    putchar(i + 48); // 4
+    putchar(10);
+
+    // while
+    i = 8;
+    while (i > 0 && i < 5) {
+        i--;
+    }
+    putchar(i + 48); // 8
+    putchar(10);
+
+    // do while
+    i = 8;
+    do {
+        i--;
+    } while (i > 0 && i < 5);
+    putchar(i + 48); // 7
+    putchar(10);
+
+    // for
+    for (i = 2; i >= 2 && i <= 5; i++) {
+        putchar(i + 48); // 2345
+    }
+    putchar(10);
+}
+
+int f() {
+    int i = 8;
+    if (1)
+        return 10 - --i;
+    return 4;
+}
+
+int main() {
+    putchar(f() + 48); // 3
+    putchar(10);
+    return 0;
+}
 
 

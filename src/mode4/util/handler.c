@@ -189,10 +189,9 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
             ident8, type_str, op_str, instr_line++, update_depth(-1));
     }
 
-    if (return_count > 1) {
+    if (return_count > 1 || cond_trigger) {
         char *dup_str = lt->array_access ? "dup_x2" : "dup";
-        fprintf(f, "%s%s ; instr_line %d depth %d\n",
-            ident8, dup_str, instr_line++, update_depth(1));
+        fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
     }
 
     m4store(f, lt);
@@ -209,9 +208,10 @@ void m4handle_func_call_exp(Function *fn) {
     // add parameter types
     if (fn->parameters) {
         ListNode *cur = fn->parameters->first;
+        HashMap *map = fn->local_var_map ? fn->local_var_map : m3_local_map;
         while (cur != NULL) {
             Variable *v = (Variable *)cur->data;
-            Type *t = map_get(fn->local_var_map, v->name);
+            Type *t = map_get(map, v->name);
             char *type_str = to_ensembly_type_str(t);
             fprintf(f, "%s", type_str);
             free(type_str);
@@ -273,7 +273,7 @@ void m4handle_r11_exp(char *op, Type *t2) {
     char *inst = strcmp(op, "++") == 0 ? "iadd" : "isub";
     fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, inst, instr_line++, update_depth(-1));
 
-    if (return_count > 0) {
+    if (return_count > 0 || cond_trigger) {
         char *dup_str = t2->array_access ? "dup_x2" : "dup";
         fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
     }
@@ -290,7 +290,8 @@ void m4handle_r12_exp(Type *t1, char *op) {
     binary_assign = 1;
     m4handle_lval(t1);
     FILE *f = get_file(m4_exp_tmp_file);
-    if (return_count > 0) {
+
+    if (return_count > 0 || cond_trigger) {
         char *dup_str = t1->array_access ? "dup_x2" : "dup";
         fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
     }

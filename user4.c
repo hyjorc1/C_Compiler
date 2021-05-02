@@ -1,15 +1,6 @@
 
-
 int main() {
-    int i = 15;
-    if (i % 3 == 0 && i % 5 == 0) {
-        i = 0;
-    }
-    putchar(i + 48); // 0
-    putchar(10);
+    int i = 0, j = i = 1;
+    i = i++;
     return 0;
 }
-
-
-
-

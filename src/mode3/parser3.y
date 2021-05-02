@@ -44,6 +44,7 @@ int return_count = 0;
 /* mode 5 */
 int instr_line = 0;
 int instr_label = 0;
+char cond_trigger = 0;
 
 %}
 
@@ -100,7 +101,7 @@ int instr_label = 0;
 %type <fn> func_decl func_proto func_def
 /* part 5 */
 %type <num> MK
-%type <t> if_cond cond_emp_exp emp_exp do_cond while_cond 
+%type <t> if_cond cond_emp_exp emp_exp do_cond while_cond rexp
 %type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts NL
 
 %%
@@ -212,8 +213,11 @@ para : type IDENT                       { m3dprint("type IDENT", $2); handle_par
     a sequence of zero or more variable declarations, a sequence of zero or more 
     statements, and a right brace. Note that this definition requires all variable 
     declarations to appear before statements. */
-func_def : func_decl LBRACE func_local_decls stmt_list RBRACE   { m3dprint("func(){func_body}", ""); handle_func_def(); }
-    | func_decl LBRACE func_local_decls RBRACE   { m3dprint("func(){func_local_decls}", ""); handle_func_def(); }
+func_def : func_decl LBRACE func_local_decls func_stmts RBRACE  { m3dprint("func(){func_body}", ""); handle_func_def(); }
+    | func_decl LBRACE func_local_decls RBRACE                  { m3dprint("func(){func_local_decls}", ""); handle_func_def(); }
+    ;
+
+func_stmts : stmt_list MK               { backpatch($1, $2); }
     ;
 
 func_local_decls : %empty               { m3dprint("empty func_local_decls", ""); }
@@ -247,10 +251,7 @@ stmt : SEMI                             { m3dprint("SEMI", ""); $$ = NULL; }
     ;
 
 return_stmt : RETURN SEMI               { m3dprint("RETURN SEMI", ""); handle_return_stmt(new_type_ast(strdup(void_str), 0, 0, 0)); }
-    | return_request root_exp SEMI      { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); return_count--; }
-    ;
-
-return_request : RETURN                 { return_count++; }
+    | RETURN rexp SEMI                  { m3dprint("RETURN exp SEMI", ""); handle_return_stmt($2); }
     ;
 
 if_stmt : if_cond MK stmts %prec WITHOUT_ELSE   { m3dprint("IF (cond){}", ""); $$ = m5handle_if($1, $2, $3); }
@@ -300,7 +301,7 @@ do_cond : LPAR cond_exp RPAR            { m3dprint("do condition", ""); $$ = han
 
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
-cond_exp : exp                          { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
+cond_exp : rexp                         { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
     ;
 
 root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
@@ -361,6 +362,15 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
     ;
 
+rexp : prer exp posr { $$ = $2; }
+    ;
+
+prer : %empty                           { return_count++; }
+    ;
+
+posr : %empty                           { return_count--; }
+    ;
+
 /* part 5 marker */
 MK : %empty                             { $$ = m5handle_label(); }
     ;
@@ -375,15 +385,15 @@ lval_assign : l_val                     { return_count++; $$ = $1; }
 lval_bassign : l_val                    { return_count++; binary_assign = 1; $$ = m4handle_lval($1); }
     ;
 
-exp_list : exp                          { m3dprint("single exp", ""); $$ = handle_single_type($1); }
-    | exp_list COMMA exp                { m3dprint("multiple exps", ""); $$ = list_add_last($1, $3); }
+exp_list : rexp                         { m3dprint("single exp", ""); $$ = handle_single_type($1); }
+    | exp_list COMMA rexp               { m3dprint("multiple exps", ""); $$ = list_add_last($1, $3); }
     ; 
 
 /* part 2 - 2.5 and part 3 - 2.8 Extra credit: struct member selection */
 l_val : IDENT                               { m3dprint("l_val id", $1); $$ = handle_l_ident($1); }
-    | array_ident LBRACKET exp RBRACKET     { m3dprint("l_val id[exp]", $1->id); $$ = handle_l_array_access($1, $3); }
+    | array_ident LBRACKET rexp RBRACKET    { m3dprint("l_val id[exp]", $1->id); $$ = handle_l_array_access($1, $3); }
     | l_val DOT IDENT                       { /* part 3 - R15 */ m3dprint("l_val.member", $3); $$ = handle_l_member($1, $3); }
-    | l_val DOT IDENT LBRACKET exp RBRACKET { /* part 3 - R15 */ m3dprint("l_val.member[exp]", $3); $$ = handle_l_array_member($1, $3, $5); }
+    | l_val DOT IDENT LBRACKET rexp RBRACKET{ /* part 3 - R15 */ m3dprint("l_val.member[exp]", $3); $$ = handle_l_array_member($1, $3, $5); }
     ;
 
 array_ident : IDENT                         { $$ = m4handle_lval(handle_l_ident($1)); }

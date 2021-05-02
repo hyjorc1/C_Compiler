@@ -164,6 +164,7 @@ extern void m4handle_r9_exp(Type *t, char *op);
 /* ---------------- mode 5  --------------------- */
 extern int instr_line;
 extern int instr_label;
+extern char cond_trigger;
 extern GotoMap *gotomap;
 
 extern void backpatch(List *list, int label);
