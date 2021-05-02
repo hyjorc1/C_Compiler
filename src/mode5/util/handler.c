@@ -18,7 +18,6 @@ void backpatch(List *list, int label) {
         cur = cur->next;
     }
     list_destroy(list);
-    // gotomap_print(gotomap);
 }
 
 void m5handle_loop() {
@@ -116,13 +115,17 @@ List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int
     fprintf(f, "%sgoto L%d ; instr_line %d depth 0\n", ident8, post_label, instr_line++);
     fclose(f);
 
-    backpatch(next_list, cond_label);
-
-    backpatch(b->truelist, stmt_label);
-    b->truelist = NULL;
-    List *l = b->falselist;
-    b->falselist = NULL;
-    free_type_ast(b);
+    List *l = NULL;
+    if (b) {
+        backpatch(next_list, cond_label);
+        backpatch(b->truelist, stmt_label);
+        b->truelist = NULL;
+        l = b->falselist;
+        b->falselist = NULL;
+        free_type_ast(b);
+    } else {
+        backpatch(next_list, stmt_label);
+    }
 
     l = list_merge(l, (List *)list_remove_last(cur_fn->breaks)); // update breaks
     backpatch((List *)list_remove_last(cur_fn->continues), post_label); // update continues
@@ -220,6 +223,8 @@ void m5handle_ubang(Type *res, Type *t) {
     if (mode != 5 || m3_error)
         return;
     print("m5handle_ubang\n");
+
+    m5handle_cond_exp(t);
 
     res->truelist = t->falselist;
     t->falselist = NULL;

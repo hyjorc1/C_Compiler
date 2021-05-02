@@ -103,8 +103,9 @@ void m4handle_return_stmt(Type *t) {
     print("m4handle_return_stmt\n");
 
     FILE *f = get_file(m4_exp_tmp_file);
+    int change = strcmp(t->name, void_str) == 0 ? 0 : -1;
     fprintf(f, "%s%sreturn ; instr_line %d depth %d\n", 
-        ident8, to_ensembly_T_str1(t), instr_line++, update_depth(-1));
+        ident8, to_ensembly_T_str1(t), instr_line++, update_depth(change));
     fclose(f);
 }
 
@@ -143,7 +144,7 @@ void m4handle_str(char *val) {
     FILE *f = get_file(m4_exp_tmp_file);
     int char_cnt = strlen(val) - 2;
     val++;
-    fprintf(f, "%sldc '%.*s' ; instr_line %d depth %d\n",
+    fprintf(f, "%sldc '%.*s\\x00' ; instr_line %d depth %d\n",
         ident8, char_cnt, val, instr_line++, update_depth(1));
     fprintf(f, "%sinvokevirtual Method java/lang/String toCharArray ()[C ; instr_line %d depth %d\n",
         ident8, instr_line++, update_depth(0));
@@ -154,8 +155,14 @@ void m4handle_char(char *val) {
     if (mode < 4 || m3_error)
         return;
     FILE *f = get_file(m4_exp_tmp_file);
+    int n = 0;
+    if (val[1] == '\\') {
+        n = 10; // TODO 
+    } else {
+        n = val[1];
+    }
     fprintf(f, "%sbipush %d ; instr_line %d depth %d\n",
-        ident8, val[1], instr_line++, update_depth(1));
+        ident8, n, instr_line++, update_depth(1));
     fclose(f);
 }
 
@@ -236,7 +243,7 @@ void m4handle_comment(char *cmt) {
         return;
     print("m4handle_comment\n");
     FILE *f = get_file(m4_exp_tmp_file);
-    fprintf(f, "%s;; %s %d %s\n", ident4, m3_cur_file_name, m3lineno, cmt);
+    fprintf(f, "%s;; %s %d %s\n", ident8, m3_cur_file_name, m3lineno, cmt);
     update_depth(0);
     fclose(f);
 }
