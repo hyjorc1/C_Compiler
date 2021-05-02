@@ -35,6 +35,8 @@ NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.
 
 6. **[Mode 4](./doc/post-4.pdf)**: The compiler reads the specified input file and check it for correctness (including type checking) as done in mode 3. If there are no errors, then the compiler  output ans equivalent Java assembly code consists of JVM instructions.
 
+7. **[Mode 5](./doc/post-5.pdf)**: The compiler reads the specified input file and generates correct code for expressions (from mode 4), and for (possibly nested) branching statements and loops.
+
 ## Note
 
 The project should be tested at `ssh usr@pyrite.cs.iastate.edu`.

@@ -1,0 +1,21 @@
+\section*{PART 5}
+
+When executed with a mode of 5, the compiler reads specified input file, and checks it for correctness (including type checking) as done in part 3. If there are no errors, then the compiler should generate correct code for expressions (from part 4), and for (possibly nested) branching statements and loops. Bison post-order traversal is utilized to generate the Java assembly code in a incremental approach. Backpatching is also used for generating the code for branching statements and loops.
+
+\subsection*{1.1 \large\textbf{src/mode5}}
+\begin{enumerate}
+    
+    \item \textbf{mode5.c} contains the main program for mode 5 to process the input files and output results.
+
+    \item \textbf{util/handler.c} contains the implementation to generate the equivalent Java assembly program.
+
+    \item \textbf{util/m5global.c} contains the general utilities for mode 5.
+
+    \item \textbf{util/goto\_map.c} contains the implementation of goto map for mode 5.
+\end{enumerate}
+
+\subsection*{1.2 \large\textbf{include/mode5}}
+\begin{enumerate}
+    \item \textbf{m5global.h} contains local variables and methods designated for mode 5.
+    \item \textbf{goto\_map.h} contains a map data structure for mapping goto instruction line number to the corresponding labels.
+\end{enumerate} 
