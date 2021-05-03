@@ -300,6 +300,16 @@ int f() {
     return 4;
 }
 
+void bool_assign() {
+    int i = 5;
+    char b = (i > 0 || i <= 5) && (i == 5) && (i % 5 == 0);
+    if (b) {
+        i++;
+    }
+    putchar(i + 48);
+    putchar(10);
+}
+
 int main() {
     if_stmt(); // 2
     if_else_stmt(); // 4
@@ -341,5 +351,7 @@ int main() {
 
     putchar(f() + 48); // 3
     putchar(10);
+
+    bool_assign(); // 6
     return 0;
 }

@@ -151,19 +151,24 @@ void m4handle_str(char *val) {
     fclose(f);
 }
 
+void m4bipush(int n) {
+    FILE *f = get_file(m4_exp_tmp_file);
+    fprintf(f, "%sbipush %d ; instr_line %d depth %d\n",
+        ident8, n, instr_line++, update_depth(1));
+    fclose(f);
+}
+
 void m4handle_char(char *val) {
     if (mode < 4 || m3_error)
         return;
-    FILE *f = get_file(m4_exp_tmp_file);
+    
     int n = 0;
     if (val[1] == '\\') {
         n = 10; // TODO 
     } else {
         n = val[1];
     }
-    fprintf(f, "%sbipush %d ; instr_line %d depth %d\n",
-        ident8, n, instr_line++, update_depth(1));
-    fclose(f);
+    m4bipush(n);
 }
 
 void m4store(FILE *f, Type *lt) {
@@ -186,7 +191,7 @@ void m4handle_dup(FILE *f, Type *t) {
     fprintf(f, "%s%s ; instr_line %d depth %d\n", ident8, dup_str, instr_line++, update_depth(1));
 }
 
-void m4handle_assign_exp(Type *lt, char *op, Type *res) {
+void m4handle_assign_exp(Type *res, Type *lt, char *op, Type *rt)  {
     if (mode < 4 || m3_error)
         return;
     print("m4handle_assign_exp\n");
@@ -203,6 +208,22 @@ void m4handle_assign_exp(Type *lt, char *op, Type *res) {
 
     if (return_count > 1) {
         m4handle_dup(f, lt);
+    }
+
+    // mode 5 handle boolean assignments
+    if (rt->is_cond) {
+        int true_label = m5handle_label();
+        m4bipush(1);
+        List *nl = m5handle_next_line();
+        int false_label = m5handle_label();
+        m4bipush(0);
+        int end_label = m5handle_label();
+        backpatch(nl, end_label);
+        backpatch(rt->truelist, true_label);
+        rt->truelist = NULL;
+        backpatch(rt->falselist, false_label);
+        rt->falselist = NULL;
+        update_depth(-1);
     }
 
     m4store(f, lt);
