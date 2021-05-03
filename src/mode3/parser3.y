@@ -81,9 +81,9 @@ char cond_trigger = 0;
 
 %left   COMMA
 %right  ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN SLASHASSIGN
-%right  QUEST COLON
-%left   DPIPE
-%left   DAMP
+%right  QUEST COLON TERNARY
+%left   DPIPE CDPIPE
+%left   DAMP CDAMP
 %left   PIPE
 %left   AMP
 %left   EQUALS NEQUAL
@@ -101,7 +101,7 @@ char cond_trigger = 0;
 %type <fn> func_decl func_proto func_def
 /* part 5 */
 %type <num> MK
-%type <t> if_cond cond_emp_exp emp_exp do_cond while_cond rexp
+%type <t> if_cond cond_emp_exp emp_exp do_cond while_cond rexp for_cond_emp_exp cond_exp2
 %type <l> block_stmt stmt_list stmt if_stmt for_stmt while_stmt do_stmt stmts NL
 
 %%
@@ -144,7 +144,7 @@ init_var_list : init_var                { m3dprint("single init var init var lis
 
 /* part 2 - 2.2 and part 3 - 2.5 Extra credit: variable initialization */
 init_var : var                          { m3dprint("init_var var", ""); $$ = update_type_map($1); }
-    | var_return ASSIGN exp             { m3dprint("var = exp", "="); $$ = handle_init_var($1, $3); return_count--; }
+    | var_return ASSIGN rexp            { m3dprint("var = exp", "="); $$ = handle_init_var($1, $3); return_count--; }
     ;
 
 var_return : var                        { $$ = $1; return_count++; }
@@ -278,15 +278,18 @@ if_cond : if LPAR cond_exp RPAR         { m3dprint("IF condition", ""); $$ = han
 if : IF                                 { m4handle_comment("if statement"); }
     ;
 
-for_stmt : for LPAR emp_exp SEMI MK cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
+for_stmt : for LPAR emp_exp SEMI MK for_cond_emp_exp SEMI MK emp_exp NL RPAR MK stmts 
                                         { m3dprint("for(){}", ""); $$ = m5handle_for($5, $6, $8, $10, $12, $13); }
+    ;
+
+for_cond_emp_exp : cond_emp_exp         { $$ = m5hanlde_for_cond($1); }
     ;
 
 for : FOR                               { m4handle_comment("for statement"); m5handle_loop(); }
     ;
 
 emp_exp : %empty                        { m3dprint("false emp_exp", ""); $$ = NULL; }
-    | exp                               { m3dprint("true emp_exp", ""); $$ = $1; }
+    | exp                              { m3dprint("true emp_exp", ""); $$ = $1; }
     ;
 
 cond_emp_exp : %empty                   { m3dprint("false cond_emp_exp", ""); $$ = NULL; }
@@ -353,19 +356,22 @@ exp : INTCONST                          { m3dprint("INTCONST", $1); $$ = new_typ
     | exp GE exp                        { /* part 3 - R10 */ m3dprint("GE", ">="); $$ = handle_r10_exp($1, ">=", $3); }
     | exp LT exp                        { /* part 3 - R10 */ m3dprint("LT", "<"); $$ = handle_r10_exp($1, "<", $3); }
     | exp LE exp                        { /* part 3 - R10 */ m3dprint("LE", "<="); $$ = handle_r10_exp($1, "<=", $3); }
-    | exp DPIPE MK exp                  { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_marker($1, "||", $3, $4); }
-    | exp DAMP MK exp                   { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_marker($1, "&&", $3, $4); }
+    | cond_exp2 DPIPE MK cond_exp2 %prec CDPIPE       { /* part 3 - R10 */ m3dprint("DPIPE", "||"); $$ = handle_r10_marker($1, "||", $3, $4); }
+    | cond_exp2 DAMP MK cond_exp2 %prec CDAMP       { /* part 3 - R10 */ m3dprint("DAMP", "&&"); $$ = handle_r10_marker($1, "&&", $3, $4); }
 
     /* part 2 - 14. Assignment operators are: =, +=, -=, *=, /= */
-    | exp QUEST MK exp NL COLON MK exp MK           
+    | cond_exp2 QUEST MK rexp NL COLON MK rexp MK %prec TERNARY      
                                         { /* part 3 - R1 */ m3dprint("exp QUEST exp COLON exp", ""); $$ = handle_ternary_exp($1, $3, $4, $5, $7, $8, $9); }
     | LPAR cast_type RPAR exp           { /* part 3 - R5, R6, R7 */ m3dprint("(type) exp", ""); $$ = handle_cast_exp($4); }
-    | LPAR exp RPAR                     { m3dprint("( exp )", ""); $$ = $2; }
+    | LPAR exp RPAR                     { m3dprint("(exp)", ""); $$ = $2; }
     ;
 
 /* part 3 - 2.3 The expression given for the condition 
     is a numerical type (one of char, int, or float). */
-cond_exp : rexp                         { m3dprint("boolean exp", ""); $$ = m5handle_cond_exp($1); }
+cond_exp : rexp                         { $$ = m5handle_cond_exp($1); }
+    ;
+
+cond_exp2 : exp                         { $$ = m5handle_cond_exp($1); }
     ;
 
 root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
@@ -374,7 +380,7 @@ root_exp : prev_root exp                { m3dprint("root exp", ""); $$ = $2; }
 prev_root : %empty                      { m3dprint("root exp", ""); m4handle_comment("expression"); }
     ;
 
-rexp : prer exp posr { $$ = $2; }
+rexp : prer exp posr                    { $$ = $2; }
     ;
 
 prer : %empty                           { return_count++; }

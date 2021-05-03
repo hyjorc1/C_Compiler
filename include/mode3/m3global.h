@@ -175,7 +175,8 @@ extern List *m5handle_if(Type *b, int true_label, List *s_list);
 extern List *m5handle_ifelse(Type *b, int true_label, List *true_list, List *next_list, int false_label, List *false_list);
 extern List *m5handle_while(int cond_label, Type *b, int do_label, List *s_list);
 extern List *m5handle_do(int do_label, List *s_list, int cond_label, Type *b);
-extern List *m5handle_for(int cond_label, Type *b, int post_label, List *next_list, int stmt_label, List *s_list);
+extern List *m5handle_for(int cond_label, Type *b, int post_label, List *pos_next, int stmt_label, List *s_list);
+extern Type *m5hanlde_for_cond(Type *b);
 extern void m5handle_break();
 extern void m5handle_continue();
 

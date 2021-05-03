@@ -48,7 +48,27 @@ void for_stmt() {
     for (i = 5; i; i--) {
         j++;
     }
-    
+    putchar(j + 48); // 5
+    putchar(10);
+}
+
+void for_stmt1() {
+    int i, j = 0;
+    for (i = 5;; i--) {
+        j++;
+        if (i == 0) break;
+    }
+    putchar(j + 48); // 6
+    putchar(10);
+}
+
+void for_stmt2() {
+    int i, j = 0;
+    for (i = 5;;) {
+        j++;
+        i--;
+        if (i == 0) break;
+    }
     putchar(j + 48); // 5
     putchar(10);
 }
@@ -59,7 +79,6 @@ void ternary_exp() {
     putchar(i + j + 48); // 6
     putchar(10);
 }
-
 
 void break_stmt1() {
     int i = 3;
@@ -136,8 +155,8 @@ void continue_stmt3() {
     }
     putchar(i + 48); // 0
     putchar(10);
-    return 0;
 }
+
 
 void cmp_exp1() {
     int i = 0;
@@ -241,7 +260,7 @@ void short_circuiting() {
 
     // ternary
     i = 3;
-    i = (i > 0 && (i == 1 || i == 2)) ? 3 : 4;
+    i = ((i > 0 && (i == 1 || i == 2)) ? 3 : 4);
     putchar(i + 48); // 4
     putchar(10);
 
@@ -282,9 +301,45 @@ int f() {
 }
 
 int main() {
+    if_stmt(); // 2
+    if_else_stmt(); // 4
+    while_stmt(); // 4
+    do_stmt(); // 3
+    for_stmt(); // 5
+    for_stmt1(); // 6
+    for_stmt2(); // 5
+
+    ternary_exp(); // 6
+
+    break_stmt1(); // 3
+    break_stmt2(); // 2
+    break_stmt3(); // 3
+
+    continue_stmt1(); // 0
+    continue_stmt2(); // 0
+    continue_stmt3(); // 0
+
+    cmp_exp1(); // 3
+    cmp_exp2(); // 0
+    cmp_exp3(); // 3
+    cmp_exp4(); // 1
+    cmp_exp5(); // 1
+    cmp_exp6(); // 1
+
+    or_exp(); // 4
+    not_exp(); // 0
+    and_exp(); // 0
+
+    short_circuiting();
+    // 3
+    // 3
+    // 4
+    // 4
+    // 8
+    // 7
+    // 2345
+
     putchar(f() + 48); // 3
     putchar(10);
     return 0;
 }
-
-

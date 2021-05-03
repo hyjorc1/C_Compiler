@@ -1,7 +1,8 @@
 NAME := user4
 
-all: link
-	./$(EXE) -5 $(NAME).c
+all: link latex
+
+# ./$(EXE) -5 $(NAME).c
 
 jassemble: link
 	./$(EXE) -5 -o $(NAME).j $(NAME).c
