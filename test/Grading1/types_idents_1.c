@@ -1,3 +1,0 @@
-float int
-void
-char

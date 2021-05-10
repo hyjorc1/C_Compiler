@@ -1,6 +1,0 @@
-Error near unary4.c line 6
-	Unary operator - cannot be applied to expression of type int[]
-Error near unary4.c line 7
-	Unary operator ~ cannot be applied to expression of type int[]
-Error near unary4.c line 8
-	Unary operator ! cannot be applied to expression of type int[]

@@ -1,8 +1,0 @@
-Warning: ignoring #define directive in ifdef_nest_4.c line 2
-Warning: ignoring #define directive in ifdef_nest_4.c line 3
-Warning: ignoring #ifdef directive in ifdef_nest_4.c line 7
-Warning: ignoring #ifdef directive in ifdef_nest_4.c line 9
-Warning: ignoring #ifdef directive in ifdef_nest_4.c line 11
-Warning: ignoring #endif directive in ifdef_nest_4.c line 13
-Warning: ignoring #endif directive in ifdef_nest_4.c line 15
-Warning: ignoring #endif directive in ifdef_nest_4.c line 17

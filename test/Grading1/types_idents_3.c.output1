@@ -1,7 +1,0 @@
-types_idents_3.c line 1 text 'i' token IDENT
-types_idents_3.c line 1 text 'i23' token IDENT
-types_idents_3.c line 1 text 'x4' token IDENT
-types_idents_3.c line 2 text 'A' token IDENT
-types_idents_3.c line 3 text 'a' token IDENT
-types_idents_3.c line 4 text 'printf' token IDENT
-types_idents_3.c line 5 text 'supercalifragilisticexpialidocious' token IDENT

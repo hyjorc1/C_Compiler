@@ -1,9 +1,0 @@
-include_5.c line 4 text 'int' token TYPE
-include_5.c line 4 text 'main' token IDENT
-include_5.c line 4 text '(' token LPAR
-include_5.c line 4 text ')' token RPAR
-include_5.c line 5 text '{' token LBRACE
-include_5.c line 6 text 'return' token RETURN
-include_5.c line 6 text '0' token INTCONST
-include_5.c line 6 text ';' token SEMI
-include_5.c line 7 text '}' token RBRACE

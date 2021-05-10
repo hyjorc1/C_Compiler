@@ -1,9 +1,0 @@
-constants_4.c line 1 text '"string"' token STRCONST
-constants_4.c line 2 text '"this is another string"' token STRCONST
-constants_4.c line 3 text '"This is a much longer string, also with symbols inside. But that's no big deal, right? Because flex handles that for us!"' token STRCONST
-constants_4.c line 4 text '"3"' token STRCONST
-constants_4.c line 5 text '"for"' token STRCONST
-constants_4.c line 6 text '" /* this one was obvious, right? */ "' token STRCONST
-constants_4.c line 7 text '" "' token STRCONST
-constants_4.c line 8 text '""' token STRCONST
-constants_4.c line 9 text '"a \"fun\" example"' token STRCONST

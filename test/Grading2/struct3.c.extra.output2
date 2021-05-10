@@ -1,9 +1,0 @@
-Global struct S1
-
-
-Global struct S2
-    nothing, something
-
-Global struct S3
-    first, second, third
-

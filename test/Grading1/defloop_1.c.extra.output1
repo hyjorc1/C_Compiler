@@ -1,3 +1,0 @@
-defloop_1.c line 4 text '"this should fail:"' token STRCONST
-defloop_1.c line 6 text 'not' token IDENT
-defloop_1.c line 6 text 'Unix' token IDENT

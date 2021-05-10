@@ -1,4 +1,0 @@
-Error near widen9.c line 10
-	No match for function call nope(char[])
-	Candidates are:
-	void nope(int[]) declared in widen9.c near line 2

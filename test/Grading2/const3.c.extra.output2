@@ -1,6 +1,0 @@
-Global variables
-    A[], message[]
-
-Prototype sum
-    Parameters:	A[], N
-

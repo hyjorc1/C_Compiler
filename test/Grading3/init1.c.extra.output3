@@ -1,7 +1,0 @@
-Global variables
-    float pi (initialized)
-    int i
-    int j (initialized)
-    int k
-    char c (initialized)
-

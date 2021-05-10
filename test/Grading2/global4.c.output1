@@ -1,8 +1,0 @@
-global4.c line 4 text 'int' token TYPE
-global4.c line 5 text 'a' token IDENT
-global4.c line 6 text ',' token COMMA
-global4.c line 7 text 'b' token IDENT
-global4.c line 8 text ',' token COMMA
-global4.c line 9 text 'c' token IDENT
-global4.c line 10 text ',' token COMMA
-global4.c line 11 text ';' token SEMI

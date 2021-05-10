@@ -1,6 +1,0 @@
-Error near unary3.c line 4
-	Operation not supported: - void
-Error near unary3.c line 5
-	Operation not supported: ! void
-Error near unary3.c line 6
-	Operation not supported: ~ void

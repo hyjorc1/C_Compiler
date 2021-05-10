@@ -1,9 +1,0 @@
-Global struct point
-    x, y, z
-
-Prototype Area
-    Parameters:	P1, P2, P3
-
-Function Area2
-    Parameters:	Triangle[]
-

@@ -1,2 +1,0 @@
-Error near ifdef_4.c line 12 text '#endif'
-	#endif with no matching #ifdef/#ifndef, ignoring

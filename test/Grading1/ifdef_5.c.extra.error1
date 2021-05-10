@@ -1,5 +1,0 @@
-Error near ifdef_5.c line 2 text '#endif'
-	#endif with no matching #ifdef/#ifndef, ignoring
-Error near ifdef_5.c line 14
-	second #else (first on line 10), ignoring
-Error in ifdef_5.c: #ifdef/#ifndef on line 22 without #endif

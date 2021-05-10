@@ -1,3 +1,0 @@
-Error near idents1.c line 8
-	global variable b already declared as:
-	int b (near line 2 in file idents1.c)

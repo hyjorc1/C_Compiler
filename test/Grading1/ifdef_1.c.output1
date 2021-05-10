@@ -1,9 +1,0 @@
-ifdef_1.c line 2 text 'GOOD1' token IDENT
-ifdef_1.c line 5 text 'bad1' token IDENT
-ifdef_1.c line 8 text 'GOOD2' token IDENT
-ifdef_1.c line 12 text 'GOOD3' token IDENT
-ifdef_1.c line 15 text 'GOOD4' token IDENT
-ifdef_1.c line 18 text 'GOOD5' token IDENT
-ifdef_1.c line 22 text 'GOOD6' token IDENT
-ifdef_1.c line 25 text 'bad2' token IDENT
-ifdef_1.c line 28 text 'GOOD7' token IDENT

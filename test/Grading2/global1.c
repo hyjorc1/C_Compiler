@@ -1,4 +1,0 @@
-
-float var;
-int A;
-

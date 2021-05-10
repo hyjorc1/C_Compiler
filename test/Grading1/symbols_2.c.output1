@@ -1,5 +1,0 @@
-symbols_2.c line 1 text '.' token DOT
-symbols_2.c line 2 text ',' token COMMA
-symbols_2.c line 3 text ':' token COLON
-symbols_2.c line 4 text '?' token QUEST
-symbols_2.c line 5 text ';' token SEMI

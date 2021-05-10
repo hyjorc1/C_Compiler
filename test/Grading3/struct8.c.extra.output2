@@ -1,6 +1,0 @@
-Global struct pair
-    x, y
-
-Function test
-    Parameters:	P, M
-

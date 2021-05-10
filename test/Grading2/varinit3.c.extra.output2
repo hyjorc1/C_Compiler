@@ -1,8 +1,0 @@
-Function foo
-    Parameters:	a
-    Local variables:	b, c, d, e, f, g
-
-Function bar
-    Parameters:	b
-    Local variables:	c
-

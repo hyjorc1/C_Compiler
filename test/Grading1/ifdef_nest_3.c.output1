@@ -1,7 +1,0 @@
-ifdef_nest_3.c line 6 text 'GOOD1' token IDENT
-ifdef_nest_3.c line 9 text 'GOOD2' token IDENT
-ifdef_nest_3.c line 11 text 'GOOD3' token IDENT
-ifdef_nest_3.c line 13 text 'GOOD4' token IDENT
-ifdef_nest_3.c line 15 text 'GOOD5' token IDENT
-ifdef_nest_3.c line 17 text 'GOOD6' token IDENT
-ifdef_nest_3.c line 19 text 'GOOD7' token IDENT

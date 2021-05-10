@@ -1,6 +1,0 @@
-define_1.c line 4 text '"#define M 7"' token STRCONST
-define_1.c line 6 text '4' token INTCONST
-define_1.c line 7 text '5' token INTCONST
-define_1.c line 8 text 'N' token IDENT
-define_1.c line 9 text 'M' token IDENT
-define_1.c line 10 text '8' token INTCONST

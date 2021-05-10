@@ -1,7 +1,0 @@
-Function proto3
-    Parameters: a, b
-
-Function proto4
-    Parameters: u, v, w, x, y, z
-    Local variables: a, b, c
-

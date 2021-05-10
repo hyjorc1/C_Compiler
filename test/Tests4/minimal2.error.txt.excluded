@@ -1,4 +1,0 @@
-Error near minimal2.c line 4
-	Return type was const float, function expects int
-Warning near minimal2.c line 5
-	unsure if function main returns a value

@@ -1,7 +1,0 @@
-ifdef_5.c line 4 text 'ALIVE' token IDENT
-ifdef_5.c line 8 text 'bad1' token IDENT
-ifdef_5.c line 12 text 'GOOD' token IDENT
-ifdef_5.c line 16 text 'undefined' token IDENT
-ifdef_5.c line 16 text 'here' token IDENT
-ifdef_5.c line 20 text 'BETTER' token IDENT
-ifdef_5.c line 24 text '"unclosed ifndef, will there be a warning?"' token STRCONST

@@ -1,5 +1,0 @@
-symbols_4.c line 1 text '|' token PIPE
-symbols_4.c line 2 text '&' token AMP
-symbols_4.c line 3 text '!' token BANG
-symbols_4.c line 4 text '||' token DPIPE
-symbols_4.c line 5 text '&&' token DAMP

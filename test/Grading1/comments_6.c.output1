@@ -1,6 +1,0 @@
-comments_6.c line 1 text 'a' token IDENT
-comments_6.c line 2 text 'de' token IDENT
-comments_6.c line 2 text 'nop' token IDENT
-comments_6.c line 3 text ';' token SEMI
-comments_6.c line 4 text ';' token SEMI
-comments_6.c line 5 text ';' token SEMI

@@ -1,6 +1,0 @@
-symbols_1.c line 1 text '(' token LPAR
-symbols_1.c line 2 text ')' token RPAR
-symbols_1.c line 3 text '[' token LBRACKET
-symbols_1.c line 4 text ']' token RBRACKET
-symbols_1.c line 5 text '{' token LBRACE
-symbols_1.c line 6 text '}' token RBRACE

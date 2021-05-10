@@ -6,7 +6,7 @@ This project is a C compiler implemented in C(clang 12.0.0), FLex(2.6.4), and GN
 
 2. `make clean` removes all generated files.
 
-3. `make test` tests mode (1 - 4). For testing mode X only then `make testX`.
+3. `make test` tests mode (1 - 5). For testing mode X only then `make testX`.
 
 NOTE: The `Makefile` only works for linux like system (tested under Mac OS X 10.15.7).
 

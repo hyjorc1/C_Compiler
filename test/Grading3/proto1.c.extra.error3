@@ -1,5 +1,0 @@
-Error near proto1.c line 14
-Function other_function originally declared with different type:
-float other_function(float) declared in proto1.c near line 6
-replaced with:
-int other_function(float) declared in proto1.c near line 14

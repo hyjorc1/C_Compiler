@@ -1,8 +1,0 @@
-include_3.c line 2 text 'start' token IDENT
-include_3.c line 2 text ';' token SEMI
-include_3.c line 6 text 'hello' token IDENT
-include_3.c line 6 text ';' token SEMI
-include_3.c line 10 text 'there' token IDENT
-include_3.c line 10 text ';' token SEMI
-include_3.c line 14 text 'done' token IDENT
-include_3.c line 14 text ';' token SEMI

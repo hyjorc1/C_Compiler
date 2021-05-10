@@ -1,5 +1,0 @@
-constants_1.c line 1 text '0' token INTCONST
-constants_1.c line 2 text '5' token INTCONST
-constants_1.c line 3 text '123456' token INTCONST
-constants_1.c line 4 text '00005' token INTCONST
-constants_1.c line 5 text '1234567890123456789012345678901234567890' token INTCONST

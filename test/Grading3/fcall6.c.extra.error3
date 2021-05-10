@@ -1,4 +1,0 @@
-Error near fcall6.c line 27
-	No match for function call thing(const char, const int)
-	Candidates are:
-	int thing(char, int, float) declared in fcall6.c near line 2

@@ -1,6 +1,0 @@
-Error near cast3.c line 6
-	Cannot cast from type int[] to type char
-Error near cast3.c line 7
-	Cannot cast from type int[] to type int
-Error near cast3.c line 8
-	Cannot cast from type int[] to type float

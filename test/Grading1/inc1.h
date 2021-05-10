@@ -1,3 +1,0 @@
-
-"inside inc1";
-

@@ -1,4 +1,0 @@
-Error near fcall2.c line 10
-	No match for function call foo(int)
-	Candidates are:
-	int foo() declared in fcall2.c near line 2

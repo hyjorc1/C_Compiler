@@ -1,6 +1,0 @@
-include_4.c line 2 text 'line2' token IDENT
-include_4.c line 2 text ';' token SEMI
-include_4.c line 7 text 'line7' token IDENT
-include_4.c line 7 text ';' token SEMI
-include_4.c line 12 text 'line12' token IDENT
-include_4.c line 12 text ';' token SEMI

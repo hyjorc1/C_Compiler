@@ -1,2 +1,0 @@
-Error near init5.c line 9
-	Type mismatch in assignment: expected int, got const float

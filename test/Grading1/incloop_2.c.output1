@@ -1,6 +1,0 @@
-incloop_2.c line 2 text 'warmup' token IDENT
-incloop_2.c line 2 text ';' token SEMI
-incloop_2.c line 6 text 'starting' token IDENT
-incloop_2.c line 6 text ';' token SEMI
-incloop_2.c line 10 text 'done' token IDENT
-incloop_2.c line 10 text ';' token SEMI

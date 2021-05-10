@@ -1,2 +1,0 @@
-defloop_2.c line 5 text '"also should fail:"' token STRCONST
-defloop_2.c line 7 text 'A' token IDENT

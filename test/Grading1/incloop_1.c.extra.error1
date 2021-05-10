@@ -1,5 +1,0 @@
-Error near incloop1.h line 4
-	#include cycle:
-	File incloop1.h includes incloop1.h
-Error near incloop1.h line 4
-	Couldn't open included file incloop1.h

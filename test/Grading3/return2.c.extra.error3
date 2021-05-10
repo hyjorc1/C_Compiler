@@ -1,2 +1,0 @@
-Error near return2.c line 25
-	Return with a value (type was const int) in a void function

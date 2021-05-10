@@ -1,6 +1,0 @@
-Error near defloop_5.c line 26
-	#define substitution cycle:
-	B macro contains E
-	E macro contains D
-	D macro contains C
-	C macro contains B

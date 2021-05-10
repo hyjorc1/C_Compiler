@@ -1,8 +1,0 @@
-Warning: ignoring #ifndef directive in ifdef_2.c line 4
-Warning: ignoring #endif directive in ifdef_2.c line 6
-Warning: ignoring #define directive in ifdef_2.c line 10
-Warning: ignoring #ifndef directive in ifdef_2.c line 14
-Warning: ignoring #endif directive in ifdef_2.c line 16
-Warning: ignoring #undef directive in ifdef_2.c line 20
-Warning: ignoring #ifndef directive in ifdef_2.c line 24
-Warning: ignoring #endif directive in ifdef_2.c line 26

@@ -1,7 +1,0 @@
-Prototype putc
-    Parameters: c
-
-Function foo
-    Parameters: c
-    Local variables: x, y
-

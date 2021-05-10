@@ -1,4 +1,0 @@
-Error near proto3.c line 4
-	Conflicting types for function print
-Error near proto3.c line 6
-	Undeclared identifier: x
