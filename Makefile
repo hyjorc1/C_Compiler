@@ -27,12 +27,12 @@ latex-clean:
 #=================================================================#
 ############################## compiler ###########################
 #=================================================================#
-CC 			:= gcc
-CFLAGS		:= -Wall -Wextra -g
-SRC			:= src
-INCLUDE		:= include
-INCLUDEDIRS := $(shell find $(INCLUDE) -type d)
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+CC 				:= gcc
+CFLAGS			:= -Wall -Wextra -g
+SRC				:= src
+INCLUDE			:= include
+INCLUDEDIRS 	:= $(shell find $(INCLUDE) -type d)
+INCLUDES		:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
 
 EXE 		:= mycc
 MAIN		:= $(SRC)/$(EXE)
